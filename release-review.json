@@ -1,0 +1,13 @@
+{
+  "date": "2026-11-16",
+  "bytes": 6295784,
+  "kB": 6295.784,
+  "KiB": 6148.2265625,
+  "lines": 6240,
+  "sha256": "878f6f71d41f2ed09496f1d15b2836cf25cde277b2acaec4654b46c309c359be",
+  "checks": 33,
+  "allPassed": true,
+  "embeddedMedia": 19,
+  "authStatus": "Social OAuth is not configured; explicit guest skip is enabled",
+  "nicknameCount": 10000
+}
