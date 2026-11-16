@@ -1,13 +1,20 @@
 {
   "date": "2026-11-16",
-  "bytes": 6295784,
-  "kB": 6295.784,
-  "KiB": 6148.2265625,
-  "lines": 6240,
-  "sha256": "878f6f71d41f2ed09496f1d15b2836cf25cde277b2acaec4654b46c309c359be",
-  "checks": 33,
+  "bytes": 6306729,
+  "kB": 6306.729,
+  "KiB": 6158.9150390625,
+  "lines": 6366,
+  "sha256": "9a3e873a5d67b5f72d06c66fe833437ad8237c2a4a242b85e753868d6877fe21",
+  "checks": 36,
   "allPassed": true,
   "embeddedMedia": 19,
-  "authStatus": "Social OAuth is not configured; explicit guest skip is enabled",
-  "nicknameCount": 10000
+  "authStatus": "Social OAuth is not configured; Supabase installation and account connection pending; explicit guest skip remains enabled",
+  "nicknameCount": 10000,
+  "changes": [
+    "Verb-aware moderation avoids neutral phrase false positives",
+    "Concrete context-aware bot dialogue and private impostor teamwork",
+    "Evidence-weighted human testimony, rebuttals, retractions and individual ballot timing",
+    "Literal punctuation nicknames parsed safely in testimony",
+    "Full-height mission controls with scrolling and narrow-screen layout; 11 viewports x 25 tasks verified"
+  ]
 }

@@ -155,9 +155,11 @@
 @media(max-width:650px){#list button{align-items:flex-start;flex-direction:column;gap:6px}#info{max-width:calc(100vw - 160px);font-size:10px;padding:7px 10px}#tl{max-width:44vw;font-size:10px;padding:8px 10px}#lobbySetup{padding:12px}#lobbyUI>.row{max-width:90vw}}
 @media(prefers-reduced-motion:reduce){button{transition:none}}
 </style>
-<style>.lobby-panel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:65;width:min(360px,86vw);max-height:80vh;overflow:auto;flex-direction:column;gap:10px;background:#172630f5;border:2px solid #7c929f;border-radius:12px;padding:22px;box-shadow:0 12px 36px #0009}.lobby-panel p,.lobby-panel h3{margin:0}.lobby-panel input{width:100%;box-sizing:border-box}.lobby-panel button{padding:10px}#waitColorWrap{top:50%;transform:translate(-50%,-50%);z-index:65;padding:20px}#waitColorClose{margin-top:14px}#donationCollect{background:#a63645}</style><style id="task-reference-style">#mg{gap:14px;padding:28px 18px;background:#080e14;overscroll-behavior:contain}
-#mg>.task-heading{width:min(720px,92vw);font-size:clamp(18px,3vw,26px);font-weight:800;color:#e7edf2;text-align:center;margin:0;letter-spacing:.02em}
-#mg>.mgb.task-device{position:relative;display:flex;flex-direction:column;align-items:stretch;gap:14px;width:min(650px,90vw);max-width:100%;min-height:0;padding:22px;box-sizing:border-box;border:7px solid #34434c;border-top-color:#9baeb4;border-left-color:#738993;border-right-color:#263640;border-bottom-color:#1c2b34;border-radius:12px;background:linear-gradient(180deg,#71848d,#566b76);box-shadow:0 0 0 2px #070c12,0 10px 26px #0007,inset 0 0 0 1px #bacbd055;overflow:hidden}
+<style>.lobby-panel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:65;width:min(360px,86vw);max-height:80vh;overflow:auto;flex-direction:column;gap:10px;background:#172630f5;border:2px solid #7c929f;border-radius:12px;padding:22px;box-shadow:0 12px 36px #0009}.lobby-panel p,.lobby-panel h3{margin:0}.lobby-panel input{width:100%;box-sizing:border-box}.lobby-panel button{padding:10px}#waitColorWrap{top:50%;transform:translate(-50%,-50%);z-index:65;padding:20px}#waitColorClose{margin-top:14px}#donationCollect{background:#a63645}</style><style id="task-reference-style">/* Task viewport: keep full device height; scroll the screen instead of clipping controls. */
+#mg{gap:14px;padding:max(68px,calc(env(safe-area-inset-top) + 54px)) max(18px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));background:#080e14;overscroll-behavior:contain;justify-content:flex-start;overflow-x:hidden;overflow-y:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch;scroll-padding:68px 12px 24px}
+#mg>.task-heading{flex:0 0 auto;width:min(720px,100%);min-width:0;font-size:clamp(18px,3vw,26px);font-weight:800;color:#e7edf2;text-align:center;margin:auto 0 0;letter-spacing:.02em}
+#mg>.mgb.task-device{position:relative;display:flex;flex-direction:column;align-items:stretch;flex:0 0 auto;gap:14px;width:min(650px,100%);max-width:100%;min-width:0;min-height:0;margin:0 auto auto;padding:22px;box-sizing:border-box;border:7px solid #34434c;border-top-color:#9baeb4;border-left-color:#738993;border-right-color:#263640;border-bottom-color:#1c2b34;border-radius:12px;background:linear-gradient(180deg,#71848d,#566b76);box-shadow:0 0 0 2px #070c12,0 10px 26px #0007,inset 0 0 0 1px #bacbd055;overflow:visible}
+#mg .task-device>*{flex-shrink:0;min-width:0;max-width:100%}#mg .task-device input{box-sizing:border-box;min-width:0;max-width:100%}#mg .task-device input[type=text]{width:100%}#mg .task-display,#mg .task-help{overflow-wrap:anywhere}#mg .task-device .task-range{margin-inline:0}#mg .task-row{flex-wrap:wrap}
 .task-device::before,.task-device::after{content:'⊕';position:absolute;top:4px;color:#26343d;font:16px monospace;text-shadow:0 1px #b9c9ca;pointer-events:none}.task-device::before{left:5px}.task-device::after{right:5px}
 #mg .task-console{position:relative;min-height:250px;border:4px solid #1c2a32;border-radius:9px;background:#152d36;box-shadow:inset 0 3px 0 #0005,0 1px #c8d7d7;overflow:hidden;box-sizing:border-box}
 #mg .task-help{font-size:13px;line-height:1.5;color:#eff5f6;text-align:center;margin:0;min-height:20px}
@@ -190,7 +192,7 @@
 #mg .task-filter{position:relative;height:320px;background:linear-gradient(90deg,#5a6468 0 15%,#b2cbe0 15%,#a9bfdd 100%);touch-action:none}#mg .filter-mouth{position:absolute;left:3%;top:17%;width:7%;height:65%;background:#0c1519;box-shadow:inset 3px 0 12px #000;border:4px ridge #79878e;border-radius:5px}#mg .filter-mouth::after{content:'◀';position:absolute;left:35%;top:45%;color:#bbd5da}
 #mg .task-leaf{position:absolute;width:48px;height:30px;min-width:0;min-height:0;padding:0;border:2px solid #613d29;border-radius:90% 0 90% 0;background:linear-gradient(135deg,#b8ba35,#8b8c28 46%,#704333 48% 52%,#cc7d37 54%,#805437);box-shadow:inset 0 2px #dac75b88;touch-action:none;cursor:grab;transform:rotate(var(--tilt,0deg));transition:opacity .2s}#mg .task-leaf::after{content:'';position:absolute;left:-12px;bottom:-3px;width:24px;border-top:2px solid #6a492e;transform:rotate(-32deg)}
 #mg .task-alignment{height:280px;background:#071f0d;border:6px ridge #83959a;padding:0;touch-action:none}#mg .task-alignment svg{width:100%;height:100%}#mg .task-align-row{display:grid;grid-template-columns:minmax(0,1fr) 45px;gap:16px}
-#mg .task-power-bank{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;padding:16px 7px;background:linear-gradient(#131b15 0 38%,#78898d 39%);min-height:300px}#mg .power-column{display:flex;flex-direction:column;align-items:center;gap:8px;color:#172d37;font:10px ui-monospace,monospace;min-width:0}#mg .power-cell{height:72px;width:66%;background:linear-gradient(0deg,#e3cb29 0 55%,#0b160f 56%);border:2px solid #c6d2bd;box-shadow:0 0 10px #d9e02722}#mg .power-column.active .power-cell{background:linear-gradient(#ffff99,#e2d22a);box-shadow:0 0 15px #ffed4677}#mg .power-column input{height:140px;width:25px}#mg .power-column span{writing-mode:vertical-rl;height:50px;overflow:hidden;font-weight:800}
+#mg .task-power-bank{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;padding:16px 7px;background:linear-gradient(#131b15 0 38%,#78898d 39%);min-height:300px}#mg .power-column{display:flex;flex-direction:column;align-items:center;gap:8px;color:#172d37;font:10px ui-monospace,monospace;min-width:0}#mg .power-cell{height:72px;width:66%;background:linear-gradient(0deg,#e3cb29 0 55%,#0b160f 56%);border:2px solid #c6d2bd;box-shadow:0 0 10px #d9e02722}#mg .power-column.active .power-cell{background:linear-gradient(#ffff99,#e2d22a);box-shadow:0 0 15px #ffed4677}#mg .power-column input{height:140px;width:25px}#mg .power-column span{writing-mode:vertical-rl;height:50px;overflow:hidden;font-weight:800}
 #mg .task-switch{height:290px;display:flex;align-items:center;justify-content:center;background:#5d6b70}#mg .task-switch svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}#mg .circuit-switch{z-index:1;width:85px;height:38px;background:linear-gradient(#9aa8b0,#d5e0e2 45%,#80949c 55%);border:4px solid #2b414c;border-radius:10px;transform:rotate(-90deg);transition:transform .45s}
 #mg .task-scan{display:flex;flex-direction:column;gap:14px;padding:18px;background:#304f5b}#mg .scan-stage{height:215px;position:relative;background:radial-gradient(ellipse at 50% 80%,#cbe6a6 0 17%,#587f64 18% 22%,transparent 23%),linear-gradient(#718c90,#adc1c4);overflow:hidden}#mg .scan-crew{position:absolute;left:50%;top:60px;width:54px;height:84px;background:var(--crew,#8b3aa8);border:5px solid #14242d;border-radius:27px 27px 14px 14px;transform:translateX(-50%);box-shadow:inset -11px -7px #0003}#mg .scan-crew::before{content:'';position:absolute;right:-10px;top:16px;width:45px;height:26px;border:5px solid #14242d;border-radius:12px;background:linear-gradient(#e0f7ff,#71c4df)}#mg .scan-crew::after{content:'';position:absolute;left:4px;bottom:-23px;width:18px;height:28px;border-radius:2px 2px 8px 8px;background:var(--crew,#8b3aa8);border:4px solid #14242d;box-shadow:25px 0 var(--crew,#8b3aa8)}#mg .scan-line{position:absolute;left:15%;right:15%;top:20%;height:4px;background:#9affbd;box-shadow:0 0 16px #8affba;animation:taskScan 1.6s linear infinite alternate}@keyframes taskScan{to{top:84%}}
 #mg .task-shields{display:grid;grid-template-columns:repeat(3,88px);justify-content:center;gap:8px;padding:28px;background:radial-gradient(ellipse,#8480a4,#333b66);border-radius:50%;aspect-ratio:1;min-height:0}#mg .shield-cell{aspect-ratio:1;clip-path:polygon(25% 4%,75% 4%,100% 50%,75% 96%,25% 96%,0 50%);background:#f3546880;border:0;box-shadow:none;color:#ffd2d5;font-size:35px;padding:0;touch-action:none}#mg .shield-cell.safe{background:#dce9f1aa;color:#fff}#mg .shield-cell:nth-child(1){grid-column:2}#mg .shield-cell:nth-child(2){grid-column:1}#mg .shield-cell:nth-child(5){grid-column:1}
@@ -201,8 +203,8 @@
 #mg .task-trash{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:14px;padding:12px;background:#667b86;min-height:330px}#mg .trash-shaft{position:relative;background:linear-gradient(95deg,#bfd5e344,#ffffff22 40%,#97c1d822 55%),#476477;border:5px ridge #a3b8c0;overflow:hidden}#mg .trash-shaft::after{content:'↓';position:absolute;inset:4px;color:#66caff55;text-align:center;font-size:170px;line-height:270px;font-weight:900;pointer-events:none}#mg .trash-piece{position:absolute;width:35px;height:30px;border:2px solid #4d382b;background:#b4973f;clip-path:polygon(10% 5%,90% 20%,77% 100%,45% 83%,0 58%);z-index:1;transform:rotate(var(--turn,0deg));transition:top .1s linear,opacity .25s}#mg .trash-lever{position:relative;height:230px;width:100%;border:5px ridge #c0ccce;border-radius:7px;background:linear-gradient(90deg,#354b59 45%,#152d39 46% 56%,#607b87 57%);padding:0;box-shadow:none;touch-action:none}#mg .trash-lever i{position:absolute;left:8%;right:8%;height:28px;top:20px;border:5px solid #263f47;background:linear-gradient(#b2d6ce,#669e95);border-radius:7px;box-shadow:0 4px #192c35;pointer-events:none}
 #mg .task-code-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.task-code-pad .task-action{font-size:21px}#mg .task-steer{height:300px;background:linear-gradient(90deg,transparent 49.5%,#89b4c7 50%,transparent 50.5%),linear-gradient(transparent 49.5%,#89b4c7 50%,transparent 50.5%),radial-gradient(circle,#7398a8,#254d64);touch-action:none}#mg .steer-target{position:absolute;left:50%;top:50%;width:60px;height:60px;border:2px dashed #d5edf7;border-radius:50%;transform:translate(-50%,-50%)}#mg .steer-cursor{position:absolute;width:54px;height:54px;border:4px solid #fff;border-radius:50%;transform:translate(-50%,-50%);background:linear-gradient(90deg,transparent 47%,#fff 48% 52%,transparent 53%),linear-gradient(transparent 47%,#fff 48% 52%,transparent 53%);pointer-events:none}
 #mg>.x{position:fixed;left:max(14px,env(safe-area-inset-left));top:max(14px,env(safe-area-inset-top));right:auto;width:45px;height:45px;min-width:45px;border:4px solid #28373c;border-radius:50%;background:#d3dedf;color:#25353b;font-size:0;padding:0;z-index:3}#mg>.x::after{content:'×';font-size:34px;line-height:32px}
-@media(max-width:600px){#mg{padding:64px 9px 16px;justify-content:flex-start;gap:10px}#mg>.mgb.task-device{width:96vw;padding:13px;border-width:6px;gap:10px}.task-simon{gap:10px!important}.task-simon-half{padding:8px!important;border-width:4px!important}#mg .task-pad{min-height:42px;border-width:3px;font-size:19px}#mg .task-grid{gap:6px}#mg .task-wire-field{height:290px}#mg .wire-port{width:56px;height:36px}#mg .task-fuel{grid-template-columns:1fr 90px;padding:16px;gap:12px}#mg .fuel-can{width:160px;height:210px}#mg .distributor-row{grid-template-columns:72px minmax(0,1fr) 60px;gap:14px}#mg .distributor-ring{width:60px;height:60px;font-size:30px;line-height:60px}#mg .distributor-ring::before{top:20px}#mg .task-distributor{padding:18px 10px}#mg .task-tubes{gap:8px;padding:20px 8px}#mg .sample-tube{height:160px}#mg .task-shields{grid-template-columns:repeat(3,65px);padding:20px;gap:5px}#mg .task-action{padding:9px 11px;font-size:13px}#mg .task-power-bank{gap:2px;padding:12px 3px}#mg .task-folder{width:82px;height:62px}#mg .task-folder b{top:72px;font-size:11px}#mg .task-transfer{padding:20px 14px}.task-help{font-size:12px!important}#mg .task-trash{grid-template-columns:minmax(0,1fr) 85px;gap:10px}#mg .task-course{height:250px}}
-@media(max-height:650px) and (min-width:650px){#mg{padding:18px;gap:6px;justify-content:flex-start}#mg>.mgb.task-device{padding:14px;width:560px;gap:8px}#mg .task-console{min-height:210px}#mg .task-wire-field,#mg .task-filter,#mg .task-asteroids,#mg .task-vent{height:270px}#mg .task-help{font-size:12px}#mg .task-heading{font-size:19px}#mg .task-simon-half{padding:8px}#mg .task-tubes{height:200px}#mg .task-fuel{min-height:240px}#mg .fuel-can{height:190px}}
+@media(max-width:600px){#mg{padding:max(68px,calc(env(safe-area-inset-top) + 54px)) max(9px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(9px,env(safe-area-inset-left));justify-content:flex-start;gap:10px}#mg>.mgb.task-device{width:100%;padding:13px;border-width:6px;gap:10px}.task-simon{gap:10px!important}.task-simon-half{padding:8px!important;border-width:4px!important}#mg .task-pad{min-height:42px;border-width:3px;font-size:19px}#mg .task-grid{gap:6px}#mg .task-wire-field{height:290px}#mg .wire-port{width:56px;height:36px}#mg .task-fuel{grid-template-columns:1fr 90px;padding:16px;gap:12px}#mg .fuel-can{width:160px;height:210px}#mg .distributor-row{grid-template-columns:72px minmax(0,1fr) 60px;gap:14px}#mg .distributor-ring{width:60px;height:60px;font-size:30px;line-height:60px}#mg .distributor-ring::before{top:20px}#mg .task-distributor{padding:18px 10px}#mg .task-tubes{gap:8px;padding:20px 8px}#mg .sample-tube{height:160px}#mg .task-shields{grid-template-columns:repeat(3,65px);padding:20px;gap:5px}#mg .task-action{padding:9px 11px;font-size:13px}#mg .task-power-bank{gap:2px;padding:12px 3px}#mg .task-folder{width:82px;height:62px}#mg .task-folder b{top:72px;font-size:11px}#mg .task-transfer{padding:20px 14px}.task-help{font-size:12px!important}#mg .task-trash{grid-template-columns:minmax(0,1fr) 85px;gap:10px}#mg .task-course{height:250px}}
+@media(max-height:650px) and (min-width:650px){#mg{gap:6px;justify-content:flex-start}#mg>.mgb.task-device{padding:14px;width:min(560px,100%);gap:8px}#mg .task-console{min-height:210px}#mg .task-wire-field,#mg .task-filter,#mg .task-asteroids,#mg .task-vent{height:270px}#mg .task-help{font-size:12px}#mg .task-heading{font-size:19px}#mg .task-simon-half{padding:8px}#mg .task-tubes{height:200px}#mg .task-fuel{min-height:240px}#mg .fuel-can{height:190px}}
 
 #mg .task-shields{display:block;width:min(350px,100%);align-self:center;aspect-ratio:1;padding:0;min-height:0}#mg .task-shields .shield-cell{position:absolute;width:29%;height:29%;margin:0}#mg .task-shields .shield-cell:nth-child(1){left:35.5%;top:4%}#mg .task-shields .shield-cell:nth-child(2){left:62%;top:20%}#mg .task-shields .shield-cell:nth-child(3){left:62%;top:51%}#mg .task-shields .shield-cell:nth-child(4){left:35.5%;top:67%}#mg .task-shields .shield-cell:nth-child(5){left:9%;top:51%}#mg .task-shields .shield-cell:nth-child(6){left:9%;top:20%}#mg .task-shields .shield-cell:nth-child(7){left:35.5%;top:35.5%}
 @media(max-width:600px){#mg .task-shields{width:min(285px,100%)}}
@@ -273,7 +275,7 @@
 </style><style>
 .shopPrice{font-size:17px;color:#ffcf77}.shopItem.premium{border-color:#b7965b66}.shopItem.premium h3{color:#ffe2ad}.shopItem button:disabled{opacity:.6;cursor:default}.shopItem .preview{padding:3px}#shopItems{grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr))}
 </style>
-<style>#shushScreen{position:fixed;inset:0;z-index:31;background:#101010;align-items:center;justify-content:center;pointer-events:none}</style><style id="dropship-start-nov12">#start{bottom:max(52px,env(safe-area-inset-bottom));padding:0 18px;min-width:180px;min-height:64px;font:italic 900 clamp(33px,5vw,49px) sans-serif;letter-spacing:-.06em;background:transparent!important;color:#f2f7f4!important;-webkit-text-stroke:1.7px #17212c;text-shadow:2px 2px 0 #0a1724,-2px -2px 0 #0a1724,0 4px 0 #566b6b;box-shadow:none;border:0;border-radius:0}#start:disabled{opacity:1;color:#ffdb7b!important}#start:focus-visible{outline:3px solid #9febce;outline-offset:5px}#startCount{position:fixed;left:50%;transform:translateX(-50%);bottom:max(21px,env(safe-area-inset-bottom));color:#b3f29d;font-size:20px;font-weight:800;text-shadow:0 2px 3px #000;z-index:4;pointer-events:none}#botp{bottom:134px}#waitColorWrap{display:none!important}@media(max-height:520px){#start{bottom:30px;font-size:34px;min-height:45px}#startCount{bottom:9px;font-size:15px}#botp{bottom:90px}}</style><style>body.meeting-intro #chat,body.meeting-intro #ibs,body.meeting-intro #tl{visibility:hidden!important}</style><style id="waiting-chat-touch">#lobbySend{display:none}#chat.waiting-chat #ci{font-size:16px;min-height:44px;padding:10px}#chat.waiting-chat:not(.min) #lobbySend{display:block;width:100%;min-height:44px;margin-top:6px;padding:10px 16px;font-size:16px;background:#2563eb}#chat.min #lobbySend{display:none!important}</style><style id="medical-scan-detail">#mg .scan-stage{height:clamp(150px,38dvh,280px);background:#415d65}#mg .medical-scan-canvas{position:static!important;inset:auto!important;transform:none!important;width:100%!important;height:100%!important;display:block;pointer-events:none}</style><style id="task-visuals-nov15">#mg .wire-connection-spark{position:absolute;right:4%;width:16px;height:16px;pointer-events:none;background:#fff8c2;box-shadow:0 0 13px #fff779;clip-path:polygon(50% 0,60% 33%,100% 20%,72% 50%,100% 80%,60% 66%,50% 100%,40% 66%,0 80%,28% 50%,0 20%,40% 33%);animation:wireSpark .26s ease-out forwards}@keyframes wireSpark{to{transform:scale(2.2) rotate(35deg);opacity:0}}#mg canvas.transfer-packet{position:absolute!important;right:auto!important;bottom:auto!important;top:20%!important;width:54px!important;height:66px!important;border:0;background:none;box-shadow:none;transform:none;pointer-events:none}#mg .task-temperature{padding:22px;display:grid;grid-template-columns:1fr 72px;gap:13px;background:linear-gradient(130deg,#5b7284,#354f62);color:#e0f3f7}#mg .temperature-target{font-size:22px;font-weight:800;grid-column:1}#mg .temperature-reading{grid-column:1;background:#10262d;border:3px ridge #a0bcc1;padding:20px 12px;font-size:42px;font-variant-numeric:tabular-nums;color:#b9ecff;align-self:center;text-align:center}#mg .temperature-gauge{grid-column:2;grid-row:1/3;position:relative;background:#173341;border:4px solid #b3cbd0;border-radius:18px;overflow:hidden;min-height:180px}#mg .temperature-gauge i{position:absolute;bottom:0;left:0;width:100%;background:linear-gradient(#e7775a,#c33743);transition:height .1s}#mg .task-temperature .task-row{grid-column:1/-1;justify-content:center}#mg .task-temperature .task-row button{min-width:62px;min-height:48px;font-size:22px}#mg .task-temperature .task-row button:last-child{font-size:17px}</style><style>#chat.meeting .vote-state.has-voted{border:2px solid #b44548;border-radius:50%;color:#b44548;transform:rotate(-12deg);padding:7px 3px;font-size:9px}#mb.vote-results .voter-chip{animation:ballotArrive .3s both;animation-delay:calc(var(--vote-order,0)*.09s)}@keyframes ballotArrive{from{opacity:0;transform:translate(18px,-18px) scale(.4)}to{opacity:1;transform:none}}@media(prefers-reduced-motion:reduce){#mb.vote-results .voter-chip{animation:none}}</style><style id="account-skip-style">
+<style>#shushScreen{position:fixed;inset:0;z-index:31;background:#101010;align-items:center;justify-content:center;pointer-events:none}</style><style id="dropship-start-nov12">#start{bottom:max(52px,env(safe-area-inset-bottom));padding:0 18px;min-width:180px;min-height:64px;font:italic 900 clamp(33px,5vw,49px) sans-serif;letter-spacing:-.06em;background:transparent!important;color:#f2f7f4!important;-webkit-text-stroke:1.7px #17212c;text-shadow:2px 2px 0 #0a1724,-2px -2px 0 #0a1724,0 4px 0 #566b6b;box-shadow:none;border:0;border-radius:0}#start:disabled{opacity:1;color:#ffdb7b!important}#start:focus-visible{outline:3px solid #9febce;outline-offset:5px}#startCount{position:fixed;left:50%;transform:translateX(-50%);bottom:max(21px,env(safe-area-inset-bottom));color:#b3f29d;font-size:20px;font-weight:800;text-shadow:0 2px 3px #000;z-index:4;pointer-events:none}#botp{bottom:134px}#waitColorWrap{display:none!important}@media(max-height:520px){#start{bottom:30px;font-size:34px;min-height:45px}#startCount{bottom:9px;font-size:15px}#botp{bottom:90px}}</style><style>body.meeting-intro #chat,body.meeting-intro #ibs,body.meeting-intro #tl{visibility:hidden!important}</style><style id="waiting-chat-touch">#lobbySend{display:none}#chat.waiting-chat #ci{font-size:16px;min-height:44px;padding:10px}#chat.waiting-chat:not(.min) #lobbySend{display:block;width:100%;min-height:44px;margin-top:6px;padding:10px 16px;font-size:16px;background:#2563eb}#chat.min #lobbySend{display:none!important}</style><style id="medical-scan-detail">#mg .scan-stage{height:clamp(150px,38dvh,280px);background:#415d65}#mg .medical-scan-canvas{position:static!important;inset:auto!important;transform:none!important;width:100%!important;height:100%!important;display:block;pointer-events:none}</style><style id="task-visuals-nov15">#mg .wire-connection-spark{position:absolute;right:4%;width:16px;height:16px;pointer-events:none;background:#fff8c2;box-shadow:0 0 13px #fff779;clip-path:polygon(50% 0,60% 33%,100% 20%,72% 50%,100% 80%,60% 66%,50% 100%,40% 66%,0 80%,28% 50%,0 20%,40% 33%);animation:wireSpark .26s ease-out forwards}@keyframes wireSpark{to{transform:scale(2.2) rotate(35deg);opacity:0}}#mg canvas.transfer-packet{position:absolute!important;right:auto!important;bottom:auto!important;top:20%!important;width:54px!important;height:66px!important;border:0;background:none;box-shadow:none;transform:none;pointer-events:none}#mg .task-temperature{padding:22px;display:grid;grid-template-columns:minmax(0,1fr) 72px;gap:13px;background:linear-gradient(130deg,#5b7284,#354f62);color:#e0f3f7}#mg .temperature-target{font-size:22px;font-weight:800;grid-column:1}#mg .temperature-reading{grid-column:1;background:#10262d;border:3px ridge #a0bcc1;padding:20px 12px;font-size:42px;font-variant-numeric:tabular-nums;color:#b9ecff;align-self:center;text-align:center}#mg .temperature-gauge{grid-column:2;grid-row:1/3;position:relative;background:#173341;border:4px solid #b3cbd0;border-radius:18px;overflow:hidden;min-height:180px}#mg .temperature-gauge i{position:absolute;bottom:0;left:0;width:100%;background:linear-gradient(#e7775a,#c33743);transition:height .1s}#mg .task-temperature .task-row{grid-column:1/-1;justify-content:center}#mg .task-temperature .task-row button{min-width:62px;min-height:48px;font-size:22px}#mg .task-temperature .task-row button:last-child{font-size:17px}@media(max-width:600px){#mg .task-temperature{grid-template-columns:minmax(0,1fr) 48px;padding:14px;gap:10px}#mg .temperature-target{font-size:18px}#mg .temperature-reading{font-size:clamp(28px,7vw,42px);padding:16px 6px}#mg .task-temperature .task-row{gap:10px}#mg .task-temperature .task-row button{min-width:52px}#mg .task-temperature .task-row button:last-child{flex:1 0 100%;font-size:16px}}</style><style>#chat.meeting .vote-state.has-voted{border:2px solid #b44548;border-radius:50%;color:#b44548;transform:rotate(-12deg);padding:7px 3px;font-size:9px}#mb.vote-results .voter-chip{animation:ballotArrive .3s both;animation-delay:calc(var(--vote-order,0)*.09s)}@keyframes ballotArrive{from{opacity:0;transform:translate(18px,-18px) scale(.4)}to{opacity:1;transform:none}}@media(prefers-reduced-motion:reduce){#mb.vote-results .voter-chip{animation:none}}</style><style id="account-skip-style">
 .title-account-actions{display:flex;gap:8px;align-items:center;justify-content:center}#login .title-account-actions button{min-height:38px;padding:8px 15px;border:1px solid #708996;border-radius:7px;background:#142733dd;font-size:13px;color:#d7e5ed}#login #accountSkipIntro{background:transparent;color:#bdced9}
 #accountOptions{position:fixed;inset:0;z-index:120;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;background:#030a12df;overflow-y:auto;touch-action:pan-y}.account-card{position:relative;box-sizing:border-box;width:min(420px,100%);max-height:calc(100dvh - 36px);overflow-y:auto;padding:28px;background:#172a35;border:1px solid #7d96a4;border-radius:12px;box-shadow:0 16px 44px #0008;text-align:left}.account-card>small{font-size:11px;letter-spacing:.08em;color:#9fb7c6}.account-card h2{margin:12px 0;font-size:24px;line-height:1.3;color:#f1f6f7}.account-card p{font-size:14px;line-height:1.7;color:#b8cbd5;margin:0 0 20px}.account-providers{display:grid;gap:8px}.account-providers button{min-height:46px;background:#263e4c;border:1px solid #6d8796;color:#b9ccd6;border-radius:7px;font-size:14px;opacity:.62}.account-card #accountClose{position:absolute;top:14px;right:14px;min-height:36px;padding:6px 10px;background:#29414e;border-color:#728a99;font-size:12px}.account-card #accountSkip{display:block;width:100%;min-height:48px;margin-top:20px;background:#a53b4a;border-color:#e7a2ad;border-radius:7px;font-size:16px}.account-card .account-note{display:block;margin-top:12px;font-size:11px;line-height:1.5;letter-spacing:0;color:#93adbc}@media(max-height:550px){.account-card{padding:20px}.account-card h2{font-size:20px}.account-card p{margin-bottom:12px}.account-providers button{min-height:40px}.account-card #accountSkip{margin-top:12px;min-height:44px}}
 @media(max-height:540px){#login .padHint,#login .title-caption{display:none}#login{gap:8px;padding-bottom:32px}#login .title-wordmark{top:20px;font-size:clamp(34px,7vw,68px)}#titleTraining{font-size:15px;min-height:38px;padding:8px 16px}#login .title-account-actions button{min-height:34px;padding:6px 12px}}
@@ -2375,6 +2377,7 @@ const note=m=>{noteMsg=m;noteUntil=Date.now()+5000};
 /* ---------- 채팅 ---------- */
 // Match explicit abuse, not neutral identity words or ordinary educational terms.
 const CHAT_BLOCKED=['씨발','시발','씨벌','시벌','씨팔','씹새','씹년','씹놈','개새끼','개새기','개색끼','개색기','새꺄','병신','븅신','등신','지랄','좆','졷','뒤져','뒤질래','죽어버려','죽여버릴','죽여버린다','자살해','한남충','한녀충','맘충','틀딱','급식충','잼민충','장애인새끼','정신병자새끼','걸레년','창녀','창놈','보지','자지','섹스','쎅스','쎅쓰','야동','포르노','딸딸이','자위해','자위하자','강간','성폭행해','따먹','박아줄','후장','페니스','니애미','니애비','느금마','느개비','니엄마죽','니엄마창','느금','ㅅㅂ','ㅆㅂ','ㅂㅅ','ㅄ','ㅈㄹ','ㅗㅗ','fuck','fucking','fucker','shit','bitch','bastard','motherfucker','nigger','nigga','retard','porn','hentai','blowjob'];
+/* Natural chat: verb-aware moderation and concrete replies. */
 function censorChat(value){
   const original=String(value??'').slice(0,500),chars=Array.from(original),map=[];let compact='';
   chars.forEach((ch,i)=>{for(const c of ch.normalize('NFKC').toLowerCase()){
@@ -2382,14 +2385,15 @@ function censorChat(value){
   }});
   const hidden=new Set();
   for(const term of CHAT_BLOCKED){const word=term.normalize('NFKC').toLowerCase();let at=0;
-    while((at=compact.indexOf(word,at))!==-1){const end=at+word.length-1;
-      const after=compact.slice(end+1),before=compact.slice(0,at);
-      const plainFragment=/^(보지|자지)$/.test(word)&&/[가-힣]/.test(chars[map[at]-1]||'')||/^(시발|시벌)$/.test(word)&&/\s/.test(chars.slice(map[at],map[end]+1).join(''))&&(/[가-힣]/.test(chars[map[at]-1]||'')||/[가-힣]/.test(chars[map[end]+1]||''));
-      const neutral=plainFragment||word==='보지'&&/(어디|누구|부터|다시|직접|일단|지켜|같이|한번|못|안|먼저|더)$/.test(before)||word==='자지'&&/(잘|일찍|이제)$/.test(before)||word==='시발'&&after.startsWith('점')||word==='보지'&&/^(못|않|말|마)/.test(after)||word==='자지'&&(/잠(을)?$/.test(before)||/^(않|말|마)/.test(after))||word==='새끼'&&/^(고양이|강아지|동물|고래|새|토끼)/.test(after);
-      // Single English words need word boundaries: e.g. "class" stays readable.
-      if(!neutral&&(!/^[a-z]+$/.test(word)||!/[a-z]/i.test(chars[map[at]-1]||'')&&!/[a-z]/i.test(chars[map[end]+1]||''))){
-        for(let i=map[at];i<=map[end];i++)hidden.add(i);
-      }
+    while((at=compact.indexOf(word,at))!==-1){const end=at+word.length-1,first=map[at],last=map[end];
+      const after=compact.slice(end+1),before=compact.slice(0,at),left=chars[first-1]||'',right=chars[last+1]||'',span=chars.slice(first,last+1).join('');
+      // Removing spaces catches obfuscation, but must not join two ordinary Korean words.
+      const crossedWords=/^(?:시발|시벌|지랄)$/.test(word)&&/^[가-힣]+\s+[가-힣]+$/.test(span)&&/[가-힣]/.test(left)&&/[가-힣]/.test(right);
+      const verbEnding=/^(?:도|는|만|조차)?(?:못|않|말|마)/.test(after);
+      const lookVerb=word==='보지'&&(/[가-힣]/.test(left)||verbEnding||/(어디|누구|부터|다시|직접|일단|지켜|같이|한번|못|안|먼저|더|왜|뭐|뭘|좀|잘|또|나도|너도|가서)$/.test(before));
+      const sleepVerb=word==='자지'&&(/[가-힣]/.test(left)||/잠(?:을)?$|(?:잘|일찍|이제)$/.test(before)||/^(?:도|는|만)?(?:않|말|마)/.test(after));
+      const neutral=crossedWords||lookVerb||sleepVerb||word==='시발'&&after.startsWith('점');
+      if(!neutral&&(!/^[a-z]+$/.test(word)||!/[a-z]/i.test(left)&&!/[a-z]/i.test(right)))for(let i=first;i<=last;i++)hidden.add(i);
       at++;
     }
   }
@@ -2654,7 +2658,7 @@ const pick=a=>a[Math.random()*a.length|0];
 const flag=v=>v===1||v>Date.now();
 const shieldVisible=q=>q.id===selfId&&q.a&&flag(q.sh);
 const kr=r=>CFG.kr+15;
-const CRL=['시체 어디서 발견했어?','나 미션하다 왔어','직접 본 사람 있어?','증거 없으면 이번엔 스킵하자'],IML=['나 미션하고 있었어','난 못 봤어','그 사람 동선부터 들어보자','어디서 본 거야?'];
+const CRL=['시체 어디서 발견했어?','나 미션하다 왔어','누가 직접 봤어?','증거 없으면 이번엔 스킵하자'],IML=['나 미션하고 있었어','난 못 봤어','그 사람 동선부터 들어보자','어디서 본 거야?'];
 // Each stage owns a fixed deadline. Bot dialogue and ability effects never add time.
 function advanceMeeting(now,alive){
   if(!meet)return;
@@ -3599,44 +3603,44 @@ function rememberBotEvent(kind,victim,actor){
 function botSuspicionLine(q,target){
   const evidence=q.suspicionEvidence;
   if(evidence&&evidence.actorId===target.id&&evidence.round===roundId&&Date.now()-evidence.at<90000){
-    if(evidence.kind==='kill')return target.nm+' 직접 킬하는 걸 봤어. 이건 경크야';
-    if(evidence.kind==='body')return target.nm+' '+evidence.room+' 시체 근처에서 본 건 맞아. 킬 장면은 못 봤어';
+    if(evidence.kind==='kill'&&!(isImp(q.r)&&isImp(target.r)))return J(target.nm,'이','가')+' '+evidence.room+'에서 죽이는 거 봤어';
+    if(evidence.kind==='body')return target.nm+' '+evidence.room+' 시체 옆에 있었어. 죽이는 건 못 봤고';
   }
-  return target.nm+' 동선은 더 확인하고 싶어. 아직 직접 본 킬 증거는 없어';
+  return target.nm+', 신고 전에는 어디였어?';
 }
 function botContextLine(q,log){
-  if(!q.a)return pick(['관전 중인데 이번 투표 궁금하다','살아 있는 애들 얘기 들어보자','이번엔 누가 나갈까']);
+  if(!q.a)return pick(['이번 투표 궁금하네','일단 얘기 듣는 중','이번엔 누가 나가려나']);
   const event=q.chatIncident;
   if(event&&event.round===roundId&&Date.now()-event.at<90000&&!q.contextSaid){
     q.contextSaid=true;q.chatIncident=null;
     if(event.kind==='kill'&&!(isImp(q.r)&&isImp(players[event.actorId]?.r))){
-      return event.actor+' 직접 킬하는 걸 봤어. 경크야.'+(meet.kind==='rep'&&meet.caller===event.actorId&&meet.bodyId===event.victimId?' 본인이 리폿까지 했으니 자작극이네':' '+event.room+'에서 봤어');
+      return meet.kind==='rep'&&meet.caller===event.actorId&&meet.bodyId===event.victimId?J(event.actor,'이','가')+' 죽이고 바로 신고했어. 내가 봤어':J(event.actor,'이','가')+' '+event.room+'에서 죽이는 거 봤어';
     }
-    if(event.kind==='vent')return event.actor+' 벤트 타는 건 봤어. 기술자일 수도 있으니까 이것만으로 경크는 아니야';
-    if(event.kind==='misfire')return event.actor+' 쏘다가 본인이 쓰러지는 걸 봤어. 보안관 오발 같아';
-    if(event.kind==='shot')return event.actor+' 총 쏘는 건 봤어. 일반 킬이랑은 구분해서 보자';
-    if(event.kind==='lover')return event.victim+'도 바로 쓰러졌어. 연인일 수도 있는데 확정은 못 해';
+    if(event.kind==='vent'&&!(isImp(q.r)&&isImp(players[event.actorId]?.r)))return event.actor+' 벤트 타더라. 기술자야?';
+    if(event.kind==='misfire')return J(event.actor,'이','가')+' 쐈는데 본인이 죽었어. 오발인 듯';
+    if(event.kind==='shot')return event.actor+' 총 쏘는 건 봤어. 보안관인지 물어봐';
+    if(event.kind==='lover')return event.victim+'도 바로 쓰러졌어. 연인인지는 모르겠고';
   }
   const sight=q.bodySight;
   if(!q.contextSaid&&meet.kind==='rep'&&sight?.round===roundId&&sight.id===meet.bodyId&&Date.now()-sight.at<60000){
     q.contextSaid=true;
-    if(q.id===meet.caller)return '내가 '+sight.room+'에서 발견해서 리폿했어.'+(sight.fresh?' 아직 서 있던 걸 보니 갓킬 같아':' 킬 장면은 못 봤어');
-    if(sight.with.includes(meet.caller))return '나도 '+sight.room+'에서 같이 발견했어. 같발은 맞고, 킬은 못 봤어';
-    return '나도 '+sight.room+' 시체는 봤어. 누가 킬했는지는 못 봤어';
+    if(q.id===meet.caller)return sight.room+'에서 내가 신고했어.'+(sight.fresh?' 아직 서 있던 거 보니 방금 죽은 듯':' 죽이는 건 못 봤어');
+    if(sight.with.includes(meet.caller))return '나도 '+sight.room+'에서 같이 봤어. 범인은 못 봤고';
+    return sight.room+' 시체는 나도 봤어. 누가 죽였는지는 몰라';
   }
-  const topic=log.find(m=>m.nm!==q.nm&&/오발|보안관|연인|자작극|셀프리폿|확시|확미|링크|경크/.test(m.t));
+  const topic=[...log].reverse().find(m=>m.nm!==q.nm&&/오발|보안관|연인|자작극|셀프리폿|확시|확미|링크|경크/.test(m.t));
   if(topic&&!q.contextSaid){
     q.contextSaid=true;
-    if(/오발|보안관/.test(topic.t))return '오발인지 직접 본 사람 있어? 시체만 보고는 구분 못 하잖아';
-    if(/연인/.test(topic.t))return '둘이 죽었다고 무조건 연인은 아니야. 같이 쓰러진 걸 본 거야?';
-    if(/자작극|셀프리폿/.test(topic.t))return '자작극이라는 근거 있어? 신고자 동선이랑 본 순서부터 맞춰보자';
-    if(/확시|확미|링크/.test(topic.t))return '같이 다닌 건 링크고, 그걸로 확시는 아니야. 확미를 직접 본 사람이 있어?';
-    if(/경크/.test(topic.t))return '경크면 누가 뭘 하는 걸 직접 봤는지 말해줘';
+    if(/오발|보안관/.test(topic.t))return '쏘는 거 직접 본 사람 있어?';
+    if(/연인/.test(topic.t))return '같이 쓰러진 거야? 시체만 둘 있었던 거야?';
+    if(/자작극|셀프리폿/.test(topic.t))return '신고자가 죽이는 걸 본 거야?';
+    if(/확시|확미|링크/.test(topic.t))return '무슨 확미를 본 건데?';
+    if(/경크/.test(topic.t))return topic.nm+', 누구를 어디서 봤는데?';
   }
   if(meet.kind==='call'&&!q.contextSaid){
     q.contextSaid=true;
-    if(q.id===meet.caller&&q.meetingReason)return q.meetingReason+'. 그래서 버튼 눌렀어';
-    return q.id===meet.caller?'내가 긴급회의 열었어. 본 거부터 얘기하자':pick(['버튼 누른 이유부터 듣자','긴급회의 왜 눌렀어? 직접 본 게 있어?']);
+    if(q.id===meet.caller&&q.meetingReason)return q.meetingReason+'. 그래서 눌렀어';
+    return q.id===meet.caller?'내가 눌렀어. 잠깐 얘기 좀 하자':pick(['무슨 일인데?','버튼 왜 눌렀어?']);
   }
   return null;
 }
@@ -3707,18 +3711,128 @@ function chooseBotSpeaker(pool){
 }
 function botPersonalityPrompt(q,al){
   if(!q.a||!(q.said>0)||botKnownEvidence(q)?.kind==='kill')return null;const persona=botPersona(q);if(Math.random()>=persona.prompt)return null;
-  const others=al.filter(other=>other.id!==q.id);if(!others.length)return null;const person=pick(others).nm;
-  if(persona.kind==='active')return pick([person+', 신고 직전에는 어디 있었어?',person+', 같이 본 사람이 있으면 말해줘','누가 뭘 직접 봤는지 먼저 맞춰보자']);
-  if(persona.kind==='cautious')return pick(['직접 본 게 더 없으면 스킵 쪽으로 생각 중이야','추측만으로 바로 찍지는 말자','말한 동선부터 한 번 더 들어볼게']);
-  return pick([person+' 동선은 한 번 더 확인하고 싶어',person+', 그 방으로 가기 전에는 어디였어?','의심되는 부분은 있는데 아직 확정은 못 하겠어']);
+  const others=al.filter(other=>other.id!==q.id);if(!others.length)return null;
+  const recent=[...meetLog].reverse().find(m=>m.id!==q.id&&!m.gh&&m.t),target=others.find(o=>recent&&mentionsNickname(recent.t,o.nm)),person=target||pick(others),sight=[...(q.hs||[])].reverse().find(h=>h.id===person.id&&Date.now()-h.t<90000);
+  if(sight&&recent&&/어디|동선|봤|있었/.test(recent.t))return person.nm+' '+sight.r+'에서 봤어. 그다음은 몰라';
+  if(recent&&/죽였|킬했|킬하는|죽이는|경크/.test(recent.t))return recent.nm+', 그때 근처에 더 있던 사람은?';
+  if(persona.kind==='active')return person.nm+', 신고 나기 바로 전엔 어디 있었어?';
+  if(persona.kind==='cautious')return recent&&/찍|투표/.test(recent.t)?'잠만, 그 사람 얘기도 듣고':'아직 못 들은 사람 동선도 들어보자';
+  return person.nm+', 거긴 혼자 갔어?';
 }
+/* Public meeting testimony informs ballots without turning claims into hidden knowledge. */
+function botChatMentions(text,al){
+  const found=[];
+  for(const p of al){
+    const labels=[p.nm,...chatColorNames(p.c)];let first=Infinity,end=-1;
+    for(const label of labels){
+      if(!label)continue;const escaped=String(label).replace(/[.*+?^$(){}|[\]\\]/g,'\\$&');
+      const re=new RegExp('(^|[\\s,:(])'+escaped+'(?:색)?(?=$|[\\s,:!?)]|(?:은|는|이|가|을|를|한테|에게|님|아|야|임)(?=\\s|$|[,!?])|찍(?:어|자|음|을|는))','giu');
+      for(const m of String(text).matchAll(re)){const at=m.index+m[1].length;if(at<first){first=at;end=m.index+m[0].length}}
+    }
+    if(Number.isFinite(first))found.push({id:p.id,at:first,end});
+  }
+  return found.sort((a,b)=>a.at-b.at||b.end-a.end);
+}
+function botPublicClaims(al){
+  if(!meet)return[];
+  const last=meetLog.at(-1),cache=meet.ballotClaims;
+  if(cache&&cache.log===meetLog&&cache.length===meetLog.length&&cache.last===last)return cache.rows;
+  const claims=new Map(),eligible=new Map(al.filter(p=>p.a).map(p=>[p.id,p]));
+  const save=(author,target,weight,kind,at)=>{
+    if(!eligible.has(target))return;const key=author.id+'|'+target,old=claims.get(key);
+    // One speaker cannot gain votes by repeating the same accusation. A retraction replaces it.
+    if(kind==='retract'){claims.set(key,{from:author.id,target,weight:0,kind,at});return}
+    if(old&&old.weight>0&&weight>0&&old.weight>weight)return;
+    claims.set(key,{from:author.id,target,weight,kind,at});
+  };
+  for(const message of meetLog.slice(-100)){
+    const author=eligible.get(message.id);if(!author||message.gh||typeof message.t!=='string')continue;
+    const text=message.t.slice(0,300),mentioned=botChatMentions(text,al);if(!mentioned.length)continue;
+    const hasWitness=/(?:내가|직접|방금|내\s*눈).{0,32}(?:봤|봄|보았|목격)|(?:봤어|봤음|봄|목격했|보는\s*앞에서)/.test(text);
+    const hearsay=/(?:봤대|봤다던|라던데|라고\s*(?:하|했)|말(?:하|했)|얘기(?:하|했)|아마|같(?:아|은|음))/.test(text);
+    const kill=/(?:킬(?:하는|하던|했|함|하더)|죽이(?:는|던|더|고)|죽였|죽임|썰었)/.test(text);
+    const negativeKill=/(?:킬|죽이|죽였).{0,20}(?:못\s*봤|안\s*봤|못\s*봄|모르|안\s*보였|아니)/.test(text);
+    // In "red killed yellow", the first named actor is the suspect, not the victim.
+    const firstActor=mentioned.find((m,i)=>{
+      const local=text.slice(m.end,mentioned[i+1]?.at??text.length);
+      const address=i===0&&mentioned.length>1&&/^(?:(?:아|야|님)?\s*,|(?:아|야|님)\s+)/.test(local);
+      return !address&&!/(?:잘못\s*봤|착각|아니(?:야|고|라)|아님|아냐|아닌)/.test(local);
+    });
+    for(let i=0;i<mentioned.length;i++){
+      const m=mentioned[i],target=eligible.get(m.id);if(!target)continue;
+      const after=text.slice(m.end,mentioned[i+1]?.at??text.length),before=text.slice(Math.max(0,m.at-25),m.at),local=after.slice(0,100);
+      const asksWitness=/(?:봤(?:어|냐|니|음)?\s*\?|봤냐|봤니|본\s*거야\s*\?)/.test(text)||!hasWitness&&/[?？]/.test(local);
+      const direct=kill&&hasWitness&&!hearsay&&!negativeKill&&!asksWitness&&firstActor?.id===target.id;
+      const retract=/(?:잘못\s*(?:봤|알|말)|착각|(?:말|의심|경크|주장)\s*취소)/.test(local);
+      if(retract){save(author,target.id,0,'retract',message.at);continue}
+      const denied=/(?:아니(?:야|다|라고|고|었|잖|라)|아님|아냐|아닌\s*것|아닐\s*듯)/.test(local)&&!/아니면/.test(local);
+      if(negativeKill&&firstActor?.id===target.id)save(author,target.id,0,'retract',message.at);
+      const visual=/(?:스캔|확미|실드|소행성|쓰레기).{0,28}(?:봤|봄|목격)|확시(?:야|임|다|\s|$)/.test(local);
+      const together=/(?:계속|내내|처음부터).{0,18}(?:같이|함께)|(?:같이|함께).{0,18}(?:계속|내내|있었)/.test(local);
+      if(!direct&&(visual||together||denied)){
+        const weight=visual?-2.5:together?-1.45:author.id===target.id?-.15:-.65;
+        save(author,target.id,weight,'defense',message.at);continue;
+      }
+      if(author.id===target.id)continue;
+      if(direct){save(author,target.id,3.15,'witness',message.at);continue}
+      // A location question or someone quoting an accusation is not independent evidence.
+      if(/(?:뭐|무슨|어떤)\s*근거|근거\s*(?:있|뭐)|왜\s*(?:의심|찍)|(?:직접\s*)?(?:봤어\?|봤냐|본\s*거야\?|본\s*사람)/.test(local))continue;
+      const nearBody=/(?:시체|사체).{0,20}(?:근처|옆|주변)|(?:근처|옆).{0,15}(?:시체|사체)/.test(local);
+      const vent=/(?:벤트|밴트).{0,18}(?:탔|타는|탐|나왔|들어)/.test(local);
+      const coded=/경크|맞경/.test(local)&&!/(?:아니|없|못)/.test(local);
+      const suspect=/수상|의심|범인|임포(?:스터)?(?:인|임|야|다|같)|(?:찍|투표하|투표할)|^\s*임(?:\s|$|[.!?])/.test(local);
+      const killClaim=kill&&!hearsay&&!negativeKill&&!asksWitness&&firstActor?.id===target.id;
+      let weight=killClaim?2.4:nearBody?1.05:vent?1.1:coded?1.55:suspect?.8:0;
+      if(weight&&hearsay)weight*=.65;
+      if(weight&&author.bot&&!nearBody&&!vent&&!coded)weight*=.45;
+      if(weight)save(author,target.id,weight,killClaim?'claim':nearBody?'body':vent?'vent':'suspicion',message.at);
+    }
+  }
+  const rows=[...claims.values()];meet.ballotClaims={log:meetLog,length:meetLog.length,last,rows};return rows;
+}
+function botBallotAssessment(q,al){
+  const others=al.filter(p=>p.a&&p.id!==q.id&&(!isImp(q.r)||!isImp(p.r))),empty={target:null,score:0,confidence:'none',reason:'none',supporters:0};if(!q?.a||!others.length||!meet)return empty;
+  const evidence=botKnownEvidence(q),direct=evidence?.kind==='kill'&&evidence.round===roundId&&others.some(p=>p.id===evidence.actorId);
+  if(direct)return{target:evidence.actorId,score:8,confidence:'direct',reason:'kill',supporters:1};
+  const persona=botPersona(q),scores=new Map(others.map(p=>[p.id,{target:p.id,score:0,reason:'none',sources:new Set()}]));
+  if(evidence?.round===roundId&&scores.has(evidence.actorId)){
+    const own=scores.get(evidence.actorId);if(evidence.kind==='body'||evidence.kind==='vent'){own.score+=evidence.kind==='body'?1.35:1.3;own.reason=evidence.kind;own.sources.add(q.id)}
+  }else if(q.sus&&scores.has(q.sus)){const own=scores.get(q.sus);own.score+=.65;own.reason='suspicion';own.sources.add(q.id)}
+  const trust=.56+persona.hearsay*.48;
+  for(const claim of botPublicClaims(al)){
+    const row=scores.get(claim.target);if(!row||claim.from===q.id)continue;
+    row.score+=claim.weight*trust;
+    if(claim.weight>0){row.sources.add(claim.from);if(claim.kind==='witness'||row.reason==='none')row.reason=claim.kind}
+  }
+  const ranked=[...scores.values()].sort((a,b)=>b.score-a.score),best=ranked[0];if(!best||best.score<=0)return empty;
+  const threshold=persona.kind==='cautious'?2.65:persona.kind==='suspicious'?1.5:1.85;
+  const margin=best.score-(ranked[1]?.score||0),enough=best.score>=threshold&&margin>=.55;
+  return{target:enough?best.target:null,score:best.score,confidence:enough?(best.reason==='witness'||best.sources.size>=2?'strong':'tentative'):'none',reason:best.reason,supporters:best.sources.size};
+}
+function botBallotReady(q,al,now){
+  if(!meet||meet.s!=='vote')return false;
+  if(!meet.voteStartedAt)meet.voteStartedAt=now;
+  let hash=0;for(const ch of String(q.id))hash=(Math.imul(hash,31)+ch.charCodeAt(0))>>>0;
+  if(q.votePlan?.meeting!==meet.id){
+    const direct=botBallotAssessment(q,al).confidence==='direct';
+    q.votePlan={meeting:meet.id,at:meet.voteStartedAt+(direct?1400+hash%1500:4500+hash%4500)};
+  }
+  const latest=meetLog.slice(-100).reverse().find(m=>!m.bot&&players[m.id]?.a&&!m.gh&&humanIntent(m.t)&&humanIntent(m.t)!=='hello');
+  const claimAt=Math.max(0,...botPublicClaims(al).filter(c=>players[c.from]?.a&&!players[c.from].bot).map(c=>c.at||0));
+  const heardAt=Math.max(latest?.at||0,claimAt),listenUntil=heardAt?heardAt+1500+hash%700:0;
+  return now>=Math.min(meet.end-650,Math.max(q.votePlan.at,listenUntil));
+}
+
 function botVoteChoice(q,al){
-  const others=al.filter(other=>other.id!==q.id),persona=botPersona(q);if(!others.length)return'skip';
-  if(isImp(q.r)){const crew=others.filter(other=>!isImp(other.r));return crew.length&&Math.random()<.75?pick(crew).id:'skip'}
-  const event=botKnownEvidence(q),direct=event?.kind==='kill'&&event.round===roundId&&players[event.actorId]?.a&&event.actorId!==q.id?event.actorId:null;if(direct)return direct;
-  const accused=topAcc(al,q);if(accused&&Math.random()<persona.hearsay)return accused;
-  if(q.sus&&players[q.sus]?.a&&q.sus!==q.id&&Math.random()<persona.suspect)return q.sus;
-  return Math.random()<persona.vote?pick(others).id:'skip';
+  const others=al.filter(other=>other.a&&other.id!==q.id);if(!q.a||!others.length)return 'skip';
+  const assessment=botBallotAssessment(q,al);
+  if(isImp(q.r)){
+    // Impostors know their teammates, but choose a plausible public suspect instead of a random pile-on.
+    if(assessment.target&&!isImp(players[assessment.target]?.r))return assessment.target;
+    const crew=others.filter(other=>!isImp(other.r)),publicSuspect=botPublicClaims(al).filter(c=>c.weight>0&&crew.some(p=>p.id===c.target)).sort((a,b)=>b.weight-a.weight)[0];
+    return publicSuspect?.weight>=1?publicSuspect.target:'skip';
+  }
+  return assessment.target||'skip';
 }
 
 function botTick(){
@@ -3834,10 +3948,7 @@ function mentionsNickname(text,nick){
   return new RegExp('(^|[\\s,:(])'+escaped+'(?=$|[\\s,:!?)]|(?:은|는|이|가|을|를|한테|에게|님|아|야)(?=\\s|$|[,!?]))','iu').test(String(text));
 }
 
-function topAcc(al,q){
-  const c={};meetLog.forEach(m=>{if(!ACC.test(m.t))return;al.forEach(o=>{if(o.nm!==m.nm&&mentionsNickname(m.t,o.nm))c[o.id]=(c[o.id]||0)+1})});
-  const e=Object.entries(c).filter(([id])=>id!==q.id).sort((a,b)=>b[1]-a[1])[0];return e&&e[1]>=2?e[0]:null;
-}
+function topAcc(al,q){return botBallotAssessment(q,al).target}
 /* 대화 엔진 v2: 본 사람·한 일·남의 주장을 기억해 앞뒤 맞게 말하는 규칙 엔진 */
 const hasF=c=>{c=c.charCodeAt(c.length-1)-44032;return c>=0&&c<11172&&c%28>0};
 const J=(n,a,b)=>n+(hasF(n)?a:b);
@@ -3872,6 +3983,7 @@ function humanIntent(text){
   if(meet?.kind==='rep'&&/^(?:ㅇㄷ|어디|어디서)[\s?!~.]*$/.test(text))return 'report';
   if(/^ㄴㄱ[\s?!~.]*$/.test(text))return 'suspect';
   if(/^킵[\s?!~.]*$/.test(text))return 'vote';
+  if(!/[?？]|누구|본\s*사람|봤(?:냐|니|나)/.test(text)&&chatTargets(text).length&&/(?:죽였|죽이는|킬하는|킬했|킬함|잡았|썰었|임포(?:스터)?(?:야|임|\s*같)|수상해)/.test(text))return 'accuse';
   if(/자작|셀프\s*(리폿|신고)/i.test(text))return 'selfreport';
   if(/오발|보안관/.test(text))return 'misfire';
   if(/연인|같이\s*죽|따라\s*죽/.test(text))return 'lover';
@@ -3879,8 +3991,8 @@ function humanIntent(text){
   if(/긴급회의|버튼|왜\s*(눌|회의)|회의\s*왜/.test(text))return 'meeting';
   if(/어디.*(발견|신고|시체)|시체.*어디|신고.*어디|리폿.*어디/.test(text))return 'report';
   if(/누구.*봤|본\s*사람|목격|봤(?:어|냐|니|음|나)|보였/.test(text))return 'seen';
-  if(/어디|ㅇㄷ|동선|뭐\s*했|뭐하|알리바이/.test(text))return 'where';
   if(/스킵|스킾|skip|넘기자|투표|찍을|찍어/i.test(text))return 'vote';
+  if(/어디|ㅇㄷ|동선|뭐\s*했|뭐하|알리바이/.test(text))return 'where';
   if(/근거|경크|맞경|왜|증거|확신/.test(text))return 'evidence';
   if(/누가|누구|범인|수상|의심|임포.*같/.test(text))return 'suspect';
   if(/나.*(아니|억울)|아닌데/.test(text))return 'claim';
@@ -3899,6 +4011,9 @@ function humanQuestionFocus(text,intent,sender){
   const position=id=>Math.min(...[players[id]?.nm,...chatColorNames(players[id]?.c)].filter(label=>label&&mentionsNickname(text,label)).map(label=>text.indexOf(label)));
   const mentioned=chatTargets(text).sort((a,b)=>position(a)-position(b)),targets=mentioned.filter(id=>id!==sender),focusSelf=/(?:나|날|내가|나를).*(?:봤|본|보였|의심|수상)|왜.*(?:나|날|내)/.test(text);
   let recipients=targets.slice(),subject=focusSelf?sender:null;
+  if(intent==='accuse')return{targets,recipients:[],subject:mentioned[0]||sender};
+  if(intent==='vote')return{targets,recipients:[],subject:mentioned[0]||null};
+  if(['evidence','suspect'].includes(intent)&&mentioned.length===1&&/왜.*의심|의심(?:하는|한).*근거|(?:누가|누구).*의심|임포.*생각|수상(?:한|하다고)/.test(text))return{targets,recipients:[],subject:mentioned[0]};
   if(intent==='seen'&&!focusSelf){
     if(/누구/.test(text)){recipients=targets.slice(0,1);subject=null}
     else if(mentioned.length>1){recipients=mentioned.slice(0,1).filter(id=>id!==sender);subject=mentioned.at(-1)}
@@ -3931,7 +4046,7 @@ function humanReplyCandidate(ready){
     if((m.recipients||m.targets).includes(q.id))return 20;
     if(m.intent==='seen'&&m.subject&&(q.chatMemory?.sightings||[]).some(h=>h.id===m.subject))return 15;
     if(meet.caller===q.id&&['report','meeting','selfreport'].includes(m.intent))return 14;
-    const event=botKnownEvidence(q,m.subject);return event?10:0;
+    const event=botKnownEvidence(q,m.subject);if(m.intent==='accuse'){if(event?.kind==='kill')return 18;if(m.subject===q.id)return 14}return event?10:0;
   };
   return ready.filter(q=>{const question=pendingHumanQuestion(q);return question&&((question.recipients||question.targets).includes(q.id)||(q.said||0)<=least+2)}).sort((a,b)=>{const qa=pendingHumanQuestion(a),qb=pendingHumanQuestion(b);return qa.at-qb.at||score(b,qb)-score(a,qa)||(a.said||0)-(b.said||0)})[0]||null;
 }
@@ -3944,32 +4059,43 @@ function botKnownEvidence(q,targetId){
   const event=q.chatMemory?.event||q.chatIncident||q.suspicionEvidence;
   return event&&event.round===roundId&&(!targetId||event.actorId===targetId)?event:null;
 }
+/* Public bot speech never exposes an impostor teammate. */
+function botPublicEvidence(q,targetId){
+  const event=botKnownEvidence(q,targetId);
+  return event&&isImp(q.r)&&isImp(players[event.actorId]?.r)&&['kill','vent'].includes(event.kind)?null:event;
+}
 function botHumanReply(q){
   const question=pendingHumanQuestion(q);if(!question)return null;
-  const memory=q.chatMemory||{},recipients=question.recipients||question.targets,subject=question.subject||question.targets.find(id=>id!==q.id),event=botKnownEvidence(q,subject),target=players[subject||question.targets[0]],person=Object.values(players).filter(p=>!p.bot&&p.a).length>1?question.nm+', ':'';
+  const memory=q.chatMemory||{},recipients=question.recipients||question.targets,subject=question.subject||question.targets.find(id=>id!==q.id),event=botPublicEvidence(q,subject),target=players[subject||question.targets[0]],person=Object.values(players).filter(p=>!p.bot&&p.a).length>1?question.nm+', ':'';
   let text='';
-  if(recipients.length&&recipients.every(id=>!players[id]?.a))text=(players[recipients[0]]?.nm||'그 사람')+'은 죽어서 지금 답 못 해';
+  if(recipients.length&&recipients.every(id=>!players[id]?.a))text=(players[recipients[0]]?.nm||'그 사람')+'은 죽어서 답 못 해';
   else if(question.intent==='where')text=botOwnAlibi(q);
   else if(question.intent==='seen'){
     const sight=[...(memory.sightings||[])].reverse().find(h=>players[h.id]&&(!subject||h.id===subject));
-    if(event?.kind==='kill'&&(!subject||subject===event.actorId))text=event.actor+' 킬하는 걸 '+event.room+'에서 봤어';
-    else text=sight?players[sight.id].nm+' '+sight.r+'에서 봤어. 그 뒤는 몰라':subject?'난 '+(target?.nm||'그 사람')+' 못 봤어':'난 확실히 기억나는 사람은 없어';
-  }else if(question.intent==='selfreport')text=event?.kind==='kill'&&meet.kind==='rep'&&meet.caller===event.actorId&&meet.bodyId===event.victimId?event.actor+' 킬하는 걸 봤는데 그 시체를 본인이 신고했어':'신고자라는 것만으론 모르겠어. 발견 전 동선은?';
-  else if(question.intent==='meeting')text=q.id===meet.caller?(q.meetingReason||'확인할 게 있어서 내가 눌렀어'):'난 안 눌렀어. 누른 사람 얘기부터 듣자';
+    if(event?.kind==='kill'&&(!subject||subject===event.actorId))text=J(event.actor,'이','가')+' '+event.room+'에서 죽이는 거 봤어';
+    else text=sight?players[sight.id].nm+' '+sight.r+'에서 봤어. 그 뒤는 몰라':subject?'난 '+(target?.nm||'그 사람')+' 못 봤어':'난 누구 본 건 없는 듯';
+  }else if(question.intent==='accuse'){
+    if(target?.id===q.id||recipients.includes(q.id))text='나 아님. '+botOwnAlibi(q);
+    else if(event?.kind==='kill')text='나도 '+J(event.actor,'이','가')+' '+event.room+'에서 죽이는 거 봤어';
+    else if(target){const sight=[...(memory.sightings||[])].reverse().find(h=>h.id===target.id);text=sight?target.nm+' '+sight.r+'에서 보긴 했는데, 죽이는 건 못 봤어':'어디서 본 건데? '+target.nm+' 죽이는 거 직접 봤어?'}
+    else text='누가 어디서 죽였어?';
+  }else if(question.intent==='selfreport')text=event?.kind==='kill'&&meet.kind==='rep'&&meet.caller===event.actorId&&meet.bodyId===event.victimId?event.actor+' 죽이고 신고도 하더라. 내가 봤어':'신고한 것 말고 다른 근거 있어?';
+  else if(question.intent==='meeting')text=q.id===meet.caller?(q.meetingReason||'내가 눌렀어. 확인할 게 있어서'):'난 안 눌렀어. 누른 사람 얘기 들어보자';
   else if(question.intent==='report'){
     const sight=q.bodySight;
-    text=meet.kind!=='rep'?'이번엔 시체 신고 아니고 버튼이야':sight?.id===meet.bodyId?(q.id===meet.caller?'내가 ':'나도 ')+sight.room+'에서 봤어'+(sight.with?.length?'. 같이 본 사람도 있어':'. 킬은 못 봤어'):'난 시체를 못 봤어. 신고자한테 물어봐';
-  }else if(question.intent==='clear')text='난 확미는 못 봤어. 링크만으로 확시는 아니잖아';
-  else if(question.intent==='misfire')text=event?.kind==='misfire'?event.actor+' 쏘고 본인이 쓰러졌어. 오발 같아':'오발하는 건 못 봤어';
-  else if(question.intent==='lover')text=event?.kind==='lover'?event.victim+'도 바로 쓰러지는 건 봤어. 연인인지는 몰라':'둘이 같이 죽는 건 못 봤어';
+    text=meet.kind!=='rep'?'시체 아니고 버튼이야':sight?.id===meet.bodyId?(q.id===meet.caller?'내가 ':'나도 ')+sight.room+'에서 봤어'+(sight.with?.length?'. 같이 본 사람도 있어':'. 죽이는 건 못 봤어'):'난 시체는 못 봤어. 신고자는 어디서 봤어?';
+  }else if(question.intent==='clear')text=target?target.nm+' 무슨 확미 한 건데? 난 못 봤어':'무슨 확미 봤어? 난 못 봤는데';
+  else if(question.intent==='misfire')text=event?.kind==='misfire'?event.actor+' 쏘고 본인이 쓰러졌어. 오발인 듯':'난 쏘는 건 못 봤어. 누가 본 거야?';
+  else if(question.intent==='lover')text=event?.kind==='lover'?event.victim+'도 바로 죽긴 했어. 연인인지는 몰라':'같이 죽는 거 본 사람이 있어?';
   else if(question.intent==='vote'){
-    const vote=meet.votes[q.id];text=vote==='skip'?'난 스킵했어':players[vote]?'난 '+players[vote].nm+' 쪽으로 냈어':event?.kind==='kill'?'난 킬 본 '+event.actor+' 쪽으로 낼 거야':'아직 안 냈어. 지금은 스킵 쪽이야';
-  }else if(question.intent==='claim')text='그럼 신고 직전 어디였어?';
+    const vote=meet.votes[q.id],alive=Object.values(players).filter(o=>o.a),assessment=typeof botBallotAssessment==='function'?botBallotAssessment(q,alive):null,intended=typeof botVoteChoice==='function'?botVoteChoice(q,alive):assessment?.target,planned=intended&&intended!=='skip'&&players[intended];
+    text=vote==='skip'?'난 이번엔 넘겼어':players[vote]?'난 '+players[vote].nm+' 찍었어':planned?'지금은 '+planned.nm+' 쪽으로 생각 중이야'+(assessment?.target===planned.id&&assessment.confidence==='direct'?'. 직접 봤으니까':'. 얘기 더 들어볼게'):event?.kind==='kill'?'난 '+event.actor+' 찍을 거야. 직접 봤어':'아직 안 정했어';
+  }else if(question.intent==='claim')text='그럼 신고 나기 바로 전엔 어디였어?';
   else if(question.intent==='hello')text='ㅎㅇ';
-  else if(event?.kind==='kill')text=event.actor+' '+event.room+'에서 직접 킬하는 걸 봤어';
-  else if(event?.kind==='vent')text=event.actor+' 벤트 타는 건 봤어. 기술자일 수도 있고';
-  else if(target?.id===q.id||recipients.includes(q.id)&&question.intent==='suspect')text='난 아닌데. '+botOwnAlibi(q);
-  else text='난 아직 모르겠어. 직접 본 건 없어';
+  else if(event?.kind==='kill')text=J(event.actor,'이','가')+' '+event.room+'에서 죽이는 거 봤어';
+  else if(event?.kind==='vent')text=event.actor+' 벤트 타더라. 기술자야?';
+  else if(target?.id===q.id||recipients.includes(q.id)&&question.intent==='suspect')text='난 아님. '+botOwnAlibi(q);
+  else text=target?target.nm+' 직접 본 게 있어? 난 아직 모르겠어':'난 아직 모르겠어. 본 거 있는 사람?';
   question.answered=true;question.by=q.id;q.li=meetLog.length;return person+text;
 }
 function botMeaningKey(q,line){
@@ -3998,16 +4124,16 @@ function botFreshLine(q,al){
   let line=botLine(q,al);
   if(!available(line)){
     const others=al.filter(o=>o.id!==q.id),reporter=players[meet.caller],lines=[];
-    if(!q.a){lines.push('관전하면서 추리해보는 중','아까 투표는 좀 의외였네','살아 있는 사람들 얘기 듣고 있어');for(const o of others)lines.push(o.nm+' 얘기는 끝까지 들어보자',o.nm+' 이번 투표는 어떻게 할까?')}
+    if(!q.a){lines.push('아직 얘기 듣는 중','아까 투표는 좀 의외였네','이번엔 누가 나가려나');for(const o of others)lines.push(o.nm+' 얘기도 좀 들어보자',o.nm+' 이번 투표는 어떻게 할까?')}
     else{
       if(meet.kind!=='call'&&reporter)lines.push(reporter.nm+', 시체 발견 전 어디서 왔어?',reporter.nm+', 발견할 때 같이 있던 사람은 없어?');
-      if(meetLog.some(m=>/자작극|셀프리폿/.test(m.t)))lines.push('셀프리폿이라는 근거가 있어? 발견한 순서부터 보자','자작극 얘기는 동선이 안 맞을 때 다시 보자');
+      if(meetLog.some(m=>/자작극|셀프리폿/.test(m.t)))lines.push('신고자가 죽이는 거 본 사람 있어?','신고한 것 말고 수상한 건 뭐야?');
       for(const o of others){
         const sight=[...(q.hs||[])].reverse().find(h=>h.id===o.id&&Date.now()-h.t<90000);
-        lines.push(o.nm+', 지금 가장 의심하는 사람 누구야?',o.nm+', 혼자 있었어, 같이 있었어?',o.nm+', 마지막으로 누구 봤어?',o.nm+' 말 중에 직접 본 내용부터 정리하자',o.nm+', 지금 찍을 근거가 충분해?',o.nm+', 돌아온 길도 말해줘',o.nm+', 방에 들어갈 때 누가 나왔어?',o.nm+', 말한 위치는 신고 직전이야?',o.nm+', 같이 봤다는 사람도 확인해줄 수 있어?',o.nm+', 확실히 본 거랑 추측을 나눠서 얘기해줘');
+        lines.push(o.nm+', 넌 누구 같아?',o.nm+', 혼자 있었어, 같이 있었어?',o.nm+', 마지막으로 누구 봤어?',o.nm+', 죽이는 걸 본 거야, 시체만 본 거야?',o.nm+', 바로 찍을 거야?',o.nm+', 돌아온 길도 말해줘',o.nm+', 방에 들어갈 때 누가 나왔어?',o.nm+', 말한 위치는 신고 직전이야?',o.nm+', 같이 본 사람 누구였어?',o.nm+', 그건 직접 본 거야?');
         if(sight)lines.push(o.nm+' '+sight.r+'에서 본 건 맞아. 그 뒤는 확인 못 했어');
       }
-      const recent=meetLog.slice(-8).filter(m=>m.nm!==q.nm&&!m.gh);for(const m of recent)lines.push(m.nm+', 그 얘기는 언제 본 거야?',m.nm+' 말은 아직 추측인 거지?',m.nm+', 그 전후에 지나간 사람은 없어?');
+      const recent=meetLog.slice(-8).filter(m=>m.nm!==q.nm&&!m.gh);for(const m of recent)lines.push(m.nm+', 그 얘기는 언제 본 거야?',m.nm+', 직접 본 건 아니고?',m.nm+', 그 전후에 지나간 사람은 없어?');
     }
     line=shuffled(lines).find(available)||null;
   }
@@ -4038,28 +4164,28 @@ function botLine(q,al){
       else if(r&&Math.random()<.65)L=T.nm+' '+r+'에서 봤어. 그 뒤 동선은 몰라';
       else L=pick([S+', '+T.nm+' 의심하는 이유가 뭐야?',T.nm+' 동선부터 들어보자','지금 얘기만으로는 '+T.nm+'인지 모르겠어'])}
     else if(mates.some(o=>o.id===T.id))L=pick([T.nm+' 얘기도 먼저 들어보자',S+', 직접 본 게 있어?']);
-    else L=pick([T.nm+' 동선은 더 확인하고 싶어',T.nm+' 얘기도 들어보자',S+' 말에서 직접 본 부분부터 맞춰보자'])}}
+    else L=pick([T.nm+' 동선은 더 확인하고 싶어',T.nm+' 얘기도 들어보자',S+', 죽이는 걸 본 거야?'])}}
   if(!L)L=botPersonalityPrompt(q,al);
   if(!L){const k=q.said||0,top=topAcc(al,q),tn=top&&players[top]?players[top].nm:null;
     if(k===0){if(!imp&&q.sus&&players[q.sus]&&players[q.sus].a)L=botSuspicionLine(q,players[q.sus]);else L=alibi()+(imp&&lastBz&&Math.random()<.4?'. 시체는 '+lastBz+'에서 나온 거야?':'')}
-    else if(k<3){const sil=ot.filter(o=>!said(o.nm));if(sil.length)L=pick(sil).nm+', 어디 있었어? 동선 좀 알려줘';else if(tn)L=tn+' 의심하는 근거부터 정리해보자'}
+    else if(k<3){const sil=ot.filter(o=>!said(o.nm));if(sil.length)L=pick(sil).nm+', 어디 있었어? 동선 좀 알려줘';else if(tn)L=tn+' 왜 의심하는 건데?'}
     else if(tn)L=imp?pick([tn+'한테 투표할게',tn+' 동선이 제일 수상한 것 같아']):pick(['난 '+tn+'한테 투표할게',tn+' 의심돼서 찍을게']);
-    else L=pick(['증거 더 없으면 이번엔 스킵하자','직접 본 사람 있어?','지금은 모르겠어. 다음에 더 보자',meet.kind==='call'?'버튼 누른 이유랑 동선부터 맞춰보자':'시체 위치랑 동선부터 맞춰보자','같이 있었다고 확시는 아니니까 조심하자','경크 본 사람이 있으면 말해줘','의심 가는 사람은 다음에 지켜보자'])}
+    else L=pick(['증거 더 없으면 이번엔 스킵하자','누가 직접 봤어?','지금은 모르겠어. 다음에 더 보자',meet.kind==='call'?'버튼 누른 사람 어디 있었어?':'시체 어디서 나왔더라?','같이 있던 시간은 얼마나 돼?','죽이는 거 본 사람 없어?','다음엔 같이 다녀보자'])}
   if(!L||q.sd[L])return null;q.sd[L]=1;
   return L;
 }
 
 function botVoteReply(q){
-  const conversation=conversationState();meet.usedLines=meet.usedLines||new Set();const choices=[],memory=q.chatMemory||{},event=botKnownEvidence(q),vote=meet.votes[q.id];
+  const conversation=conversationState();meet.usedLines=meet.usedLines||new Set();const choices=[],memory=q.chatMemory||{},event=botPublicEvidence(q),vote=meet.votes[q.id];
   if(!q.said){
     choices.push({t:botOwnAlibi(q)});const sight=[...(memory.sightings||[])].reverse().find(h=>players[h.id]);
     if(sight)choices.push({t:players[sight.id].nm+' '+sight.r+'에서 봤어. 그 뒤는 몰라'});
-    if(!event||event.kind!=='kill')choices.push({t:'난 직접 본 킬 장면은 없어'});
+    if(!event||event.kind!=='kill')choices.push({t:'난 죽이는 건 못 봤어'});
   }
   if(event?.kind==='kill'&&!q.contextSaid)choices.push({t:event.actor+' 킬하는 걸 '+event.room+'에서 봤어',kind:'evidence'});
   if(q.voteSpeech!==meet.id&&vote){
     if(vote==='skip'&&!meet.skipVoteMentioned)choices.push({t:'난 확실한 게 없어서 넘겼어',kind:'skip'});
-    else if(players[vote])choices.push({t:'난 '+players[vote].nm+' 쪽으로 냈어'+(event?.kind==='kill'&&event.actorId===vote?'. 킬하는 걸 봤으니까':'. 확신은 없어'),kind:'vote'});
+    else if(players[vote])choices.push({t:'난 '+players[vote].nm+' 찍었어'+(event?.kind==='kill'&&event.actorId===vote?'. 내가 죽이는 걸 봤어':'. 확신은 없어'),kind:'vote'});
   }
   const fresh=choices.find(o=>safeGhostLine(q,o.t)&&!meet.usedLines.has(botSpeechKey(o.t))&&!conversation.meanings.has(botMeaningKey(q,o.t)));if(!fresh)return null;
   meet.usedLines.add(botSpeechKey(fresh.t));conversation.meanings.add(botMeaningKey(q,fresh.t));q.sd=q.sd||{};q.sd[fresh.t]=1;
@@ -4092,7 +4218,7 @@ function botMeeting(al){
   if(meet.s==='vote'&&now<meet.end)scheduledMeetingChat(al,now,true);
   al.forEach(q=>{
     if(!q.bot)return;
-    if(meet.s==='vote'&&!meet.votes[q.id]&&Math.random()<.07){
+    if(meet.s==='vote'&&now<meet.end&&!meet.votes[q.id]&&botBallotReady(q,al,now)){
       const t=botVoteChoice(q,al);
       hVote(q.id,{t,j:q.r==='judge'&&!q.ju&&!meet.judge&&q.sus===t&&completedTaskGroups(q)>=2});
     }
@@ -4306,7 +4432,7 @@ function openMG(st,done){
   const timers=new Set(),intervals=new Set(),later=(fn,ms)=>{const t=setTimeout(()=>{timers.delete(t);if(!closed)fn()},ms);timers.add(t);return t},every=(fn,ms)=>{const t=setInterval(()=>{if(!closed)fn()},ms);intervals.add(t);return t};
   const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e};
   const box=$('mg');box.innerHTML='';box.style.display='flex';document.body.classList.add('task-open');
-  const heading=el('div','task-heading',st.n||'장비 점검'),body=el('div','mgb task-device'),exit=el('button','x','닫기');exit.type='button';exit.setAttribute('aria-label',st.k==='emergency'?'긴급회의 장비 닫기':'임무 닫기');box.append(heading,body,exit);
+  const heading=el('div','task-heading',st.n||'장비 점검'),body=el('div','mgb task-device'),exit=el('button','x','닫기');exit.type='button';exit.setAttribute('aria-label',st.k==='emergency'?'긴급회의 장비 닫기':'임무 닫기');box.append(heading,body,exit);box.scrollTop=0;
   const status=el('div','task-display','장비 연결 완료'),help=el('p','task-help','터치 또는 패드로 장비를 조작해');
   const close=ok=>{if(closed)return;if(st.k==='scan')requestMedicalScan(st,false);closed=true;globalThis.removeEventListener?.('blur',cancelPointers);cancelPointers();timers.forEach(clearTimeout);intervals.forEach(clearInterval);activeTaskKey=null;mgOpen=false;setTaskBusy(false);mgClose=null;box.style.display='none';document.body.classList.remove('task-open');if(ok===true){if(st.k!=='emergency')missionSfx(st.k);if(st.k==='card'&&firstTry)unlockAch('불가능한 임무');done()}};
   mgClose=close;exit.onclick=()=>close(false);
@@ -4423,9 +4549,9 @@ function openMG(st,done){
   }else if(st.k==='steer'){
     const panel=consoleBox('task-steer'),target=el('i','steer-target'),cursor=el('i','steer-cursor'),controls=el('div','task-row');let x=rnd(10,90),y=rnd(10,90),drag=false;panel.append(target,cursor);const update=()=>{cursor.style.left=x+'%';cursor.style.top=y+'%';status.textContent=Math.hypot(x-50,y-50)<7?'항로 중심 일치 · 고정해':'항해 조준점을 가운데 십자선으로 옮겨'};panel.onpointerdown=e=>{drag=true;capture(e,panel);const p=point(e,panel);x=p.x;y=p.y;update()};panel.onpointermove=e=>{if(drag){const p=point(e,panel);x=p.x;y=p.y;update()}};panel.onpointerup=panel.onpointercancel=()=>drag=false;cancelHooks.push(panel.onpointercancel);[['←',-5,0],['↑',0,-5],['↓',0,5],['→',5,0]].forEach(([s,dx,dy])=>controls.append(action(s,()=>{x=Math.max(0,Math.min(100,x+dx));y=Math.max(0,Math.min(100,y+dy));update()})));controls.append(action('고정',()=>{if(Math.hypot(x-50,y-50)<7)close(true);else snd('wireBad')}));show(panel,'조준점을 중앙에 맞춰 · 패드는 화살표 키를 선택해 조금씩 조정해');body.insertBefore(controls,help);update();
   }else if(st.k==='lights'){
-    const panel=el('div','task-col'),lamps=el('div','task-display'),board=el('div','task-light-switches'),states=Array.isArray(st.lightSwitches)?st.lightSwitches.slice(0,5):[false,true,false,false,true];board.style.cssText='display:flex;gap:12px;justify-content:center;padding:30px 12px;background:#202a31;border:8px solid #7b8790;border-radius:9px';
+    const panel=el('div','task-col'),lamps=el('div','task-display'),board=el('div','task-light-switches'),states=Array.isArray(st.lightSwitches)?st.lightSwitches.slice(0,5):[false,true,false,false,true];board.style.cssText='display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:30px 4px;background:#202a31;border:8px solid #7b8790;border-radius:9px';
     const refresh=()=>{lamps.textContent='POWER GRID  '+states.map(on=>on?'●':'○').join('   ');status.textContent='켜진 회로 '+states.filter(Boolean).length+' / 5';for(const [i,b]of [...board.children].entries()){b.textContent=states[i]?'ON':'OFF';b.setAttribute('aria-pressed',String(states[i]));b.style.background=states[i]?'#45c17d':'#b74645';b.style.transform=states[i]?'translateY(-13px)':'translateY(13px)'}};
-    states.forEach((_,i)=>{const b=action('OFF',()=>{states[i]=!states[i];snd('wire');refresh();if(states.every(Boolean))later(()=>close(true),250)});b.style.cssText='min-height:72px;min-width:43px;border:4px solid #101922;border-radius:6px;color:#fff;font-weight:900';b.setAttribute('aria-label',(i+1)+'번 전기 스위치');board.append(b)});panel.append(lamps,board);show(panel,'다섯 스위치를 모두 위쪽 ON으로 올려 전기를 복구해');refresh();
+    states.forEach((_,i)=>{const b=action('OFF',()=>{states[i]=!states[i];snd('wire');refresh();if(states.every(Boolean))later(()=>close(true),250)});b.style.cssText='min-height:72px;min-width:0;padding:0;border:4px solid #101922;border-radius:6px;color:#fff;font-weight:900';b.setAttribute('aria-label',(i+1)+'번 전기 스위치');board.append(b)});panel.append(lamps,board);show(panel,'다섯 스위치를 모두 위쪽 ON으로 올려 전기를 복구해');refresh();
   }else if(st.k==='temperature'){
     const target=Number.isInteger(st.temperatureTarget)?st.temperatureTarget:(st.temperatureTarget=rnd(-28,-5)),panel=consoleBox('task-temperature'),read=el('div','temperature-reading'),goal=el('div','temperature-target','목표 온도 '+target+' °C'),gauge=el('div','temperature-gauge'),mercury=el('i'),controls=el('div','task-row');let value=Number.isInteger(st.temperatureCurrent)?st.temperatureCurrent:(st.temperatureCurrent=Math.min(55,target+rnd(6,14)));gauge.append(mercury);const update=()=>{st.temperatureCurrent=value;read.textContent=value+' °C';mercury.style.height=((value+60)/120*100)+'%';status.textContent=value===target?'목표 온도와 일치 · 기록해':'조절 버튼으로 센서 값을 목표 온도에 맞춰';record.disabled=value!==target};const minus=action('−',()=>{value=Math.max(-60,value-1);snd('data');update()}),plus=action('+',()=>{value=Math.min(60,value+1);snd('data');update()}),record=action('온도 기록',()=>{if(value!==target)return;record.disabled=true;status.textContent='온도 기록 완료';later(()=>close(true),400)});minus.setAttribute('aria-label','온도 1도 낮추기');plus.setAttribute('aria-label','온도 1도 올리기');controls.append(minus,plus,record);panel.append(goal,read,gauge,controls);show(panel,'현재 온도를 목표 온도와 같게 맞춘 뒤 기록해 · 패드는 − / + 선택');update();
   }else if(st.k==='frequency'){
