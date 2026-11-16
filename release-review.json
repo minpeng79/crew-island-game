@@ -1,20 +1,11 @@
 {
   "date": "2026-11-16",
-  "bytes": 6306729,
-  "kB": 6306.729,
-  "KiB": 6158.9150390625,
-  "lines": 6366,
-  "sha256": "9a3e873a5d67b5f72d06c66fe833437ad8237c2a4a242b85e753868d6877fe21",
-  "checks": 36,
-  "allPassed": true,
-  "embeddedMedia": 19,
-  "authStatus": "Social OAuth is not configured; Supabase installation and account connection pending; explicit guest skip remains enabled",
-  "nicknameCount": 10000,
-  "changes": [
-    "Verb-aware moderation avoids neutral phrase false positives",
-    "Concrete context-aware bot dialogue and private impostor teamwork",
-    "Evidence-weighted human testimony, rebuttals, retractions and individual ballot timing",
-    "Literal punctuation nicknames parsed safely in testimony",
-    "Full-height mission controls with scrolling and narrow-screen layout; 11 viewports x 25 tasks verified"
-  ]
+  "change": "Studio VELTO startup: shared gold V identity, assemble, side shove, reveal, settle, automatic fade and skip",
+  "bytes": 6311264,
+  "sha256": "f5d039a9832a5b064472b40d7dd4bf4cf4cee8156e4eb18500599562408df783",
+  "validation": [
+    "Whole-module game integration passed",
+    "Studio logo rendered and visually inspected"
+  ],
+  "authStatus": "Supabase project created; game social login not yet connected"
 }
