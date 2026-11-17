@@ -1,12 +1,11 @@
 {
   "date": "2026-11-17",
-  "change": "Replace VELTO with STUDIO EMBER: exact procedural fire and ash wordmark from pigeon game, no tagline",
-  "bytes": 6312125,
-  "sha256": "6ca5b3a63f55b684faca059ad968978f9cfdcadcfccf529be719eeadb627e14f",
+  "change": "STUDIO OFFBEAT staggered typography intro with late bouncing B",
+  "bytes": 6310502,
+  "sha256": "1475f74d3fc3d2b6bc9e7dcfb740e541ea06ebe29ca036b22d0ad172e81a821f",
   "validation": [
     "Game module unchanged byte-for-byte",
-    "Browser rendered original fire and wordmark",
-    "Automatic intro dismissal and focus unlock passed"
+    "Real browser rendering and automatic dismissal passed"
   ],
   "authStatus": "Supabase project created; game login is not yet connected"
 }
