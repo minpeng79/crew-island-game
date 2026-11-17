@@ -1,11 +1,12 @@
 {
-  "date": "2026-11-16",
-  "change": "Studio VELTO startup: shared gold V identity, assemble, side shove, reveal, settle, automatic fade and skip",
-  "bytes": 6311264,
-  "sha256": "f5d039a9832a5b064472b40d7dd4bf4cf4cee8156e4eb18500599562408df783",
+  "date": "2026-11-17",
+  "change": "Replace VELTO with STUDIO EMBER: exact procedural fire and ash wordmark from pigeon game, no tagline",
+  "bytes": 6312125,
+  "sha256": "6ca5b3a63f55b684faca059ad968978f9cfdcadcfccf529be719eeadb627e14f",
   "validation": [
-    "Whole-module game integration passed",
-    "Studio logo rendered and visually inspected"
+    "Game module unchanged byte-for-byte",
+    "Browser rendered original fire and wordmark",
+    "Automatic intro dismissal and focus unlock passed"
   ],
-  "authStatus": "Supabase project created; game social login not yet connected"
+  "authStatus": "Supabase project created; game login is not yet connected"
 }
