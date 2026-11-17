@@ -2763,6 +2763,7 @@ function taskRows(list=tasks){
   return [...groups.values()].map(g=>({...g,done:g.items.every(o=>o.t.d),current:g.items.find(o=>!o.t.d),finished:g.items.filter(o=>o.t.d).length}));
 }
 function taskReady(t){
+  if(finalHideActive())return false;
   if(t.d)return false;
   if(Number.isInteger(t.depends))return t.depends<0||!!tasks[t.depends]?.d;
   const i=tasks.indexOf(t);return t.k!=='ul'||i>0&&tasks[i-1].d;
@@ -2926,7 +2927,9 @@ function drawTransferCourier(canvas,c='#b4d0db'){
   canvas.width=54;canvas.height=66;const g=canvas.getContext('2d');g.clearRect(0,0,54,66);drawChar(g,27,38,{c,fc:1,sc:1.05,noSh:true,t:0});g.save();g.translate(34,42);g.rotate(.28);g.fillStyle='#f4fcff';g.strokeStyle='#7897a8';g.lineWidth=1.4;g.fillRect(-8,-8,15,19);g.strokeRect(-8,-8,15,19);g.strokeStyle='#9ab6c5';g.lineWidth=1;g.beginPath();g.moveTo(-5,-3);g.lineTo(3,-3);g.moveTo(-5,1);g.lineTo(3,1);g.stroke();g.restore();
 }
 
+function finalHideActive(n=Date.now()){return gameMode==='hide'&&phase==='play'&&hideEnds>0&&n>=hideStarts&&hideEnds-n<=CFG.hideFinal*1000}
 function hTask(p,i,taskRound=roundId){
+  if(finalHideActive())return;
   const q=players[p];
   if(taskRound!==roundId||phase!=='play'||!Number.isInteger(i)||!q||q.v||isImp(q.r)||q.r==='jt'||!q.tk||q.dn[i]!==0)return;
   const st=STATIONS[q.tk[i]];
@@ -2971,7 +2974,14 @@ function hKill(p,v){
 }
 
 function detectiveLocation(q){const room=roomOf(q.x,q.y);if(room&&room!=='복도')return room;const nearest=STATIONS.slice().sort((a,b)=>Math.hypot(a.x-q.x,a.y-q.y)-Math.hypot(b.x-q.x,b.y-q.y))[0];return nearest?stRoom(nearest)+' 근처':'복도'}
-function showDetectiveNotes(selected){const box=$('pick');box.textContent='';box.style.display='flex';box.style.maxHeight='80dvh';box.style.overflowY='auto';const header=document.createElement('div');header.textContent='탐정 수첩 · 사건 당시 위치';box.append(header);const cases=me()?.detectiveNotes||[];const row=cases.find(c=>c.id===selected)||cases.at(-1);if(!row){const hint=document.createElement('p');hint.textContent='시체가 신고되면 사건이 기록돼. 회의 후 가까운 사람을 심문해.';box.append(hint)}else{const select=document.createElement('select');for(const c of cases){const o=document.createElement('option');o.value=c.id;o.textContent=c.victim+' 사건';select.append(o)}select.value=row.id;select.onchange=()=>showDetectiveNotes(select.value);box.append(select);for(const note of row.notes||[]){const p=document.createElement('p');p.textContent=note.name+' · '+note.location;box.append(p)}const hint=document.createElement('p');hint.textContent='위치는 단서일 뿐, 범인 확정은 아니야. 가까운 사람을 선택해 심문해.';box.append(hint);for(const t of Object.values(players).filter(t=>t.id!==selfId&&t.a&&!t.v)){const b=document.createElement('button');b.textContent=t.nm+' 심문';b.disabled=!near(me(),t,140)||!los(me().x,me().y,t.x,t.y);b.onclick=()=>sendAb({k:'interrogate',t:t.id,caseId:row.id});box.append(b)}}const close=document.createElement('button');close.textContent='닫기';close.onclick=()=>box.style.display='none';box.append(close)}
+function appendDetectiveAnnotations(box,row){
+ const form=document.createElement('div');form.style.cssText='display:grid;gap:10px;width:min(100%,420px);text-align:left';
+ const add=(caption,options,key)=>{const label=document.createElement('label'),select=document.createElement('select');label.textContent=caption+' ';for(const [value,text]of options){const o=document.createElement('option');o.value=value;o.textContent=text;select.append(o)}select.value=row[key]||'';select.onchange=()=>row[key]=select.value;label.append(select);form.append(label)};
+ add('발견 장소',[['','미확인'],...[...new Set(ST_RAW.map(t=>t[3]))].map(r=>[r,r]),['복도','복도'],['외부','외부']],'scene');
+ add('의심하는 임포스터',[['','미확인'],...['imp','ss','ph','vp','cl','py','qb'].map(r=>[r,RN[r]])],'killerType');
+ const label=document.createElement('label'),memo=document.createElement('textarea');label.textContent='내 추리 메모';memo.maxLength=300;memo.rows=3;memo.value=row.memo||'';memo.placeholder='신고자 설명 · 동선 모순 · 의심되는 사람';memo.style.cssText='display:block;width:100%;box-sizing:border-box;min-height:76px';memo.oninput=()=>row.memo=memo.value.slice(0,300);label.append(memo);form.append(label);box.append(form);
+}
+function showDetectiveNotes(selected){const box=$('pick');box.textContent='';box.style.display='flex';box.style.maxHeight='80dvh';box.style.overflowY='auto';const header=document.createElement('div');header.textContent='탐정 수첩 · 사건 당시 위치';box.append(header);const cases=me()?.detectiveNotes||[];const row=cases.find(c=>c.id===selected)||cases.at(-1);if(!row){const hint=document.createElement('p');hint.textContent='시체가 신고되면 사건이 기록돼. 회의 후 가까운 사람을 심문해.';box.append(hint)}else{const select=document.createElement('select');for(const c of cases){const o=document.createElement('option');o.value=c.id;o.textContent=c.victim+' 사건';select.append(o)}select.value=row.id;select.onchange=()=>showDetectiveNotes(select.value);box.append(select);appendDetectiveAnnotations(box,row);for(const note of row.notes||[]){const p=document.createElement('p');p.textContent=note.name+' · '+note.location;box.append(p)}const hint=document.createElement('p');hint.textContent='위치는 단서일 뿐, 범인 확정은 아니야. 가까운 사람을 선택해 심문해.';box.append(hint);for(const t of Object.values(players).filter(t=>t.id!==selfId&&t.a&&!t.v)){const b=document.createElement('button');b.textContent=t.nm+' 심문';b.disabled=phase!=='play'||!near(me(),t,140)||!los(me().x,me().y,t.x,t.y);b.onclick=()=>sendAb({k:'interrogate',t:t.id,caseId:row.id});box.append(b)}}const close=document.createElement('button');close.textContent='닫기';close.onclick=()=>box.style.display='none';box.append(close)}
 function hVent(p,d){
   const q=players[p],v=VENTS[d.i],n=Date.now();
   if(phase!=='play'||!q||!q.a||!v)return;
@@ -3265,7 +3275,7 @@ function hFix(p,d){
 
 function hostTick(){
   if(tickStartCountdown())return;
-  const n=Date.now();tickRulesClocks(n);if(gameMode==='hide'&&phase==='play'&&hideEnds&&n>=hideEnds){check('🎉 크루원 승리! (시간 생존)');return}
+  const n=Date.now();if(finalHideActive(n)&&mgClose)mgClose(false);tickRulesClocks(n);if(gameMode==='hide'&&phase==='play'&&hideEnds&&n>=hideEnds){check('🎉 크루원 승리! (시간 생존)');return}
   bodies=bodies.filter(b=>!b.acid||b.acid>n);
   Object.values(players).forEach(q=>{
     if(q.scanVisual&&!medicalScanValid(q,n))clearMedicalScan(q);
@@ -3874,7 +3884,8 @@ function botTick(){
     if((b.tick+botIndex)%20===0&&phase==='play'&&q.a&&!q.v&&n>=introEnd){q.lz=roomOf(q.x,q.y);const hs=q.hs=q.hs||[];all.filter(x=>x.id!==q.id&&x.a&&!x.v&&!(x.iv>n)&&Math.hypot(x.x-q.x,x.y-q.y)<280&&botPerceives(q,x.x,x.y,n)).forEach(o=>{const apparent=botObservedIdentity(o);if(!apparent.id)return;q.ls={id:apparent.id,z:roomOf(o.x,o.y)};hs.push({id:apparent.id,r:roomOf(o.x,o.y),t:n});if(hs.length>14)hs.shift()})}
     if(phase!=='play'||n<introEnd)return;
     if(tickBotVentEscape(q,b,all,n))return;rememberBotRoom(q,n);botPersona(q);
-    const imp=isImp(q.r),worker=!imp&&q.r!=='jt';
+    const imp=isImp(q.r),worker=!imp&&q.r!=='jt'&&!finalHideActive(n);
+    if(finalHideActive(n)&&b.want==='task'){releaseBotStation(q,b,n);q.cur=null}
     if(b.tick%30===0){
       if(b.mode!=='work'&&Math.hypot(q.x-b.lx,q.y-b.ly)<8)b.path=[];
       b.lx=q.x;b.ly=q.y;
@@ -4312,7 +4323,7 @@ function openEmergencyConsole(){
   });
 }
 function use(targetIndex=null){
-  if(gameMode==='hide'&&isImp(myRole))return;
+  if(gameMode==='hide'&&(isImp(myRole)||finalHideActive()))return;
   if(phase==='wait'){useLobby();return}
   if(deviceView)return;
   const m=me();
@@ -4394,6 +4405,7 @@ const sendAb=d=>{if(isHost)hAbil(selfId,d);else sAbil(d,hostId)};
 const ABCD={egg:30000,revive:1000,clean:25000,oil:6000,cloak:25000,morph:30000,shield:20000,track:30000,vit:25000};
 function ability(){
   const m=me(),n=Date.now();
+  if(myRole==='det'&&m.a&&['play','meet'].includes(phase)&&!m.v&&!mgOpen&&!ej&&!meetingFx){showDetectiveNotes();return}
   if(myRole==='inf'&&!m.a){openInfluence();return}
   if(phase!=='play'||Date.now()<introEnd||!m.a||m.v||mgOpen||n<abNext)return;
   if(myRole==='det'){showDetectiveNotes();return}
@@ -5923,7 +5935,7 @@ function drawInformationMarkers(g,n,seen,m){if(gameMode==='hide')return;
   informationDevices().forEach(d=>{if(!seen(d.x,d.y))return;const active=m.a&&near(m,d,92),watching=d.type==='cctv'?camerasOn:Object.values(players).some(q=>deviceViewerActive(q,d.type));if(active){g.save();g.strokeStyle='#ffe45c';g.lineWidth=2.5;g.shadowColor='#facc15';g.shadowBlur=8;g.beginPath();g.roundRect(d.x-39,d.y-24,78,48,7);g.stroke();g.restore()}g.fillStyle=watching&&Math.floor(n/550)%2?'#ef4444':'#73d0a6';g.beginPath();g.arc(d.x+28,d.y-13,3,0,6.3);g.fill()});
 }
 function renderTaskPanel(){
-  const root=$('tl'),show=phase==='play'&&tasks.length&&sabS?.k!=='comm';root.style.display=show?'block':'none';if(!show)return;
+  const root=$('tl'),show=phase==='play'&&!finalHideActive()&&tasks.length&&sabS?.k!=='comm';root.style.display=show?'block':'none';if(!show)return;
   const all=taskRows(),rows=all.filter(g=>g.scope===taskFilter),sig=JSON.stringify([taskFilter,taskPanelClosed,isImp(myRole),all.map(g=>[g.key,g.finished,g.done])]);if(sig===taskPanelSig)return;taskPanelSig=sig;root.textContent='';
   const head=document.createElement('div');head.className='task-panel-head';const title=document.createElement('b');title.textContent=(isImp(myRole)?'가짜 임무':'내 임무')+' '+all.filter(g=>g.done).length+'/'+all.length;
   const toggle=document.createElement('button');toggle.type='button';toggle.textContent=taskPanelClosed?'펼치기':'접기';toggle.setAttribute('aria-expanded',String(!taskPanelClosed));toggle.onclick=()=>{taskPanelClosed=!taskPanelClosed;taskPanelSig='';renderTaskPanel()};head.append(title,toggle);root.append(head);
@@ -5935,6 +5947,7 @@ function renderTaskPanel(){
   const hint=document.createElement('small');hint.textContent='선택한 탭의 현재 단계만 노랗게 표시';root.append(hint);
 }
 function frameBody(){
+  if(finalHideActive()&&mgClose)mgClose(false);
   syncReactorAlert();syncHideDangerAudio(Date.now());syncEngineHum();
   if(phase!=='play'||!gr||!introEnd)$('shushScreen').style.display='none';
   drawTitleScreen(Date.now());
@@ -5983,7 +5996,7 @@ function frameBody(){
     if(!sOK)sabMapOpen=false;
     const ak=ABK[myRole],acd=Math.max(0,(myRole==='qb'?(m.eggNext||0):abNext)-n);
     if(myRole==='inf'&&!alive){setAbil(['track','메시지','#7c3aed','x']);setIB('b-abil',{show:(phase==='play'||phase==='meet')&&!m.iu,en:true,txt:'메시지'});}
-    else{setAbil(ak);setIB('b-abil',{show:play&&alive&&!!ak,en:acd===0&&!((myRole==='sf'||myRole==='ga'||myRole==='md')&&m.su<=0),cd:acd,tot:ak?(ABCD[ak[3]]||1000):1000,txt:myRole==='qb'&&m.eggTargets?.length?'부화 '+Math.ceil(Math.min(...m.eggTargets.map(t=>t.remaining))/1000)+'초':myRole==='py'&&m.oilProgress?'기름 '+Math.min(3,m.oilProgress.elapsed/1000).toFixed(1)+'/3초':ak?ak[1]+((myRole==='ga'||myRole==='sf'||myRole==='md')?' ×'+m.su:''):''});}
+    else{setAbil(ak);setIB('b-abil',{show:(play||myRole==='det'&&phase==='meet')&&alive&&!!ak,en:(myRole==='det'||acd===0)&&!((myRole==='sf'||myRole==='ga'||myRole==='md')&&m.su<=0),cd:acd,tot:ak?(ABCD[ak[3]]||1000):1000,txt:myRole==='qb'&&m.eggTargets?.length?'부화 '+Math.ceil(Math.min(...m.eggTargets.map(t=>t.remaining))/1000)+'초':myRole==='py'&&m.oilProgress?'기름 '+Math.min(3,m.oilProgress.elapsed/1000).toFixed(1)+'/3초':ak?ak[1]+((myRole==='ga'||myRole==='sf'||myRole==='md')?' ×'+m.su:''):''});}
     const oilCount=(m.oilIds||[]).filter(id=>players[id]?.a).length,fireCD=Math.max(0,(m.icd||0)-n);
     setIB('b-ignite',{show:play&&alive&&myRole==='py',en:oilCount>0&&fireCD===0&&!m.v,cd:fireCD,tot:12000,txt:'점화 '+oilCount+'/3'});
     setIB('b-training',{show:gameMode==='training'&&isHost,en:true,txt:trainingMenuOpen?'닫기 · B':'훈련 설정 · T'});

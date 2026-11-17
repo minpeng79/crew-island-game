@@ -1,11 +1,15 @@
 {
   "date": "2026-11-17",
-  "change": "Hide vent travel costs with free origin return; no hunter tasks/fakes; update hidden actor rendering; detective private notebook and historical location interrogation",
-  "reference": "https://www.innersloth.com/behind-the-beans-detective/",
-  "sha256": "99253e0b82d727ba1aa6b706e2d5af6f16424dfe314169dd5d7518ecffd6e0cd",
+  "change": "Official Final Hide task shutdown and survival-only bot behavior; detective notes accessible during meetings with manual scene, killer-type and inference annotations",
+  "references": [
+    "https://innersloth.zendesk.com/hc/en-us/articles/10435021136788-How-to-Play-Hide-n-Seek",
+    "https://www.innersloth.com/new-roles-are-on-the-scene-of-17-0-0-emergency-meeting-41/"
+  ],
+  "sha256": "bae674d8381d205bd2304e77ddef57f13e053d920323b063fb9cdac0653701ea",
   "validation": [
-    "Full runtime including revised hide vent costs and return rules passed",
-    "Actual body report, private case, historical interrogation and range checks passed",
-    "12000 chat forms and revival limit passed"
+    "Actual Final Hide host task rejection, task list and readiness passed",
+    "Meeting notes and annotation form passed",
+    "12000 chat forms, revival and ballots passed",
+    "Whole runtime passed"
   ]
 }
