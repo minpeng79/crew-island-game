@@ -397,7 +397,7 @@ const IMPS=['imp','ss','ph','vp','cl','py','qb','dr'],isImp=r=>IMPS.includes(r),
 const RN={qb:'여왕벌',dr:'전염자',imp:'임포스터',ss:'형상 변환자',ph:'팬텀',vp:'바이퍼',nm:'노이즈메이커',judge:'판사',inf:'인플루언서',crew:'크루원',eng:'기술자',det:'탐정',sci:'과학자',sf:'보안관',tr:'추적자',ga:'수호천사',jt:'광대',md:'의사',cl:'시체청소부',py:'화염광',lv:'연인'};
 const RI={qb:'🐝',dr:'🦠',imp:'🔪',ss:'🎭',ph:'👻',vp:'🐍',nm:'📣',judge:'⚖️',inf:'👻',crew:'🧑‍🚀',eng:'🔧',det:'🔍',sci:'🧪',sf:'🤠',tr:'📡',ga:'😇',jt:'🤡',md:'🩺',cl:'🧹',py:'🔥',lv:'💕'};
 const RD={qb:'술래잡기 15명 이상에서 술래의 20% 확률 · F로 가까운 숨는 사람에게 알 심기 · 쿨타임 30초, 부화 15초 후 전염자로 전환',dr:'여왕벌의 전염자 · 한 명을 처치하면 본인도 쓰러져. 알을 심거나 전염시킬 수 없어',imp:'크루를 속이고 킬해. 벤트·사보타주 가능',ss:'임포스터 + 다른 사람 모습으로 변신 (F)',ph:'임포스터 + 투명화 8초 (F), 킬하면 풀려',vp:'임포스터 + 처치한 시체가 15초 뒤 녹아 사라져. 유령은 남은 임무를 계속 할 수 있어',nm:'크루원 + 처치당하면 모두에게 시체 방향 알림',judge:'크루원 + 임무 2개 완료 후 회의에서 1회 판결. 임포스터면 추방, 아니면 자신이 추방돼',inf:'크루원 + 유령이 된 뒤 살아있는 플레이어 한 명에게 그림 메시지 1회 전송',
-crew:'미션을 끝내거나 임포스터를 찾아',eng:'기술자 크루원 + 제한 시간 동안 벤트 사용, 재사용 대기시간 있음',det:'시체를 신고하면 범인 색 단서를 얻어',sci:'생체 정보로 누가 살아있는지 확인 (F)',
+crew:'미션을 끝내거나 임포스터를 찾아',eng:'기술자 크루원 + 제한 시간 동안 벤트 사용, 재사용 대기시간 있음',det:'신고된 사건을 수첩에 기록하고, 가까운 사람을 심문해 사건 당시 위치를 모아 (F)',sci:'생체 정보로 누가 살아있는지 확인 (F)',
 sf:'총알 1발 (F) — 임포스터면 처치, 아니면 너가 죽어',tr:'한 명을 40초간 추적 (F, 3회)',ga:'가까운 사람에게 25초 보호막 (F, 2회)',jt:'미션 필요 없음. 회의에서 추방당하면 단독 승리!',cl:'임포스터 + 시체 근처에서 F: 시체를 가까운 벤트로 숨겨 (벤트에 핏자국이 남아)',py:'1200 거리 안에서 같은 상대를 3초간 바라보면 자동으로 기름을 묻혀 (벽 너머 제외, 최대 3명·45초). G로 내 기름이 묻은 대상을 점화',lv:'연인이 한 명 있어. 한 명이 죽으면 다른 한 명도 따라 죽어',md:'시체 근처에서 F: 죽은 크루원을 되살려 (한 번만)'};
 const roleFactionColor=r=>isImp(r)?'#ff4d4d':'#70cfe7';
 const roleNote=r=>RI[r]+' '+RN[r]+' — '+RD[r];
@@ -1737,13 +1737,13 @@ function openComputerWardrobe(){
   $('shopColorSection').style.display='block';renderShop();renderColors('shopComputerColors');
 }
 function ventTravelChoices(m=me()){
-  if(!m?.v||gameMode==='hide'||!VENTS[m.vi])return[];
+  if(!m?.v||!VENTS[m.vi])return[];
   const origin=VENTS[m.vi],sectors=new Map();
-  VENTS.forEach((v,i)=>{if(i===m.vi||v.g!==origin.g)return;const dx=v.x-origin.x,dy=v.y-origin.y,angle=Math.atan2(dy,dx),sector=(Math.round(angle/(Math.PI/2))+4)%4,distance=Math.hypot(dx,dy),old=sectors.get(sector);if(!old||distance<old.distance)sectors.set(sector,{i,angle,distance})});
+  VENTS.forEach((v,i)=>{if(i===m.vi||v.g!==origin.g||gameMode==='hide'&&(m.hideVents||0)<=0&&i!==m.ventOrigin)return;const dx=v.x-origin.x,dy=v.y-origin.y,angle=Math.atan2(dy,dx),sector=(Math.round(angle/(Math.PI/2))+4)%4,distance=Math.hypot(dx,dy),old=sectors.get(sector);if(!old||distance<old.distance)sectors.set(sector,{i,angle,distance})});
   return[...sectors.values()].sort((a,b)=>a.angle-b.angle);
 }
 function travelVentDirection(x=0,y=0){
-   if(!me()?.v||gameMode==='hide'||mgOpen||mapOpen||sabMapOpen||deviceView||trainingMenuOpen||kf||ej||reviveFx)return;const choices=ventTravelChoices();if(!choices.length)return;
+   if(!me()?.v||mgOpen||mapOpen||sabMapOpen||deviceView||trainingMenuOpen||kf||ej||reviveFx)return;const choices=ventTravelChoices();if(!choices.length)return;
    if(Math.hypot(x,y)<.3){vnext();return}
    choices.sort((a,b)=>(Math.cos(b.angle)*x+Math.sin(b.angle)*y)-(Math.cos(a.angle)*x+Math.sin(a.angle)*y));doVent({s:2,i:choices[0].i});
  }
@@ -2552,7 +2552,7 @@ function enterRoom(id){
     bodies=s.b.map(a=>({x:a[0],y:a[1],c:a[2],id:a[3],acid:a[4]>0?Date.now()+a[4]:0,born:Date.now()-(a[5]??10000),stand:a[6]??2000,fc:a[7]||1}));stains=(s.st||[]).map(a=>({x:a[0],y:a[1]}));
     s.p.forEach(o=>{
       if(o.id===selfId){
-        const q=me();if(q.lobbySeat!==o.lobbySeat){q.x=o.x;q.y=o.y;q.rx=o.x;q.ry=o.y}q.scanVisual=acceptScanVisual(o.sv);q.lobbySeat=o.lobbySeat;q.a=o.a;q.hd=Number.isFinite(o.hd)?cl(o.hd):undefined;q.c=o.c;q.hat=o.hat||'';q.decor=o.decor||'';q.pet=o.pet||'';q.skin=o.skin||'';q.seatUntil=o.seatUntil||0;q.iv=o.iv;q.oi=o.oi;q.ju=o.ju;q.hideVents=o.hideVents;q.vcd=o.vcd||0;
+        const q=me();if(q.lobbySeat!==o.lobbySeat){q.x=o.x;q.y=o.y;q.rx=o.x;q.ry=o.y}q.scanVisual=acceptScanVisual(o.sv);q.lobbySeat=o.lobbySeat;q.a=o.a;q.hd=Number.isFinite(o.hd)?cl(o.hd):undefined;q.c=o.c;q.hat=o.hat||'';q.decor=o.decor||'';q.pet=o.pet||'';q.skin=o.skin||'';q.seatUntil=o.seatUntil||0;q.iv=o.iv;q.oi=o.oi;q.ju=o.ju;q.hideVents=o.hideVents;q.ventOrigin=o.ventOrigin;q.vcd=o.vcd||0;
         if(!isImp(myRole)&&myRole!=='jt'&&o.dn)tasks.forEach((t,i)=>{t.d=o.dn[i]==='1'});
         if(q.v&&!o.v&&Date.now()-q.vt>800){q.v=false;if(myRole==='eng')q.vcd=Date.now()+EVC}
       }else players[o.id]=Object.assign(players[o.id]||{},o,{scanVisual:acceptScanVisual(o.sv)});
@@ -2605,7 +2605,7 @@ function enterRoom(id){
       const n2=Date.now();
       sState({round:roundId,ds:doorSensorPulse(n2),de:currentMap==='mira'?ensureMapIntel().epoch:0,shl:taskShieldLighting,ph:phase,start:lobbyCountdownPacket(),sb:sabS,pg:visibleTaskProgress(),dc:deaths,map:selectedMap,mode:gameMode,hs:hideStarts,he:hideEnds,pot:donationPot,
         b:bodies.filter(b=>!b.acid||b.acid>n2).map(b=>[Math.round(b.x),Math.round(b.y),b.c,b.id,b.acid?Math.max(0,b.acid-n2):0,Math.max(0,n2-b.born),b.stand,b.fc]),st:stains.map(a=>[Math.round(a.x),Math.round(a.y)]),m:meetObj(),
-        p:Object.values(players).map(q=>{const d=disp(q);return{id:q.id,bot:!!q.bot,sv:scanVisualPacket(q,n2),hd:gameMode==='hide'&&q.a&&!isImp(q.r)?Math.round(hideDangerLevel(q)*100)/100:0,nm:d.nm,c:d.c,hat:q.hat||'',decor:q.decor||'',pet:q.pet||'',skin:q.skin||'',lobbySeat:q.lobbySeat,seatUntil:q.seatUntil||0,watching:q.watching||'',hideVents:q.hideVents,vcd:q.vcd||0,a:q.a,v:q.v,iv:q.iv>n2?1:0,oi:q.oil>n2?1:0,dn:(q.dn||[]).join(''),ju:!!q.ju,x:Math.round(q.x),y:Math.round(q.y)}})});
+        p:Object.values(players).map(q=>{const d=disp(q);return{id:q.id,bot:!!q.bot,sv:scanVisualPacket(q,n2),hd:gameMode==='hide'&&q.a&&!isImp(q.r)?Math.round(hideDangerLevel(q)*100)/100:0,nm:d.nm,c:d.c,hat:q.hat||'',decor:q.decor||'',pet:q.pet||'',skin:q.skin||'',lobbySeat:q.lobbySeat,seatUntil:q.seatUntil||0,watching:q.watching||'',hideVents:q.hideVents,ventOrigin:q.ventOrigin,vcd:q.vcd||0,a:q.a,v:q.v,iv:q.iv>n2?1:0,oi:q.oil>n2?1:0,dn:(q.dn||[]).join(''),ju:!!q.ju,x:Math.round(q.x),y:Math.round(q.y)}})});
       meetS=acceptMeetingSnapshot(meetObj())||null;
     }else sPos({x:Math.round(me().x),y:Math.round(me().y)},hostId);
   },66);
@@ -2645,6 +2645,8 @@ function fxLocal(d){
   if(d.t==='v'&&fxs.some(f=>f.t==='v'&&f.phase===d.phase&&(f.actor||f.c)===(d.actor||d.c)&&Math.hypot(f.x-d.x,f.y-d.y)<8&&Date.now()-f.ts<VENT_CYCLE_MS))return;
   if(d.t==='v'&&d.actor)fxs=fxs.filter(f=>f.t!=='v'||f.actor!==d.actor);
   if(['shield','revive','guard-save','position','ability-state'].includes(d.t)&&d.target!==selfId)return;
+  if(d.t==='detective-case'){const q=me();if(q){q.detectiveNotes=q.detectiveNotes||[];if(!q.detectiveNotes.some(c=>c.id===d.case.id))q.detectiveNotes.push({...d.case,notes:[]})}return}
+  if(d.t==='detective-note'){const row=me()?.detectiveNotes?.find(c=>c.id===d.caseId);if(row){row.notes=row.notes||[];row.notes=row.notes.filter(c=>c.target!==d.target);row.notes.push({target:d.target,name:d.name,location:d.location});showDetectiveNotes(row.id)}return}
   if(d.t==='ability-state'){if(me()){if(Number.isFinite(d.su))me().su=d.su;if(d.oilIds)me().oilIds=d.oilIds;me().icd=d.icd||0;if(d.eggCooldown!==undefined)me().eggNext=Date.now()+d.eggCooldown;if(d.eggTargets)me().eggTargets=d.eggTargets;if('oilProgress'in d)me().oilProgress=d.oilProgress}return}
   if(d.t==='position'){if(me())Object.assign(me(),{x:d.x,y:d.y,rx:d.x,ry:d.y});return}
   if(d.t==='shield'){if(me())me().sh=d.until;return}
@@ -2793,7 +2795,7 @@ function hStart(){
   const ids=Object.keys(players);
   if(ids.length<(gameMode==='training'?1:3)){over='최소 3명 필요해 (AI 추가 가능)';return}
   stopRoomNicknameMusic();
-  const startN=Date.now();doorLocks={};doorNext={};rulesClockAt=startN;taskBarCommit=null;taskBarRound='';for(const q of Object.values(players)){q.taskBusy=false;q.sabReadyAt=startN+CFG.sabcd*1000;q.rulesSentAt=0;q.meetReadyAt=0}if(gameMode==='hide'){hideStarts=startN+6900+CFG.hideGrace*1000;hideEnds=hideStarts+CFG.hideDuration*1000}else{hideStarts=0;hideEnds=0}endScene=null;const rl=assignRoles(ids);ids.forEach(i=>{const z=players[i];z.chatRevivalUsed=false;z.hs=[];z.roomTrail=[];z.roomTrailRound=null;z.botKillMemory=null;z.fakeAlibi=null;z.chatIncident=null;z.suspicionEvidence=null;z.bodySight=null;z.contextSaid=false;z.lastTaskAt=0;z.dl=[];z.cur=null;z.ls=null;z.lp=null;z.oil=0;z.oilBy=null;z.oilIds=[];z.oilFocusId=null;z.oilFocusAt=0;z.eggAt=0;z.eggBy=null;z.eggNext=0;z.queenDrone=false;z.icd=0;z.hideVents=CFG.hideVentUses;z.ventUsed=false});const lv=ids.filter(i=>rl[i]==='lv');if(lv.length===2){players[lv[0]].lp=lv[1];players[lv[1]].lp=lv[0]}const imL=ids.filter(i=>isImp(rl[i])).map(i=>({id:i,nm:players[i].nm,c:players[i].c}));hideHunterId=gameMode==='hide'?imL[0]?.id||'':'';
+  const startN=Date.now();doorLocks={};doorNext={};rulesClockAt=startN;taskBarCommit=null;taskBarRound='';for(const q of Object.values(players)){q.taskBusy=false;q.sabReadyAt=startN+CFG.sabcd*1000;q.rulesSentAt=0;q.meetReadyAt=0}if(gameMode==='hide'){hideStarts=startN+6900+CFG.hideGrace*1000;hideEnds=hideStarts+CFG.hideDuration*1000}else{hideStarts=0;hideEnds=0}endScene=null;const rl=assignRoles(ids);ids.forEach(i=>{const z=players[i];z.detCases=[];z.detectiveNotes=[];z.chatRevivalUsed=false;z.hs=[];z.roomTrail=[];z.roomTrailRound=null;z.botKillMemory=null;z.fakeAlibi=null;z.chatIncident=null;z.suspicionEvidence=null;z.bodySight=null;z.contextSaid=false;z.lastTaskAt=0;z.dl=[];z.cur=null;z.ls=null;z.lp=null;z.oil=0;z.oilBy=null;z.oilIds=[];z.oilFocusId=null;z.oilFocusAt=0;z.eggAt=0;z.eggBy=null;z.eggNext=0;z.queenDrone=false;z.icd=0;z.hideVents=CFG.hideVentUses;z.ventUsed=false});const lv=ids.filter(i=>rl[i]==='lv');if(lv.length===2){players[lv[0]].lp=lv[1];players[lv[1]].lp=lv[0]}const imL=ids.filter(i=>isImp(rl[i])).map(i=>({id:i,nm:players[i].nm,c:players[i].c}));hideHunterId=gameMode==='hide'?imL[0]?.id||'':'';
   const N=ids.length,tl=N<=6?[1,1]:N<=12?[2,1]:[2,2];
   buildWorld(tl[0],tl[1]);
   closeLobbyPanel();const spawn={},used=[];
@@ -2803,7 +2805,7 @@ function hStart(){
   const catalog=taskCatalog(),common=shuffled(catalog.common).slice(0,Math.min(catalog.common.length,Math.max(0,Math.round(CFG.common??1))));tasks=[];bodies=[];stains=[];meet=null;deviceView=null;
   ids.forEach(id=>{
     const q=players[id],r=rl[id];
-    const plan=makeTaskPlan(common,selectPersonalTasks(catalog.personal)),tk=plan.map(t=>t.sid);
+    const plan=gameMode==='hide'&&isImp(r)?[]:makeTaskPlan(common,selectPersonalTasks(catalog.personal)),tk=plan.map(t=>t.sid);
     Object.assign(q,spawn[id],{rx:spawn[id].x,ry:spawn[id].y,a:true,v:false,seatUntil:0,mt:0,lk:Date.now(),r,iv:0,ms:null,sh:0,shBy:null,ju:false,iu:false,ccd:0,ocd:0,icd:0,su:r==='ga'?2:r==='sf'||r==='md'?1:0,cc:0,mc:0,sc:0,vt:0,vcd:0,bt:null,sus:null,said:0,tk,tm:plan,dn:tk.map(()=>0)});
     const role={r,su:q.su,plan,im:isImp(r)?imL:[],ni:imL.length,hideHunter:gameMode==='hide'?imL[0]?.id:'',pt:q.lp?{id:q.lp,nm:players[q.lp].nm,c:players[q.lp].c}:null};
     if(id===selfId){myRole=r;tasks=ownTaskPlan(plan);taskFilter=common.length?'common':'personal';taskPanelSig='';taskPanelClosed=false}
@@ -2937,6 +2939,7 @@ function hTask(p,i,taskRound=roundId){
 }
 function makeBody(t,k,extra={}){
   const b={x:t.x,y:t.y,c:disp(t).c,id:t.id,kc:disp(k).c,born:Date.now(),stand:rnd(1000,2000),fc:t.fc||dirOf(t.x),...extra};
+  b.locations=Object.fromEntries(Object.values(players).filter(q=>q.a||q.id===t.id).map(q=>[q.id,detectiveLocation(q)]));b.victim=disp(t).nm;
   bodies.push(b);return b;
 }
 function absorbShield(t){
@@ -2966,15 +2969,19 @@ function hKill(p,v){
   q.x=t.x;q.y=t.y;rememberBotKill(q,t,n);linkDeath(t);consumeDrone(q,n);
   check();
 }
+
+function detectiveLocation(q){const room=roomOf(q.x,q.y);if(room&&room!=='복도')return room;const nearest=STATIONS.slice().sort((a,b)=>Math.hypot(a.x-q.x,a.y-q.y)-Math.hypot(b.x-q.x,b.y-q.y))[0];return nearest?stRoom(nearest)+' 근처':'복도'}
+function showDetectiveNotes(selected){const box=$('pick');box.textContent='';box.style.display='flex';box.style.maxHeight='80dvh';box.style.overflowY='auto';const header=document.createElement('div');header.textContent='탐정 수첩 · 사건 당시 위치';box.append(header);const cases=me()?.detectiveNotes||[];const row=cases.find(c=>c.id===selected)||cases.at(-1);if(!row){const hint=document.createElement('p');hint.textContent='시체가 신고되면 사건이 기록돼. 회의 후 가까운 사람을 심문해.';box.append(hint)}else{const select=document.createElement('select');for(const c of cases){const o=document.createElement('option');o.value=c.id;o.textContent=c.victim+' 사건';select.append(o)}select.value=row.id;select.onchange=()=>showDetectiveNotes(select.value);box.append(select);for(const note of row.notes||[]){const p=document.createElement('p');p.textContent=note.name+' · '+note.location;box.append(p)}const hint=document.createElement('p');hint.textContent='위치는 단서일 뿐, 범인 확정은 아니야. 가까운 사람을 선택해 심문해.';box.append(hint);for(const t of Object.values(players).filter(t=>t.id!==selfId&&t.a&&!t.v)){const b=document.createElement('button');b.textContent=t.nm+' 심문';b.disabled=!near(me(),t,140)||!los(me().x,me().y,t.x,t.y);b.onclick=()=>sendAb({k:'interrogate',t:t.id,caseId:row.id});box.append(b)}}const close=document.createElement('button');close.textContent='닫기';close.onclick=()=>box.style.display='none';box.append(close)}
 function hVent(p,d){
   const q=players[p],v=VENTS[d.i],n=Date.now();
   if(phase!=='play'||!q||!q.a||!v)return;
   if(d.s===1){
-    const hideCrew=gameMode==='hide'&&!isImp(q.r);if(q.v||!(hideCrew?(q.hideVents||0)>0:(isImp(q.r)||q.r==='eng')&&gameMode!=='hide')||!near(q,v,75)||n<(q.vcd||0))return;if(hideCrew)q.hideVents--;q.ventUsed=true;
+    const hideCrew=gameMode==='hide'&&!isImp(q.r);if(q.v||!(hideCrew?(q.hideVents||0)>0:(isImp(q.r)||q.r==='eng')&&gameMode!=='hide')||!near(q,v,75)||n<(q.vcd||0))return;q.ventOrigin=d.i;q.ventUsed=true;
     if(q.r==='eng'&&n<q.vcd)return;
     q.v=true;q.vi=d.i;q.vt=n;q.x=v.x;q.y=v.y;q.iv=0;rememberBotEvent('vent',q,q);hFx({t:'v',x:v.x,y:v.y,phase:'enter',c:q.c,actor:p});
   }else if(d.s===2){
-    if(gameMode==='hide'||!q.v||VENTS[q.vi].g!==v.g)return;
+    if(!q.v||!VENTS[q.vi]||VENTS[q.vi].g!==v.g||q.vi===d.i)return;
+    if(gameMode==='hide'){if(isImp(q.r))return;if(d.i!==q.ventOrigin){if((q.hideVents||0)<=0)return;q.hideVents--}}
     q.vi=d.i;q.x=v.x;q.y=v.y;hFx({t:'v',x:v.x,y:v.y,phase:'move',c:q.c,actor:p});
   }else{
     if(!q.v)return;
@@ -3057,6 +3064,7 @@ function tickSpecialRoles(n=Date.now()){
 function hAbil(p,d){
   const q=players[p],n=Date.now();
   try{
+  if(d.k==='interrogate'){if(phase!=='play'||!q?.a||q.r!=='det'||q.v)return;const target=players[d.t],row=(q.detCases||[]).find(c=>c.id===d.caseId);if(!target?.a||target.id===p||target.v||!row||!near(q,target,140)||!los(q.x,q.y,target.x,target.y))return;privateFx(p,{t:'detective-note',caseId:row.id,target:target.id,name:target.nm,location:row.locations[target.id]||'기록 없음'});return}
   if(d.k==='chatRevive'){reviveFromChat(p);return}
   if(d.k==='egg'){
     if(phase!=='play'||n<introEnd||gameMode==='hide'&&n<hideStarts||!q||q.r!=='qb'||!q.a||q.v||n<(q.eggNext||0))return;
@@ -3113,7 +3121,8 @@ function hMeet(p,d){
   let w,reportedBody;
   if(q.bot&&Date.now()<(d.k==='call'?emergencyReadyAt:botReportReadyAt))return;
   if(d.k==='call'){if(criticalSabotage()||Date.now()<(q.meetReadyAt||0)||!nearTbl(q,80)||(q.mt||0)>=CFG.mtgs)return;q.mt=(q.mt||0)+1;q.meetReadyAt=Date.now()+30000;lastBz='';w=q.nm+' 긴급 회의 소집!'}
-  else{const b=reportableBody(q,100,d.bodyId||'');if(!b)return;reportedBody=b;lastBz=roomOf(b.x,b.y);w=q.nm+' 시체 신고!'+(q.r==='det'?' · 단서: 범인은 '+CN[COLORS.indexOf(b.kc)]+'색!':'')}
+  else{const b=reportableBody(q,100,d.bodyId||'');if(!b)return;reportedBody=b;lastBz=roomOf(b.x,b.y);w=q.nm+' 시체 신고!'}
+  if(reportedBody)for(const detective of Object.values(players).filter(o=>o.a&&o.r==='det')){const row={id:roundId+':'+reportedBody.id+':'+reportedBody.born,victim:reportedBody.victim||players[reportedBody.id]?.nm||'크루원',at:reportedBody.born,locations:reportedBody.locations||{}};detective.detCases=detective.detCases||[];detective.detCases.push(row);if(detective.detCases.length>8)detective.detCases.shift();privateFx(detective.id,{t:'detective-case',case:{id:row.id,victim:row.victim,at:row.at}})}
   doorLocks={};phase='meet';stopUploadedSound('alert');reviveFx=null;bodies=[];stains=[];sab=null;sabNext=Date.now()+CFG.sabcd*1000;meet={id:roundId+':'+Date.now()+':'+p,s:'talk',end:Date.now()+normalizeGameCfg(CFG).talk*1000,votes:{},w,kind:d.k,caller:p,bodyId:reportedBody?.id||'',nextBotAt:Date.now()+rnd(1000,2000),lastBot:null};
   emergencyReadyAt=Date.now()+30000;emergencyClaim=null;hFx({t:'meeting',map:currentMap,kind:d.k,nm:q.nm,c:q.c,bodyC:reportedBody?.c,reason:q.bot?q.meetingReason||'확인할 내용이 있어':''});
   Object.values(players).forEach(x=>{x.v=false;x.ms=null;x.iv=0;x.oil=0;x.oilFocusId=null;x.oilFocusAt=0;x.said=0;x.nx=0;x.li=0;x.sd={};x.ch={};x.contextSaid=false});meetLog=[];
@@ -3952,7 +3961,7 @@ function botTick(){
       const freeTasks=und.filter(o=>!botStationBusy(q,o.s,all));
       const taskChoice=worker&&freeTasks.length?botDestination(q,freeTasks,all):null;
       if(taskChoice&&n>=(b.divertUntil||0)&&botCrowding(q,taskChoice.s,all)<4&&Math.random()<.9){t=taskChoice.s;b.ti=taskChoice.i;b.stn=t;b.want='task'}
-      else{const s2=botDestination(q,STATIONS.filter(s=>!botStationBusy(q,s,all)),all);b.stn=s2||null;b.want=s2&&!worker&&Math.random()<.35?'fake':'wander';t=b.want==='fake'?s2:botDestination(q,Array.from({length:24},()=>pick(FLOORS)).filter(p=>Math.hypot(p.x-q.x,p.y-q.y)>120),all)||s2||pick(FLOORS)}
+      else{const s2=botDestination(q,STATIONS.filter(s=>!botStationBusy(q,s,all)),all);b.stn=s2||null;b.want=s2&&!worker&&gameMode!=='hide'&&Math.random()<.35?'fake':'wander';t=b.want==='fake'?s2:botDestination(q,Array.from({length:24},()=>pick(FLOORS)).filter(p=>Math.hypot(p.x-q.x,p.y-q.y)>120),all)||s2||pick(FLOORS)}
       b.mode='idle';
       if(!planBotPath(q,b,t)){b.want='';b.stn=null;return}
     }
@@ -4303,6 +4312,7 @@ function openEmergencyConsole(){
   });
 }
 function use(targetIndex=null){
+  if(gameMode==='hide'&&isImp(myRole))return;
   if(phase==='wait'){useLobby();return}
   if(deviceView)return;
   const m=me();
@@ -4362,9 +4372,9 @@ function doVent(d){
   const m=me(),n=Date.now();
   if(isHost){hVent(selfId,d);return}
   const v=VENTS[d.i];
-  if(d.s===1){m.v=true;m.vi=d.i;m.vt=n;if(gameMode==='hide')m.hideVents=Math.max(0,(m.hideVents||0)-1)}
+  if(d.s===1){m.v=true;m.vi=d.i;m.vt=n;m.ventOrigin=d.i}
   else if(d.s===0){m.v=false;if(myRole==='eng'||gameMode==='hide')m.vcd=n+EVC}
-  else m.vi=d.i;
+  else{if(gameMode==='hide'&&d.i!==m.ventOrigin)m.hideVents=Math.max(0,(m.hideVents||0)-1);m.vi=d.i}
   if(d.s!==0){m.x=v.x;m.y=v.y}
   sVent(d,hostId);
 }
@@ -4376,9 +4386,8 @@ function vent(){
   doVent({s:1,i});
 }
 function vnext(){
-  const m=me();if(!m.v||gameMode==='hide'||mgOpen||mapOpen||sabMapOpen||deviceView||trainingMenuOpen||kf||ej||reviveFx)return;
-  const ids=VENTS.map((v,i)=>i).filter(i=>VENTS[i].g===VENTS[m.vi].g);
-  doVent({s:2,i:ids[(ids.indexOf(m.vi)+1)%ids.length]});
+  const m=me();if(!m.v||mgOpen||mapOpen||sabMapOpen||deviceView||trainingMenuOpen||kf||ej||reviveFx)return;
+  const choices=ventTravelChoices(m);if(!choices.length)return;doVent({s:2,i:choices[0].i});
 }
 const vote=(t,j=false)=>{judgeMode=false;if(isHost)hVote(selfId,{t,j});else sVote({t,j},hostId)};
 const sendAb=d=>{if(isHost)hAbil(selfId,d);else sAbil(d,hostId)};
@@ -4387,6 +4396,7 @@ function ability(){
   const m=me(),n=Date.now();
   if(myRole==='inf'&&!m.a){openInfluence();return}
   if(phase!=='play'||Date.now()<introEnd||!m.a||m.v||mgOpen||n<abNext)return;
+  if(myRole==='det'){showDetectiveNotes();return}
   if(myRole==='ph'){sendAb({k:'cloak'});abNext=n+ABCD.cloak}
   else if(myRole==='sf'){
     if(m.su<=0)return;
@@ -4756,7 +4766,7 @@ $('cfgbtn').onclick=()=>{if(isHost&&phase==='wait'){const c=$('cfg');c.style.dis
  addEventListener('pointermove',e=>{if(dr){const dy=e.clientY-dr.y;if(Math.abs(dy)>5)moved=true;mb.scrollTop=dr.s-dy}});
  addEventListener('pointerup',()=>{dr=null});
  mb.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault();moved=false}},true);}
-const ABK={qb:['oil','알 심기','#d09a22','egg'],md:['revive','소생','#10b981','revive'],cl:['clean','청소','#64748b','clean'],py:['oil','기름 묻히기','#ea580c','oil'],ph:['cloak','투명화','#6b21a8','cloak'],ss:['morph','변신','#7c3aed','morph'],sf:['shoot','사격','#b45309','x'],tr:['track','추적','#0369a1','track'],ga:['shield','보호막','#0d9488','shield'],sci:['vitals','생체','#15803d','vit']};
+const ABK={det:['track','수첩 · 심문','#b29462','interrogate'],qb:['oil','알 심기','#d09a22','egg'],md:['revive','소생','#10b981','revive'],cl:['clean','청소','#64748b','clean'],py:['oil','기름 묻히기','#ea580c','oil'],ph:['cloak','투명화','#6b21a8','cloak'],ss:['morph','변신','#7c3aed','morph'],sf:['shoot','사격','#b45309','x'],tr:['track','추적','#0369a1','track'],ga:['shield','보호막','#0d9488','shield'],sci:['vitals','생체','#15803d','vit']};
 function setIB(id,o){
   const b=$(id);if(!b)return;
   b.style.display=o.show?'flex':'none';if(!o.show)return;
@@ -5967,7 +5977,7 @@ function frameBody(){
       else{vcv=Math.max(0,(m.vcd||0)-n);vtot=EVC}
     }else if(m.v)vtx='나가기';
     setIB('b-vent',{show:vOK,en:m.v||(VENTS.findIndex(v=>near(m,v,45))>=0&&vcv===0),cd:vcv,tot:vtot,txt:vtx});
-    setIB('b-vnext',{show:vOK&&m.v&&gameMode!=='hide',en:true,txt:'이동'});
+    setIB('b-vnext',{show:vOK&&m.v,en:ventTravelChoices(m).length>0,txt:gameMode==='hide'?'이동 · '+(m.hideVents||0)+'회':'이동'});
     const sOK=gameMode!=='hide'&&play&&alive&&imp,sb=effectiveSabState();
     setIB('b-sab',{show:sOK,en:!m.v,cd:sb.k?0:sb.c*1000,tot:25000,txt:sb.k?'진행중':'사보타주'});
     if(!sOK)sabMapOpen=false;
@@ -6192,13 +6202,14 @@ function draw(m,n,imp){
   // 플레이어
   const killTargetId=localKillTarget(n)?.id;
   for(const b of Object.values(players)){
+    smoothActorDisplay(b,n,b.id===selfId);
     if(b.v||ventActorAnimating(b,n))continue;
     const self=b.id===selfId;
     if(!b.a&&m.a)continue;
     if(!b.a&&fxs.some(f=>f.t==='k'&&f.vid===b.id&&n-f.ts<KW))continue;
     if(fxs.some(f=>f.t==='k'&&f.kid===b.id&&!f.sn&&n-f.ts<KW))continue;
-    if(!self&&m.a&&(flag(b.iv)||!seen(b.x,b.y)))continue;
-    smoothActorDisplay(b,n,self);
+    if(!self&&m.a&&(flag(b.iv)||!seen(b.x,b.y))){b.px=b.rx;b.py=b.ry;b.mvT=0;continue;}
+
     const d=disp(b);
     ctx.globalAlpha=(self&&flag(b.iv))?.35:1;
     if(shieldVisible(b)){ctx.strokeStyle='rgba(94,234,212,.9)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(b.rx,b.ry,26,0,6.3);ctx.stroke()}

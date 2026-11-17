@@ -1,12 +1,11 @@
 {
   "date": "2026-11-17",
-  "change": "Consistent elapsed-time actor smoothing and footfall effects; teleport gait reset; ring-shaped classic spawn; fact-grounded bot follow-up questions",
-  "sha256": "7923dc50e674be2999f7042d21fb5318d5fd9811a5ebd9754f17874033767cde",
+  "change": "Hide vent travel costs with free origin return; no hunter tasks/fakes; update hidden actor rendering; detective private notebook and historical location interrogation",
+  "reference": "https://www.innersloth.com/behind-the-beans-detective/",
+  "sha256": "99253e0b82d727ba1aa6b706e2d5af6f16424dfe314169dd5d7518ecffd6e0cd",
   "validation": [
-    "30/60/120 Hz display interpolation parity passed",
-    "Teleport gait reset passed",
-    "Full five-map three-mode runtime and rendered scenes passed",
-    "12000 dialogue forms, contextual replies and revival limit passed",
-    "Human meeting conversation regression passed"
+    "Full runtime including revised hide vent costs and return rules passed",
+    "Actual body report, private case, historical interrogation and range checks passed",
+    "12000 chat forms and revival limit passed"
   ]
 }
