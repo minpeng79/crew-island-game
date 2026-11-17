@@ -1,11 +1,12 @@
 {
   "date": "2026-11-17",
-  "change": "12000 conversational expression variants across 12 intents; contextual responses; once-per-player-per-round chat revival; prioritize witness evidence over generic alibi",
-  "sha256": "598d49af95b86c6304f1de0a57ee4cabdd09e1f7bb006a28433e7014477cfa6d",
+  "change": "Consistent elapsed-time actor smoothing and footfall effects; teleport gait reset; ring-shaped classic spawn; fact-grounded bot follow-up questions",
+  "sha256": "7923dc50e674be2999f7042d21fb5318d5fd9811a5ebd9754f17874033767cde",
   "validation": [
-    "12000 distinct forms and 120 contextual replies passed",
-    "Actual host second-revival rejection passed",
-    "Human conversation, ghost privacy, perception and meeting fairness passed",
-    "Whole game runtime passed; shorthand normalization regression corrected"
+    "30/60/120 Hz display interpolation parity passed",
+    "Teleport gait reset passed",
+    "Full five-map three-mode runtime and rendered scenes passed",
+    "12000 dialogue forms, contextual replies and revival limit passed",
+    "Human meeting conversation regression passed"
   ]
 }
