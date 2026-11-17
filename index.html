@@ -3762,7 +3762,7 @@ function botPublicClaims(al){
     const text=message.t.slice(0,300),mentioned=botChatMentions(text,al);if(!mentioned.length)continue;
     const hasWitness=/(?:내가|직접|방금|내\s*눈).{0,32}(?:봤|봄|보았|목격)|(?:봤어|봤음|봄|목격했|보는\s*앞에서)/.test(text);
     const hearsay=/(?:봤대|봤다던|라던데|라고\s*(?:하|했)|말(?:하|했)|얘기(?:하|했)|아마|같(?:아|은|음))/.test(text);
-    const kill=/(?:킬(?:하는|하던|했|함|하더)|죽이(?:는|던|더|고)|죽였|죽임|썰었)/.test(text);
+    const kill=/(?:킬(?:하는|하던|했|함|하더)|죽이(?:는|던|더|고)|죽였|죽임|썰었|처치(?:하|했)|잡는)/.test(text);
     const negativeKill=/(?:킬|죽이|죽였).{0,20}(?:못\s*봤|안\s*봤|못\s*봄|모르|안\s*보였|아니)/.test(text);
     // In "red killed yellow", the first named actor is the suspect, not the victim.
     const firstActor=mentioned.find((m,i)=>{
@@ -3832,7 +3832,9 @@ function botBallotReady(q,al,now){
   const latest=meetLog.slice(-100).reverse().find(m=>!m.bot&&players[m.id]?.a&&!m.gh&&humanIntent(m.t)&&humanIntent(m.t)!=='hello');
   const claimAt=Math.max(0,...botPublicClaims(al).filter(c=>players[c.from]?.a&&!players[c.from].bot).map(c=>c.at||0));
   const heardAt=Math.max(latest?.at||0,claimAt),listenUntil=heardAt?heardAt+1500+hash%700:0;
-  return now>=Math.min(meet.end-650,Math.max(q.votePlan.at,listenUntil));
+  // An uncertain ballot stays open for late testimony; a cast ballot cannot be revised.
+  const choice=botVoteChoice(q,al),skipAt=meet.end-2200-hash%1800;
+  return now>=Math.min(meet.end-650,Math.max(q.votePlan.at,listenUntil,choice==='skip'?skipAt:0));
 }
 
 function botVoteChoice(q,al){
@@ -4068,7 +4070,8 @@ function botOwnAlibi(q){
   return memory.task?'난 '+room+'에서 '+memory.task+' 하고 있었어':'난 '+room+' 쪽에 있었어';
 }
 function botKnownEvidence(q,targetId){
-  const event=q.chatMemory?.event||q.chatIncident||q.suspicionEvidence;
+  const events=[q.chatMemory?.event,q.chatIncident,q.suspicionEvidence].filter(e=>e&&e.round===roundId&&(!targetId||e.actorId===targetId));
+  const event=events.find(e=>e.kind==='kill')||events.sort((a,b)=>(b.at||0)-(a.at||0))[0];
   return event&&event.round===roundId&&(!targetId||event.actorId===targetId)?event:null;
 }
 /* Public bot speech never exposes an impostor teammate. */

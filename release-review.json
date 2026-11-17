@@ -1,11 +1,10 @@
 {
   "date": "2026-11-17",
-  "change": "STUDIO OFFBEAT staggered typography intro with late bouncing B",
-  "bytes": 6310502,
-  "sha256": "1475f74d3fc3d2b6bc9e7dcfb740e541ea06ebe29ca036b22d0ad172e81a821f",
+  "change": "Defer uncertain bot skips for late testimony; preserve own kill evidence across incidents; recognize additional kill testimony",
+  "sha256": "bb447e22413f4fb4265bbdb47c2ad28d16674fd86be8e741167178ec13557daf",
   "validation": [
-    "Game module unchanged byte-for-byte",
-    "Real browser rendering and automatic dismissal passed"
-  ],
-  "authStatus": "Supabase project created; game login is not yet connected"
+    "Actual host ballot late-testimony and evidence priority regression passed",
+    "Human chat, perception, five-map movement and moving reports passed",
+    "Whole game runtime passed"
+  ]
 }
