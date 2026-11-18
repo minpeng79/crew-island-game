@@ -1,15 +1,11 @@
 {
-  "date": "2026-11-17",
-  "change": "Official Final Hide task shutdown and survival-only bot behavior; detective notes accessible during meetings with manual scene, killer-type and inference annotations",
-  "references": [
-    "https://innersloth.zendesk.com/hc/en-us/articles/10435021136788-How-to-Play-Hide-n-Seek",
-    "https://www.innersloth.com/new-roles-are-on-the-scene-of-17-0-0-emergency-meeting-41/"
-  ],
-  "sha256": "bae674d8381d205bd2304e77ddef57f13e053d920323b063fb9cdac0653701ea",
+  "date": "2026-11-18",
+  "change": "Pace bot ballots one at a time, show pending voter count, reveal ballots at results, clear stale meeting evidence and ignore invalid targets",
+  "sha256": "9de5f46a0a653b52865c79049a95d71eac3e0134f9e0e05d33b8d314df58b918",
   "validation": [
-    "Actual Final Hide host task rejection, task list and readiness passed",
-    "Meeting notes and annotation form passed",
-    "12000 chat forms, revival and ballots passed",
-    "Whole runtime passed"
+    "18 bots cast separately during minimum 20-second voting",
+    "No catch-up burst after delayed tick",
+    "Late testimony and vote privacy regression passed",
+    "Full runtime passed"
   ]
 }

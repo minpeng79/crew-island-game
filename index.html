@@ -2688,7 +2688,7 @@ function advanceMeeting(now,alive){
   if(meet.s==='vote'&&now>=meet.end){meet.s='result';meet.end=now+3500}
   else if(meet.s==='result'&&now>=meet.end)tally(alive);
 }
-const meetObj=()=>meet?{id:meet.id,s:meet.s,remaining:Math.max(0,meet.end-Date.now()),r:Math.max(0,Math.ceil((meet.end-Date.now())/1000)),caller:meet.caller,kind:meet.kind,vd:Object.keys(meet.votes),ballots:{...meet.votes},w:meet.w,judge:meet.judge?{by:meet.judge.by,target:meet.judge.target}:null}:0;
+const meetObj=()=>meet?{id:meet.id,s:meet.s,remaining:Math.max(0,meet.end-Date.now()),r:Math.max(0,Math.ceil((meet.end-Date.now())/1000)),caller:meet.caller,kind:meet.kind,vd:Object.keys(meet.votes),ballots:meet.s==='result'?{...meet.votes}:{},w:meet.w,judge:meet.judge?{by:meet.judge.by,target:meet.judge.target}:null}:0;
 let meetingClock=null,meetingTab='chat',meetingTabStage='',meetingUnread=0;
 function acceptMeetingSnapshot(snapshot){
   if(!snapshot){meetingClock=null;return null}
@@ -3147,7 +3147,7 @@ function hVote(p,d){
 }
 function tally(al){
   const c={};let sk=0;
-  al.forEach(q=>{const v=meet.votes[q.id];if(v==='skip')sk++;else if(v)c[v]=(c[v]||0)+1});
+  al.forEach(q=>{const v=meet.votes[q.id];if(v==='skip')sk++;else if(v&&players[v]?.a)c[v]=(c[v]||0)+1});
   let e=Object.entries(c).sort((a,b)=>b[1]-a[1]);
   if(meet.judge){const target=players[meet.judge.target],judge=players[meet.judge.by],expelled=target&&isImp(target.r)?target:judge;if(expelled&&expelled.a){e=[[expelled.id,Number.MAX_SAFE_INTEGER]];sk=0}}
   let msg='아무도 추방되지 않았어',jt=false,ejd=null;
@@ -3158,7 +3158,7 @@ function tally(al){
   taskBarRound=roundId;taskBarCommit=progress();
   emergencyReadyAt=Date.now()+30000;botReportReadyAt=Date.now()+6000;emergencyClaim=null;meet=null;phase='play';meetS=null;
   const meetingSpawn=meetingSpawnPlan(Object.keys(players));
-  Object.values(players).forEach(q=>{q.sus=null;q.chatIncident=null;q.cur=null;q.bt=null;const pos=meetingSpawn[q.id];if(pos)Object.assign(q,pos,{rx:pos.x,ry:pos.y,v:false})});
+  Object.values(players).forEach(q=>{q.sus=null;q.chatIncident=null;q.suspicionEvidence=null;q.chatMemory=null;q.meetingReason=null;q.cur=null;q.bt=null;const pos=meetingSpawn[q.id];if(pos)Object.assign(q,pos,{rx:pos.x,ry:pos.y,v:false})});
   if(ejd)hFx({t:'ej',c:ejd,msg,map:currentMap,remainingImpostors:Object.values(players).filter(q=>q.a&&isImp(q.r)).length});hFx({t:'res',msg});hFx({t:'tp',spawn:meetingSpawn});
   if(jt)check('🤡 광대 승리! (추방됨)');else check();
 }
@@ -3847,7 +3847,7 @@ function botBallotAssessment(q,al){
   const margin=best.score-(ranked[1]?.score||0),enough=best.score>=threshold&&margin>=.55;
   return{target:enough?best.target:null,score:best.score,confidence:enough?(best.reason==='witness'||best.sources.size>=2?'strong':'tentative'):'none',reason:best.reason,supporters:best.sources.size};
 }
-function botBallotReady(q,al,now){
+function botBallotReady(q,al,now,pending){
   if(!meet||meet.s!=='vote')return false;
   if(!meet.voteStartedAt)meet.voteStartedAt=now;
   let hash=0;for(const ch of String(q.id))hash=(Math.imul(hash,31)+ch.charCodeAt(0))>>>0;
@@ -3859,8 +3859,11 @@ function botBallotReady(q,al,now){
   const claimAt=Math.max(0,...botPublicClaims(al).filter(c=>players[c.from]?.a&&!players[c.from].bot).map(c=>c.at||0));
   const heardAt=Math.max(latest?.at||0,claimAt),listenUntil=heardAt?heardAt+1500+hash%700:0;
   // An uncertain ballot stays open for late testimony; a cast ballot cannot be revised.
-  const choice=botVoteChoice(q,al),skipAt=meet.end-2200-hash%1800;
-  return now>=Math.min(meet.end-650,Math.max(q.votePlan.at,listenUntil,choice==='skip'?skipAt:0));
+  const choice=botVoteChoice(q,al);
+  // Leave time for one ballot at a time even if the whole room is undecided.
+  const lastStart=meet.end-250-(pending-1)*420;
+  const skipAt=meet.end-Math.max(4400,250+pending*600)-hash%700;
+  return now>=Math.min(lastStart,Math.max(q.votePlan.at,listenUntil,choice==='skip'?skipAt:0));
 }
 
 function botVoteChoice(q,al){
@@ -4263,13 +4266,17 @@ function botMeeting(al){
   if(!meet)return;const now=Date.now();
   if(meet.s==='talk'){if(now<meet.end)scheduledMeetingChat(al,now,false);return}
   if(meet.s==='vote'&&now<meet.end)scheduledMeetingChat(al,now,true);
-  al.forEach(q=>{
-    if(!q.bot)return;
-    if(meet.s==='vote'&&now<meet.end&&!meet.votes[q.id]&&botBallotReady(q,al,now)){
-      const t=botVoteChoice(q,al);
-      hVote(q.id,{t,j:q.r==='judge'&&!q.ju&&!meet.judge&&q.sus===t&&completedTaskGroups(q)>=2});
-    }
-  });
+  if(meet.s!=='vote'||now>=meet.end||now<(meet.nextBallotAt||0))return;
+  const pending=al.filter(q=>q.bot&&q.a&&!meet.votes[q.id]);
+  const ready=pending.filter(q=>botBallotReady(q,al,now,pending.length));
+  if(!ready.length)return;
+  ready.sort((a,b)=>a.votePlan.at-b.votePlan.at||String(a.id).localeCompare(String(b.id)));
+  const q=ready[0],target=botVoteChoice(q,al);
+  const judge=target!=='skip'&&q.r==='judge'&&!q.ju&&!meet.judge&&q.sus===target&&completedTaskGroups(q)>=2;
+  hVote(q.id,{t:target,j:judge});
+  // A network snapshot never contains a burst of bot ballots, including after a stalled tick.
+  const available=(meet.end-now-180)/Math.max(1,pending.length-1);
+  meet.nextBallotAt=now+Math.max(140,Math.min(rnd(420,650),available));
 }
 
 /* ---------- 행동 (내 입력) ---------- */
@@ -4619,7 +4626,8 @@ function renderMeet(){
   if(phase!=='meet'||!meetS){el.style.display='none';msig='';mo=false;meetingClock=null;return}
   el.style.display='flex';if(!mo){mo=true;$('chat').classList.remove('min')}
   const m=me();if(!m)return;const all=Object.values(players),voted=meetS.vd.includes(selfId),result=meetS.s==='result';
-  $('mt').textContent=result?'투표 결과 · 표 아이콘에 투표자가 표시돼':meetS.s==='talk'?'누가 임포스터일까? · 토론 후 투표할 수 있어':voted?'투표 완료 · 다른 플레이어를 기다리는 중':'누가 임포스터일까? · 이름을 눌러 투표해';
+  const remaining=all.filter(q=>q.a&&!meetS.vd.includes(q.id)).length;
+  $('mt').textContent=result?'투표 결과 · 표 아이콘에 투표자가 표시돼':meetS.s==='talk'?'누가 임포스터일까? · 토론 후 투표할 수 있어':!m.a?'관전 중 · '+remaining+'명 미투표':voted?'투표 완료 · '+remaining+'명 미투표':'이름을 눌러 투표해 · '+remaining+'명 미투표';
   const jb=$('judgeUse'),jready=myRole==='judge'&&!m.ju&&!meetS.judge&&taskRows().filter(g=>g.done).length>=2&&meetS.s==='vote';if(jb){jb.style.display=jready?'block':'none';jb.textContent='⚖ 판결 능력: '+(judgeMode?'사용':'대기');jb.classList.toggle('on',judgeMode)}
   const ballots=meetS.ballots||{},sig=meetS.s+'|'+JSON.stringify(ballots)+'|'+meetS.vd.join()+'|'+all.map(q=>q.id+(q.a?1:0)+q.nm+q.c+(q.hat||'')+(q.decor||'')).join()+m.a+judgeMode;
   if(sig===msig)return;msig=sig;
@@ -4631,7 +4639,7 @@ function renderMeet(){
   all.forEach(q=>{
     const b=document.createElement('button'),dead=!q.a,label=document.createElement('span'),state=document.createElement('small');label.className='vote-name';label.textContent=(q.id===meetS.caller?'📣 ':'')+q.nm+(q.id===selfId?' (나)':'');
     b.className='player-vote-card'+(dead?' dead':'')+(isImp(myRole)&&myAllies.has(q.id)?' ally':'');b.style.setProperty('--pc',q.c);b.append(portrait(q),label);
-    state.className='vote-state';state.textContent=dead?'사망':meetS.vd.includes(q.id)?'I VOTED':result?'미투표':'미투표';state.classList.toggle('has-voted',meetS.vd.includes(q.id));state.classList.toggle('missed-vote',!dead&&result&&!meetS.vd.includes(q.id));b.append(state);
+    state.className='vote-state';state.textContent=dead?'사망':meetS.vd.includes(q.id)?'투표 완료':meetS.s==='talk'?'토론 중':'미투표';state.classList.toggle('has-voted',meetS.vd.includes(q.id));state.classList.toggle('missed-vote',!dead&&result&&!meetS.vd.includes(q.id));b.append(state);
     b.disabled=dead||!can||(judgeMode&&q.id===selfId);if(!dead)b.onclick=()=>vote(q.id,judgeMode);votersFor(b,q.id);box.append(b);
   });
   const sk=document.createElement('button');sk.className='skip';const label=document.createElement('span');label.className='vote-name';label.textContent=result?'스킵한 투표':'스킵';sk.append(label);sk.disabled=!can;sk.onclick=()=>vote('skip');votersFor(sk,'skip');box.append(sk);
