@@ -1,10 +1,10 @@
 {
   "date": "2026-11-23",
-  "change": "Ghost Tracker private meeting chat with three messages per participant, explicit ballot confirmation with drawn icons, stable chat tab, context-driven vote timing",
-  "sha256": "bc38709c07af030cdf0c98f779f172dac175ab3246a66e1a29d95e19565bfa66",
+  "change": "Import Studio Action slate opener and clap from the pigeon drone game",
+  "sha256": "c3398ea35da9177210da749e0877744f66295682163ee311225449c78b2b7e6e",
   "validation": [
-    "Ghost selection, isolation, participant and message limits",
-    "Chat continuity and confirm/cancel",
-    "Crowded ballot pacing and full runtime"
+    "Game module byte-for-byte unchanged",
+    "Original clap bytes match",
+    "Automatic and manual animation, skip, reduced motion and menu focus passed"
   ]
 }
