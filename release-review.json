@@ -1,11 +1,10 @@
 {
-  "date": "2026-11-18",
-  "change": "Pace bot ballots one at a time, show pending voter count, reveal ballots at results, clear stale meeting evidence and ignore invalid targets",
-  "sha256": "9de5f46a0a653b52865c79049a95d71eac3e0134f9e0e05d33b8d314df58b918",
+  "date": "2026-11-23",
+  "change": "Ghost Tracker private meeting chat with three messages per participant, explicit ballot confirmation with drawn icons, stable chat tab, context-driven vote timing",
+  "sha256": "bc38709c07af030cdf0c98f779f172dac175ab3246a66e1a29d95e19565bfa66",
   "validation": [
-    "18 bots cast separately during minimum 20-second voting",
-    "No catch-up burst after delayed tick",
-    "Late testimony and vote privacy regression passed",
-    "Full runtime passed"
+    "Ghost selection, isolation, participant and message limits",
+    "Chat continuity and confirm/cancel",
+    "Crowded ballot pacing and full runtime"
   ]
 }
