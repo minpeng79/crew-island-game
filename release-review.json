@@ -1,10 +1,13 @@
 {
-  "date": "2026-11-23",
-  "change": "Import Studio Action slate opener and clap from the pigeon drone game",
-  "sha256": "c3398ea35da9177210da749e0877744f66295682163ee311225449c78b2b7e6e",
+  "date": "2026-11-24",
+  "change": "Recognize concise human testimony and prioritize real replies, add rare witnessed kills and desperate vent escapes, mark room approaches on five maps and add an original Fungle cable shortcut",
+  "sha256": "c58be7ed9e39dcdac6cf58fc5585992b39d45f14ef60b3aa1a9faa5efec1be8b",
+  "reference": "https://www.innersloth.com/banishing-bothersome-bugs/",
   "validation": [
-    "Game module byte-for-byte unchanged",
-    "Original clap bytes match",
-    "Automatic and manual animation, skip, reduced motion and menu focus passed"
+    "Five-map full runtime and 20-player meetings",
+    "Local and guest testimony, contextual reactions and late votes",
+    "Crowded pacing, human chat IME, 12000 dialogue forms",
+    "Witnessed behavior and cable round trips",
+    "Ghost link and ballot confirmation"
   ]
 }

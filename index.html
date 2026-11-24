@@ -243,6 +243,10 @@
 #chat.meeting #quick button{color:#213c50;background:#dcebf5;border:2px solid #758c9f;border-radius:8px;box-shadow:0 2px 0 #65798b;padding:7px 12px;font-size:13px}
 #chat.meeting #ci{grid-column:1;grid-row:5;border:3px solid #344c60;border-radius:10px;background:#fff;color:#1f2937;padding:11px 16px;min-height:48px;font-size:16px;box-shadow:inset 0 2px 0 #c0cbd6}
 #chat.meeting #ci::placeholder{color:#5e7487}
+#meetingSend{display:none}
+#chat.meeting[data-tab=chat]{grid-template-columns:minmax(0,1fr) auto}
+#chat.meeting[data-tab=chat] :is(#cbtn,#meetingTabs,#log,#quick){grid-column:1/-1}
+#chat.meeting[data-tab=chat] #meetingSend{display:block;grid-row:5;grid-column:2;min-height:44px;padding:0 13px;border:2px solid #45687f;border-radius:9px;background:#395b73;color:#f3fbff;font-weight:800}
 #chat.meeting #meet{position:relative;inset:auto;grid-column:1;grid-row:3/6;width:100%;min-width:0;min-height:0;padding:8px 10px 12px;gap:10px;border:2px solid #607d91;border-radius:8px;background:#a9c4d7;box-shadow:inset 0 2px 0 #23465a22;justify-content:flex-start;overflow:hidden;color:#263d50}
 #ghostLink[hidden],#ghostLinkForm[hidden],#ghostLinkTab[hidden]{display:none!important}
 #chat.meeting[data-tab=ghost] :is(#meet,#log,#quick,#ci,#chatCracks){display:none!important}
@@ -412,7 +416,7 @@
   <nav id="meetingTabs" aria-label="회의 태블릿" role="tablist" hidden><button id="meetingChatTab" type="button" role="tab" aria-controls="log">채팅</button><button id="meetingVoteTab" type="button" role="tab" aria-controls="meet">참가자 · 투표</button><span id="meetingClock" role="timer" aria-live="off"></span><button id="ghostLinkTab" type="button" role="tab" aria-controls="ghostLink" hidden>귀신 교신</button></nav><section id="ghostLink" aria-label="귀신과 비공개 대화" hidden><header id="ghostLinkTitle"></header><div id="ghostLinkLog" role="log" aria-live="polite"></div><form id="ghostLinkForm" hidden><input id="ghostLinkInput" maxlength="60" placeholder="메시지 입력" aria-label="교신 메시지"><button type="submit">보내기</button></form></section>
   <div id="log"></div>
   <div id="quick"></div>
-  <input id="ci" maxlength="60" placeholder="Enter로 채팅"><button id="lobbySend" type="button" aria-label="대기실 메시지 전송">전송</button>
+  <input id="ci" maxlength="60" placeholder="Enter로 채팅"><button id="lobbySend" type="button" aria-label="대기실 메시지 전송">전송</button><button id="meetingSend" type="button" aria-label="회의 메시지 전송">보내기</button>
 </div>
 
 <div id="blk" style="display:none;position:fixed;inset:0;z-index:25"></div>
@@ -534,6 +538,7 @@ let selectedMap=localStorage.getItem('amMap')||'skeld',selectedMode=normalizeGam
 localStorage.setItem('amMode',selectedMode);
 const MAP_DATA={"mira":{"rooms":[["I",3,22,14,10],["D",35,29,5,5],["E",35,24,5,4],["J",28,24,6,8],["K",25,18,4,8],["L",29,12,9,7],["M",18,11,7,9],["G",40,8,5,5],["F",49,8,6,5],["H",40,2,15,5],["A",42,25,5,8],["B",49,25,12,8],["C",45,34,16,3],["N",43,18,5,4]],"links":[[10,31,10,34],[10,34,34,34],[34,34,34,25],[34,31,36,31],[31,30,34,30],[27,24,31,25],[27,18,27,15],[24,15,30,15],[34,25,45,20],[45,20,55,25],[45,20,46,10],[44,10,50,10],[46,10,46,5],[45,31,51,31],[55,32,55,35]],"tasks":[[8,27,"fuel","발사대"],[36,31,"scan","의무실"],[37,25,"code","통신실"],[30,26,"wires","탈의실"],[33,14,"sample","실험실"],[30,16,"nums","실험실"],[20,14,"sim","원자로"],[22,16,"divert","원자로"],[51,10,"code","관리실"],[41,10,"dl","사무실"],[43,10,"ul","사무실"],[43,4,"o2filter","온실"],[52,4,"wires","온실"],[43,28,"trash","창고"],[54,27,"trash","식당"],[57,28,"code","식당"],[58,35,"asteroids","발코니"],[48,35,"course","발코니"]],"vents":[[7,28,1],[30,27,1],[27,22,1],[20,18,1],[35,16,1],[42,11,1],[47,4,1],[52,11,1],[53,24,1],[54,35,1],[38,32,1]],"spots":[["light",41,11,0,"전등"],["o2",47,4,0,"산소"],["reactor",20,14,0,"원자로"],["comm",37,25,0,"통신"]],"table":[54,29],"start":[9,28],"systems":[[41,11],[47,4],[20,14],[23,14]],"outside":false,"names":{"A":"창고","B":"식당","C":"발코니","D":"의무실","E":"통신실","F":"관리실","G":"사무실","H":"온실","I":"발사대","J":"탈의실","K":"소독실","L":"실험실","M":"원자로","N":"삼거리"}},"polus":{"rooms":[["A",22,2,11,10],["B",25,23,17,7],["C",31,31,10,6],["D",17,22,6,6],["E",3,21,9,9],["F",9,14,9,6],["G",3,14,5,6],["H",43,11,18,8],["I",56,20,5,4],["J",49,29,11,6],["K",27,16,9,6],["L",42,32,5,4],["M",16,31,8,5],["N",3,31,8,5]],"links":[[27,11,27,14],[7,16,11,16],[14,19,14,22],[9,20,9,23],[7,29,7,32],[20,27,20,30],[27,26,23,26],[34,29,34,32],[40,34,44,34],[46,34,51,32],[58,18,58,21],[58,23,58,30],[44,17,40,17],[32,21,32,23]],"tasks":[[27,5,"fuel","수송선"],[29,25,"card","사무실"],[36,25,"code","사무실"],[35,33,"code","관리실"],[19,24,"dl","통신실"],[7,24,"o2filter","산소실"],[5,27,"trash","산소실"],[12,16,"wires","전기실"],[5,16,"dl","보안실"],[48,14,"sample","실험실"],[57,14,"scan","실험실"],[53,31,"nums","표본실"],[30,18,"fuel","창고"],[19,33,"asteroids","무기고"],[7,33,"time","보일러실"],[37,34,"ul","관리실"]],"vents":[[28,11,1],[30,18,1],[20,25,1],[7,25,2],[14,17,2],[5,17,2],[46,16,3],[57,15,3],[56,32,3],[36,34,4],[18,33,4]],"spots":[["light",12,16,0,"전등"],["o2",7,24,0,"산소"],["reactor",6,12,0,"서쪽 지진계"],["reactor",40,12,0,"동쪽 지진계"],["comm",19,24,0,"통신"]],"table":[32,26],"start":[27,8],"systems":[[12,16],[7,24],[6,12],[40,12]],"outside":true,"names":{"A":"수송선","B":"사무실","C":"관리실","D":"통신실","E":"산소실","F":"전기실","G":"보안실","H":"실험실","I":"상부 소독실","J":"표본실","K":"창고","L":"하부 소독실","M":"무기고","N":"보일러실"}},"airship":{"rooms":[["A",1,15,8,7],["B",11,3,9,9],["C",22,5,7,5],["F",29,1,13,4],["G",30,7,11,6],["L",43,6,9,9],["M",54,8,5,8],["R",54,18,9,9],["J",18,16,11,7],["Q",30,17,13,6],["P",44,17,8,7],["E",46,28,8,6],["I",35,26,10,8],["D",28,28,6,7],["H",17,28,9,7],["N",11,23,6,8],["K",10,34,7,3],["O",10,14,6,5],["S",50,25,3,3]],"links":[[8,18,19,18],[14,11,14,15],[19,8,23,8],[26,8,32,10],[30,3,30,8],[39,10,44,10],[51,12,55,12],[56,15,56,19],[51,20,55,20],[52,24,52,29],[49,33,44,32],[36,29,33,30],[30,32,25,32],[20,22,20,29],[14,29,18,30],[13,30,13,35],[24,20,32,20],[41,20,45,20],[14,18,14,24],[42,24,42,27],[47,14,47,18]],"tasks":[[4,18,"course","조종실"],[15,7,"dial","금고"],[24,7,"code","함교"],[31,30,"dl","보안실"],[50,30,"scan","의무실"],[34,3,"card","회의실"],[33,10,"wires","틈새 공간"],[21,31,"trash","주방"],[38,28,"wires","전기실"],[24,19,"fuel","엔진실"],[13,35,"time","전망 데크"],[47,10,"dl","기록실"],[56,11,"code","라운지"],[13,26,"asteroids","무기고"],[12,16,"code","통신실"],[47,20,"nums","샤워실"],[34,20,"trash","중앙 홀"],[57,22,"ul","화물실"],[51,26,"divert","환기실"]],"vents":[[4,19,1],[15,8,1],[24,7,1],[22,20,2],[34,10,2],[21,31,2],[47,11,3],[56,12,3],[58,22,3],[31,31,4],[39,29,4]],"spots":[["light",38,28,0,"전등"],["o2",50,30,0,"산소"],["reactor",23,19,0,"충돌 방지"],["comm",12,16,0,"통신"]],"table":[35,3],"start":[34,20],"systems":[[38,28],[50,30],[32,10],[39,10]],"outside":false,"names":{"A":"조종실","B":"금고","C":"함교","D":"보안실","E":"의무실","F":"회의실","G":"틈새 공간","H":"주방","I":"전기실","J":"엔진실","K":"전망 데크","L":"기록실","M":"라운지","N":"무기고","O":"통신실","P":"샤워실","Q":"중앙 홀","R":"화물실","S":"환기실"}},"fungle":{"rooms":[["C",17,3,12,9],["F",8,12,10,7],["H",5,20,12,7],["E",13,28,8,7],["A",27,21,8,7],["B",35,22,5,6],["I",33,12,7,8],["N",43,15,6,7],["O",52,3,10,5],["Q",45,8,7,7],["P",55,14,7,7],["M",54,28,8,7],["L",43,31,7,6],["K",25,29,7,7],["J",32,29,10,8],["D",3,12,5,7],["G",3,28,8,4]],"links":[],"tasks":[[30,24,"code","회의실"],[37,24,"wires","기숙사"],[22,7,"fuel","수송선"],[5,15,"time","해변"],[16,31,"trash","주방"],[12,15,"card","식당"],[6,29,"course","부두"],[10,23,"dial","스플래시 존"],[36,15,"trash","창고"],[37,33,"sim","정글"],[28,32,"sample","실험실"],[46,33,"o2filter","온실"],[58,31,"nums","원자로"],[45,18,"course","망루"],[57,5,"code","통신실"],[58,17,"time","상부 엔진실"],[48,11,"fuel","웅덩이"],[45,34,"dl","온실"],[47,35,"ul","온실"]],"vents":[[12,16,1],[10,24,1],[28,33,1],[22,8,1],[36,16,2],[38,32,2],[58,32,2],[56,5,3],[48,12,3],[58,18,3]],"spots":[["light",36,15,0,"전등"],["o2",46,33,0,"산소"],["reactor",58,31,0,"원자로"],["comm",57,5,0,"통신"]],"table":[30,24],"start":[22,8],"systems":[[36,15],[46,33],[58,31],[58,17]],"outside":true,"names":{"A":"회의실","B":"기숙사","C":"수송선","D":"해변","E":"주방","F":"식당","G":"부두","H":"스플래시 존","I":"창고","J":"정글","K":"실험실","L":"온실","M":"원자로","N":"망루","O":"통신실","P":"상부 엔진실","Q":"웅덩이"}}};
 if(!MAP_DATA.polus.tasks.some(t=>t[2]==='temperature'))MAP_DATA.polus.tasks.push([50,17,'temperature','실험실']);
+const ISLAND_CABLE=[[45,24],[45,31]];
 const FUNGLE_SHORE=[[7,1],[17,2],[29,1],[39,3],[52,1],[59,4],[62,11],[61,18],[62,25],[59,34],[52,37],[43,36],[35,37],[27,35],[18,37],[7,37],[2,32],[1,24],[2,17],[1,10],[3,4]];
 function fungleRebuildPlan(){return {
   shore:[[7,2],[12,1],[16,3],[23,2],[29,1],[35,3],[40,2],[44,4],[51,1],[56,2],[61,4],[63,8],[61,12],[63,17],[62,21],[63,26],[61,29],[63,34],[60,37],[53,38],[49,38],[44,38],[40,36],[36,38],[31,37],[27,37],[22,37],[17,36],[12,38],[7,36],[4,34],[2,31],[3,27],[1,24],[2,21],[1,17],[3,13],[1,10],[3,7],[3,4]],
@@ -1065,6 +1070,7 @@ function drawSkeldBackdropNative(g,rn,FLOORS){
   }g.stroke()}
   DOORS.forEach(([wx,wy,bw,bh])=>{const[x,y,ww,hh]=[wx,wy,bw,bh].map(v=>v/MAP_SCALE);g.fillStyle='#4f6b70';g.fillRect(x+3,y+3,ww-6,hh-6);g.strokeStyle='#a3c4c4';g.lineWidth=3;g.beginPath();g.moveTo(x+6,y+6);g.lineTo(x+ww-6,y+6);g.moveTo(x+6,y+hh-6);g.lineTo(x+ww-6,y+hh-6);g.stroke()});
   drawMapEdgeFinish(g,'skeld');
+  drawMapApproaches(g,'skeld');
   drawPremiumInteriorDetails(g,'skeld');
   drawPremiumMapLighting(g,'skeld');
 }
@@ -1174,6 +1180,8 @@ function drawReferenceBackdropNative(g,rn,FLOORS){
   // Boundary walls exactly match collision geometry, including Polus door openings.
   if(id!=='fungle')for(let r=0;r<SH;r++)for(let c=0;c<SW;c++)if(!floor(c,r)&&[-1,0,1].some(dy=>[-1,0,1].some(dx=>floor(c+dx,r+dy)))){const x=c*CELL,y=r*CELL;g.fillStyle=id==='airship'?'#713b47':id==='mira'?'#728f95':'#48556c';g.fillRect(x,y,40,40);g.fillStyle=id==='mira'?'#d1deda':'#8299a8';g.fillRect(x+2,y+3,36,5);g.fillStyle='#213845';g.fillRect(x+2,y+33,36,5)}
   drawMapEdgeFinish(g,id);
+  drawMapApproaches(g,id);
+  if(id==='fungle')drawIslandCable(g);
   drawPremiumInteriorDetails(g,id);
   drawPremiumLandscapeDetails(g,id);
   drawPremiumMapLighting(g,id);
@@ -1220,6 +1228,46 @@ function drawMapSurfaceFinish(g,id){
     // Soft contact shadows are only on real map boundaries, never across an exit.
     const borders=[[0,-1,x,y,C,9],[0,1,x,y+C-9,C,9],[-1,0,x,y,9,C],[1,0,x+C-9,y,9,C]];
     for(const[dx,dy,bx,by,bw,bh]of borders){if(cellCh(c+dx,r+dy)!==' ')continue;const grad=g.createLinearGradient(bx,by,dx?bx+bw:bx,dy?by+bh:by);const reverse=dx===1||dy===1;grad.addColorStop(reverse?1:0,id==='fungle'?'#45373a30':'#0c293a50');grad.addColorStop(reverse?0:1,'#112e3700');g.fillStyle=grad;g.fillRect(bx,by,bw,bh)}
+  }
+  g.restore();
+}
+
+// Draw each room's clearest approach using the same grid as collision and sight.
+function drawMapApproaches(g,id){
+  const size=40;
+  const palettes={skeld:['#a6bdc2','#2e484e'],mira:['#bbdfde','#365e73'],polus:['#e9c3a9','#473557'],airship:['#e1bf82','#53484a'],fungle:['#e7d5a6','#564c45']};
+  const [ink,edge]=palettes[id],entries=new Map();
+  for(let row=1;row<SH-1;row++)for(let col=1;col<SW-1;col++){
+    const passage=cellCh(col,row);if(passage!=='+'&&!/^[1-4]$/.test(passage))continue;
+    for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const room=cellCh(col+dx,row+dy),label=RM[room]?.[0];if(!label||room==='+')continue;
+      const x=(col+.5)*size,y=(row+.5)*size;
+      if(ST_RAW.some(t=>Math.hypot(t[0]*size+size/2-x,t[1]*size+size/2-y)<52)||VT_RAW.some(t=>Math.hypot(t[0]*size+size/2-x,t[1]*size+size/2-y)<47))continue;
+      const next=cellCh(col-dx,row-dy),straight=next==='+'||/^[1-4]$/.test(next);
+      const score=(passage!=='+'?3:0)+(straight?2:0)+(cellCh(col+dx*2,row+dy*2)===room?1:0);
+      if(!entries.has(room)||entries.get(room).score<score)entries.set(room,{x,y,dx,dy,score,label});
+    }
+  }
+  const printed=[];
+  for(const {x,y,dx,dy,label}of [...entries.values()].sort((a,b)=>b.score-a.score)){
+    if(printed.some(p=>Math.hypot(p.x-x,p.y-y)<95))continue;
+    printed.push({x,y});g.save();g.translate(x,y);
+    g.rotate(Math.atan2(dy,dx));g.lineCap='round';g.lineJoin='round';
+    for(const [width,color]of [[4.5,edge],[2,ink]]){g.lineWidth=width;g.strokeStyle=color;g.beginPath();g.moveTo(0,-6);g.lineTo(8,0);g.lineTo(0,6);g.stroke()}
+    g.rotate(-Math.atan2(dy,dx));g.font='bold 9px sans-serif';g.textAlign='center';g.textBaseline='middle';
+    g.lineWidth=2.6;g.strokeStyle=edge;g.fillStyle=ink;g.strokeText(label,-dx*11,dy===-1?13:-17,72);g.fillText(label,-dx*11,dy===-1?13:-17,72);g.restore();
+  }
+}
+function drawIslandCable(g){
+  const [a,b]=ISLAND_CABLE.map(([c,r])=>({x:(c+.5)*40,y:(r+.5)*40}));
+  g.save();g.lineCap='round';
+  for(const [offset,width,color]of [[9,9,'#211c28a0'],[0,5,'#29313a'],[0,2,'#d5ceab']]){
+    g.strokeStyle=color;g.lineWidth=width;g.beginPath();g.moveTo(a.x+offset,a.y);g.quadraticCurveTo(a.x+17+offset,(a.y+b.y)/2,b.x+offset,b.y);g.stroke();
+  }
+  for(const [i,p]of [a,b].entries()){
+    g.fillStyle='#423e40';g.strokeStyle='#c8ab78';g.lineWidth=2;g.beginPath();g.roundRect(p.x-21,p.y-13,42,26,6);g.fill();g.stroke();
+    g.fillStyle='#ffdf88';g.fillRect(p.x-13,p.y-5,5,10);g.fillRect(p.x+8,p.y-5,5,10);
+    g.textAlign='center';g.font='bold 10px sans-serif';g.strokeStyle='#332832';g.lineWidth=3;const label=i?'망루행':'온실행',y=p.y+(i?26:-21);g.strokeText(label,p.x,y);g.fillText(label,p.x,y);
   }
   g.restore();
 }
@@ -1871,8 +1919,38 @@ function returnToLobby(){
   if(endScene&&pendingEjection)endScene.until+=Math.max(0,pendingEjection.ts+4200-Date.now());
   Object.values(players).forEach(q=>{const pos=lobbySeat(q.lobbySeat||0);Object.assign(q,pos,{rx:pos.x,ry:pos.y,a:true,v:false,sh:0,seatUntil:Date.now()+2100,bt:null})});
 }
+
+const ISLAND_RIDE_MS=1120;
+function islandCableEntry(q,n=Date.now()){
+  if(currentMap!=='fungle'||phase!=='play'||!q?.a||q.v||q.mapRide||n<introEnd||n<(q.mapRideReady||0))return -1;
+  if(gameMode==='hide'&&isImp(q.r||myRole)&&n<hideStarts)return -1;
+  return ISLAND_CABLE.findIndex(([c,r])=>{const p=cc(c,r);return near(q,p,49)&&los(q.x,q.y,p.x,p.y)});
+}
+function startIslandRide(id){
+  const q=players[id],from=islandCableEntry(q);
+  if(from<0||ISLAND_CABLE.map(p=>cc(...p)).some(p=>blocked(p.x,p.y,p)))return;
+  hFx({t:'island-ride',actor:id,from});
+}
+function receiveIslandRide(packet){
+  if(currentMap!=='fungle'||phase!=='play'||![0,1].includes(packet.from))return;
+  const q=players[packet.actor];if(!q?.a||q.mapRide)return;
+  const now=Date.now(),entry=cc(...ISLAND_CABLE[packet.from]),exit=cc(...ISLAND_CABLE[1-packet.from]);
+  q.mapRide={entry,exit,at:now};q.mapRideReady=now+ISLAND_RIDE_MS+850;
+  if(q.id===selfId){if(mgClose)mgClose(false);releaseControls()}
+}
+function finishIslandRides(n,interrupt=false){
+  for(const q of Object.values(players)){
+    const ride=q.mapRide;if(!ride||(!interrupt&&n<ride.at+ISLAND_RIDE_MS))continue;
+    Object.assign(q,ride.exit,{rx:ride.exit.x,ry:ride.exit.y,px:ride.exit.x,py:ride.exit.y,mvT:0,mapRide:null});
+    if(isHost)q.mapRideIgnoreUntil=n+180;
+  }
+}
+function islandRidePoint(ride,n){
+  const f=cl((n-ride.at)/ISLAND_RIDE_MS),sway=34*MAP_SCALE*f*(1-f);
+  return {x:ride.entry.x+(ride.exit.x-ride.entry.x)*f+sway,y:ride.entry.y+(ride.exit.y-ride.entry.y)*f};
+}
 function receivePosition(p,d){
-  const q=players[p];if(!q||!Number.isFinite(d.x)||!Number.isFinite(d.y))return;
+  const q=players[p];if(!q||q.mapRide||Date.now()<(q.mapRideIgnoreUntil||0)||!Number.isFinite(d.x)||!Number.isFinite(d.y))return;
   const valid=phase==='wait'?!lobbyBlocked(d.x,d.y):q.a?!blocked(d.x,d.y,q):d.x>=R&&d.x<=WW-R&&d.y>=R&&d.y<=WH-R;
   if(valid){q.x=d.x;q.y=d.y}
   else privateFx(p,{t:'position',target:p,x:q.x,y:q.y});
@@ -2507,9 +2585,18 @@ QUICK.forEach((q,i)=>{
 });
 $('lobbySend').onclick=()=>{if(!gr||phase!=='wait'||!chatAllowed())return;say($('ci').value);$('ci').value='';$('ci').focus()};
 $('ci').addEventListener('input',()=>{if(chatAllowed()&&$('ci').value)snd('chatTyping')});
+function submitPublicChat(){
+  const input=$('ci');
+  if(!chatAllowed()||!input.value.trim())return;
+  say(input.value);input.value='';
+}
+$('meetingSend').onclick=()=>{if(phase==='meet'&&meetingTab==='chat')submitPublicChat()};
 $('ci').addEventListener('keydown',e=>{
-  if(e.key==='Enter'){say($('ci').value);$('ci').value='';$('ci').blur()}
   e.stopPropagation();
+  // Korean IMEs use Enter to confirm the current syllable before the message is ready.
+  if(e.key!=='Enter'||e.isComposing||e.keyCode===229)return;
+  e.preventDefault();submitPublicChat();
+  if(phase!=='meet')$('ci').blur();
 });
 
 /* ---------- 로비 ---------- */
@@ -2677,6 +2764,8 @@ $('leave').onclick=()=>leave();
 function hFx(d){sFx({...d,round:roundId});fxLocal(d)}
 function privateFx(p,d){if(p===selfId)fxLocal(d);else if(players[p]&&!players[p].bot)sFx({...d,round:roundId},p)}
 function fxLocal(d){
+  if(d.t==='island-ride'){receiveIslandRide(d);return}
+  if(d.t==='meeting')finishIslandRides(Date.now(),true);
   if(d.t==='taskvisual'){receiveTaskVisual(d);return}
   if(d.t==='ghost-link'){receiveGhostLink(d);return}
   if(d.t==='voteStamp'){snd('voteStamp');return}
@@ -2911,7 +3000,7 @@ function hStart(){
   const ids=Object.keys(players);
   if(ids.length<(gameMode==='training'?1:3)){over='최소 3명 필요해 (AI 추가 가능)';return}
   stopRoomNicknameMusic();
-  const startN=Date.now();doorLocks={};doorNext={};rulesClockAt=startN;taskBarCommit=null;taskBarRound='';for(const q of Object.values(players)){q.taskBusy=false;q.sabReadyAt=startN+CFG.sabcd*1000;q.rulesSentAt=0;q.meetReadyAt=0}if(gameMode==='hide'){hideStarts=startN+6900+CFG.hideGrace*1000;hideEnds=hideStarts+CFG.hideDuration*1000}else{hideStarts=0;hideEnds=0}endScene=null;const rl=assignRoles(ids);ids.forEach(i=>{const z=players[i];z.ghostLastRoom='';z.detCases=[];z.detectiveNotes=[];z.chatRevivalUsed=false;z.hs=[];z.roomTrail=[];z.roomTrailRound=null;z.botKillMemory=null;z.fakeAlibi=null;z.chatIncident=null;z.suspicionEvidence=null;z.bodySight=null;z.contextSaid=false;z.lastTaskAt=0;z.dl=[];z.cur=null;z.ls=null;z.lp=null;z.oil=0;z.oilBy=null;z.oilIds=[];z.oilFocusId=null;z.oilFocusAt=0;z.eggAt=0;z.eggBy=null;z.eggNext=0;z.queenDrone=false;z.icd=0;z.hideVents=CFG.hideVentUses;z.ventUsed=false});const lv=ids.filter(i=>rl[i]==='lv');if(lv.length===2){players[lv[0]].lp=lv[1];players[lv[1]].lp=lv[0]}const imL=ids.filter(i=>isImp(rl[i])).map(i=>({id:i,nm:players[i].nm,c:players[i].c}));hideHunterId=gameMode==='hide'?imL[0]?.id||'':'';
+  const startN=Date.now();doorLocks={};doorNext={};rulesClockAt=startN;taskBarCommit=null;taskBarRound='';for(const q of Object.values(players)){q.taskBusy=false;q.sabReadyAt=startN+CFG.sabcd*1000;q.rulesSentAt=0;q.meetReadyAt=0}if(gameMode==='hide'){hideStarts=startN+6900+CFG.hideGrace*1000;hideEnds=hideStarts+CFG.hideDuration*1000}else{hideStarts=0;hideEnds=0}endScene=null;const rl=assignRoles(ids);ids.forEach(i=>{const z=players[i];z.mapRide=null;z.mapRideReady=0;z.mapRideIgnoreUntil=0;z.ghostLastRoom='';z.detCases=[];z.detectiveNotes=[];z.chatRevivalUsed=false;z.hs=[];z.roomTrail=[];z.roomTrailRound=null;z.botKillMemory=null;z.fakeAlibi=null;z.chatIncident=null;z.suspicionEvidence=null;z.bodySight=null;z.contextSaid=false;z.lastTaskAt=0;z.dl=[];z.cur=null;z.ls=null;z.lp=null;z.oil=0;z.oilBy=null;z.oilIds=[];z.oilFocusId=null;z.oilFocusAt=0;z.eggAt=0;z.eggBy=null;z.eggNext=0;z.queenDrone=false;z.icd=0;z.hideVents=CFG.hideVentUses;z.ventUsed=false});const lv=ids.filter(i=>rl[i]==='lv');if(lv.length===2){players[lv[0]].lp=lv[1];players[lv[1]].lp=lv[0]}const imL=ids.filter(i=>isImp(rl[i])).map(i=>({id:i,nm:players[i].nm,c:players[i].c}));hideHunterId=gameMode==='hide'?imL[0]?.id||'':'';
   const N=ids.length,tl=N<=6?[1,1]:N<=12?[2,1]:[2,2];
   buildWorld(tl[0],tl[1]);
   closeLobbyPanel();const spawn={},used=[];
@@ -3044,6 +3133,7 @@ function drawTransferCourier(canvas,c='#b4d0db'){
 
 function finalHideActive(n=Date.now()){return gameMode==='hide'&&phase==='play'&&hideEnds>0&&n>=hideStarts&&hideEnds-n<=CFG.hideFinal*1000}
 function hTask(p,i,taskRound=roundId){
+  if(players[p]?.mapRide)return;
   if(finalHideActive())return;
   const q=players[p];
   if(taskRound!==roundId||phase!=='play'||!Number.isInteger(i)||!q||q.v||isImp(q.r)||q.r==='jt'||!q.tk||q.dn[i]!==0)return;
@@ -3075,17 +3165,19 @@ function linkDeath(t,nb){
   if(!nb){makeBody(o,o);hFx({t:'k',x:o.x,y:o.y,vid:o.id,kid:o.id,kn:'연인',e:6,self:true,kc:disp(o).c,vc:disp(o).c})}
   return o;
 }
-function hKill(p,v){
+function hKill(p,v,{bold=false}={}){
   const q=players[p],t=players[v],n=Date.now();
+  if(q?.mapRide||t?.mapRide)return;
   if(phase!=='play'||Date.now()<introEnd||(gameMode==='hide'&&Date.now()<hideStarts)||!q||!isImp(q.r)||!q.a||q.v||!t||!t.a||t.v||isImp(t.r))return;
   if(n-q.lk<kcd(q.r)-500||!near(q,t,kr(q.r))||!los(q.x,q.y,t.x,t.y))return;
   q.iv=0;
   if(absorbShield(t)){q.lk=n-kcd(q.r)+3000;return}
   t.a=false;q.lk=n;deaths++;
-  makeBody(t,q,{acid:q.r==='vp'?n+15000:0});rememberBotEvent('kill',t,q);
+  const exposedTo=q.bot?botVisibleKillWitnesses(q,t,Object.values(players),n).map(o=>o.id):[];
+  makeBody(t,q,{acid:q.r==='vp'?n+15000:0});rememberBotEvent('kill',t,q,{bold:!!q.bot&&bold});
   if(t.r==='nm')hFx({t:'noise',x:t.x,y:t.y});
   hFx({t:'k',x:t.x,y:t.y,vid:t.id,kid:p,kn:q.nm,impKill:true,sn:false,e:pick([0,1,2,3,4,7,8,9]),kc:disp(q).c,vc:disp(t).c});
-  q.x=t.x;q.y=t.y;rememberBotKill(q,t,n);linkDeath(t);consumeDrone(q,n);
+  q.x=t.x;q.y=t.y;rememberBotKill(q,t,n,exposedTo);linkDeath(t);consumeDrone(q,n);
   check();
 }
 
@@ -3099,12 +3191,13 @@ function appendDetectiveAnnotations(box,row){
 }
 function showDetectiveNotes(selected){const box=$('pick');box.textContent='';box.style.display='flex';box.style.maxHeight='80dvh';box.style.overflowY='auto';const header=document.createElement('div');header.textContent='탐정 수첩 · 사건 당시 위치';box.append(header);const cases=me()?.detectiveNotes||[];const row=cases.find(c=>c.id===selected)||cases.at(-1);if(!row){const hint=document.createElement('p');hint.textContent='시체가 신고되면 사건이 기록돼. 회의 후 가까운 사람을 심문해.';box.append(hint)}else{const select=document.createElement('select');for(const c of cases){const o=document.createElement('option');o.value=c.id;o.textContent=c.victim+' 사건';select.append(o)}select.value=row.id;select.onchange=()=>showDetectiveNotes(select.value);box.append(select);appendDetectiveAnnotations(box,row);for(const note of row.notes||[]){const p=document.createElement('p');p.textContent=note.name+' · '+note.location;box.append(p)}const hint=document.createElement('p');hint.textContent='위치는 단서일 뿐, 범인 확정은 아니야. 가까운 사람을 선택해 심문해.';box.append(hint);for(const t of Object.values(players).filter(t=>t.id!==selfId&&t.a&&!t.v)){const b=document.createElement('button');b.textContent=t.nm+' 심문';b.disabled=phase!=='play'||!near(me(),t,140)||!los(me().x,me().y,t.x,t.y);b.onclick=()=>sendAb({k:'interrogate',t:t.id,caseId:row.id});box.append(b)}}const close=document.createElement('button');close.textContent='닫기';close.onclick=()=>box.style.display='none';box.append(close)}
 function hVent(p,d){
+  if(players[p]?.mapRide)return;
   const q=players[p],v=VENTS[d.i],n=Date.now();
   if(phase!=='play'||!q||!q.a||!v)return;
   if(d.s===1){
     const hideCrew=gameMode==='hide'&&!isImp(q.r);if(q.v||!(hideCrew?(q.hideVents||0)>0:(isImp(q.r)||q.r==='eng')&&gameMode!=='hide')||!near(q,v,75)||n<(q.vcd||0))return;q.ventOrigin=d.i;q.ventUsed=true;
     if(q.r==='eng'&&n<q.vcd)return;
-    q.v=true;q.vi=d.i;q.vt=n;q.x=v.x;q.y=v.y;q.iv=0;rememberBotEvent('vent',q,q);hFx({t:'v',x:v.x,y:v.y,phase:'enter',c:q.c,actor:p});
+    q.v=true;q.vi=d.i;q.vt=n;q.x=v.x;q.y=v.y;q.iv=0;rememberBotEvent('vent',q,q,{ventShow:!!(q.bot&&q.bt?.botEscape?.ventShow)});hFx({t:'v',x:v.x,y:v.y,phase:'enter',c:q.c,actor:p});
   }else if(d.s===2){
     if(!q.v||!VENTS[q.vi]||VENTS[q.vi].g!==v.g||q.vi===d.i)return;
     if(gameMode==='hide'){if(isImp(q.r))return;if(d.i!==q.ventOrigin){if((q.hideVents||0)<=0)return;q.hideVents--}}
@@ -3190,6 +3283,8 @@ function tickSpecialRoles(n=Date.now()){
 function hAbil(p,d){
   const q=players[p],n=Date.now();
   try{
+  if(d.k==='island-ride'){startIslandRide(p);return}
+  if(q?.mapRide)return;
   if(d.k==='ghost-open'||d.k==='ghost-line'){hostGhostLink(p,d);return}
   if(d.k==='interrogate'){if(phase!=='play'||!q?.a||q.r!=='det'||q.v)return;const target=players[d.t],row=(q.detCases||[]).find(c=>c.id===d.caseId);if(!target?.a||target.id===p||target.v||!row||!near(q,target,140)||!los(q.x,q.y,target.x,target.y))return;privateFx(p,{t:'detective-note',caseId:row.id,target:target.id,name:target.nm,location:row.locations[target.id]||'기록 없음'});return}
   if(d.k==='chatRevive'){reviveFromChat(p);return}
@@ -3243,6 +3338,7 @@ function hAbil(p,d){
   }finally{if(q&&Number.isFinite(q.su))privateFx(p,{t:'ability-state',target:p,su:q.su,oilIds:Object.values(players).filter(o=>o.a&&o.oil>n&&o.oilBy===p).map(o=>o.id),icd:q.icd||0})}
 }
 function hMeet(p,d){
+  if(players[p]?.mapRide)return;
   const q=players[p];
   if(gameMode==='hide'||phase!=='play'||Date.now()<introEnd||!q||!q.a||q.v)return;
   let w,reportedBody;
@@ -3392,6 +3488,7 @@ function hFix(p,d){
 
 function hostTick(){
   if(tickStartCountdown())return;
+  finishIslandRides(Date.now());
   const n=Date.now();if(finalHideActive(n)&&mgClose)mgClose(false);tickRulesClocks(n);if(gameMode==='hide'&&phase==='play'&&hideEnds&&n>=hideEnds){check('🎉 크루원 승리! (시간 생존)');return}
   bodies=bodies.filter(b=>!b.acid||b.acid>n);
   Object.values(players).forEach(q=>{
@@ -3741,16 +3838,19 @@ function botInspectBody(q,b,all,n){
   if(b.path.length)followPath(q,b);else stepBot(q,body.x,body.y);
   return true;
 }
-function rememberBotEvent(kind,victim,actor){
+function rememberBotEvent(kind,victim,actor,details={}){
   const n=Date.now(),apparent=botObservedIdentity(actor);
   if(actor.iv>n)return;
-  Object.values(players).forEach(q=>{
-    if(!q.bot||!q.a||q.v||q.id===actor.id||!near(q,victim,320)||!botPerceives(q,victim.x,victim.y,n))return;
-    if(!near(q,actor,320)||!botPerceives(q,actor.x,actor.y,n))return;
+  const seen=(q,target)=>near(q,target,320)&&botPerceives(q,target.x,target.y,n);
+  const witnesses=Object.values(players).filter(q=>q.a&&!q.v&&q.id!==actor.id&&q.id!==victim.id&&seen(q,victim)&&seen(q,actor));
+  const publicWitness=kind==='kill'&&witnesses.filter(q=>!isImp(q.r)).length>=2;
+  witnesses.filter(q=>q.bot).forEach(q=>{
     // A distant lover death cannot reveal the other person's hidden relationship.
     if(kind==='lover'&&q.chatIncident?.kind==='kill')return;
     const event={kind,victim:disp(victim).nm,victimId:victim.id,actor:apparent.nm,actorId:apparent.id,
-      at:n,round:roundId,room:roomOf(victim.x,victim.y)};
+      at:n,round:roundId,room:roomOf(victim.x,victim.y),publicWitness};
+    if(kind==='kill'&&details.bold)event.bold=true;
+    if(kind==='vent'&&details.ventShow)event.ventShow=true;
     q.chatIncident=event;
     if(kind==='kill'&&!isImp(q.r)&&apparent.id){q.sus=apparent.id;q.suspicionEvidence=event}
   });
@@ -3763,15 +3863,27 @@ function botSuspicionLine(q,target){
   }
   return target.nm+', 신고 전에는 어디였어?';
 }
+function botKillWitnessLine(event,prefix=''){
+  const actor=J(event.actor,'이','가');
+  if((event.publicWitness||event.bold)&&!meet.publicKillReaction){
+    meet.publicKillReaction=true;
+    return prefix+actor+' '+event.room+'에서 죽이는 거 봤어. 진짜 대놓고 하네';
+  }
+  return prefix+actor+' '+event.room+'에서 죽이는 거 봤어';
+}
+function botVentWitnessLine(event){
+  if(event.ventShow&&!meet.ventShowReaction){meet.ventShowReaction=true;return event.actor+' 내 앞에서 벤트 탔어. 그냥 보여주고 가네 ㅋㅋ'}
+  return event.actor+' 벤트 타는 건 봤어. 기술자인지는 몰라';
+}
 function botContextLine(q,log){
   if(!q.a)return pick(['이번 투표 궁금하네','일단 얘기 듣는 중','이번엔 누가 나가려나']);
   const event=q.chatIncident;
   if(event&&event.round===roundId&&Date.now()-event.at<90000&&!q.contextSaid){
     q.contextSaid=true;q.chatIncident=null;
     if(event.kind==='kill'&&!(isImp(q.r)&&isImp(players[event.actorId]?.r))){
-      return meet.kind==='rep'&&meet.caller===event.actorId&&meet.bodyId===event.victimId?J(event.actor,'이','가')+' 죽이고 바로 신고했어. 내가 봤어':J(event.actor,'이','가')+' '+event.room+'에서 죽이는 거 봤어';
+      return meet.kind==='rep'&&meet.caller===event.actorId&&meet.bodyId===event.victimId?J(event.actor,'이','가')+' 죽이고 바로 신고했어. 내가 봤어':botKillWitnessLine(event);
     }
-    if(event.kind==='vent'&&!(isImp(q.r)&&isImp(players[event.actorId]?.r)))return event.actor+' 벤트 타더라. 기술자야?';
+    if(event.kind==='vent'&&!(isImp(q.r)&&isImp(players[event.actorId]?.r)))return botVentWitnessLine(event);
     if(event.kind==='misfire')return J(event.actor,'이','가')+' 쐈는데 본인이 죽었어. 오발인 듯';
     if(event.kind==='shot')return event.actor+' 총 쏘는 건 봤어. 보안관인지 물어봐';
     if(event.kind==='lover')return event.victim+'도 바로 쓰러졌어. 연인인지는 모르겠고';
@@ -3816,8 +3928,10 @@ function rememberBotRoom(q,n=Date.now()){
   if(last?.room===room)last.end=n;else trail.push({room,at:n,end:n});
   while(trail.length>32||trail.length&&trail[0].end<n-30000)trail.shift();
 }
-function rememberBotKill(q,victim,n=Date.now()){
-  if(!q.bot)return;const room=botActualRoom(victim);q.botKillMemory={round:roundId,at:n,room,bodyId:victim.id,seen:new Map(),escapeDone:false};q.fakeAlibi=null;
+function rememberBotKill(q,victim,n=Date.now(),exposedTo=[]){
+  if(!q.bot)return;
+  q.botKillMemory={round:roundId,at:n,room:botActualRoom(victim),bodyId:victim.id,seen:new Map(),exposedTo:new Set(exposedTo),escapeDone:false};
+  q.fakeAlibi=null;
 }
 function botFalseAlibi(q){
   const kill=q.botKillMemory;if(!q.a||!isImp(q.r)||!kill||kill.round!==roundId)return null;
@@ -3828,10 +3942,43 @@ function botFalseAlibi(q){
 function botKillHasWitness(q,victim,all,n=Date.now()){
   return all.some(other=>other.id!==q.id&&other.id!==victim.id&&other.a&&!other.v&&!(other.iv>n)&&((near(q,other,320)&&botPerceives(other,q.x,q.y,n))||(near(victim,other,320)&&botPerceives(other,victim.x,victim.y,n))));
 }
-function botEscapeThreat(q,all,n){
-  const memory=q.botKillMemory;if(!memory||memory.round!==roundId||memory.escapeDone||n-memory.at>6000)return null;
-  for(const other of all){if(other.id===q.id||!other.a||other.v||isImp(other.r)||other.iv>n)continue;const distance=Math.hypot(other.x-q.x,other.y-q.y);if(distance>360||!botPerceives(q,other.x,other.y,n))continue;const prior=memory.seen.get(other.id);memory.seen.set(other.id,distance);if(distance<120||prior===undefined?distance<240:distance<prior-1)return other}
+function botVisibleKillWitnesses(q,victim,all,n){
+  return all.filter(other=>other.id!==q.id&&other.id!==victim.id&&other.a&&!other.v&&!(other.iv>n)&&!isImp(other.r)&&near(q,other,320)&&botPerceives(q,other.x,other.y,n)&&botPerceives(other,q.x,q.y,n)&&botPerceives(other,victim.x,victim.y,n));
+}
+function botMayRiskKill(q,b,victim,all,n){
+  if(gameMode!=='classic'||n<(b.riskCheckAt||0)||n-q.lk<kcd(q.r)+3500||!near(q,victim,kr(q.r)*.88))return false;
+  if(all.filter(o=>o.a&&!isImp(o.r)).length<4||botVisibleKillWitnesses(q,victim,all,n).length!==1)return false;
+  // Give a close, tempting opportunity one roll, not a fresh roll every game tick.
+  b.riskCheckAt=n+7000;
+  return Math.random()<.2;
+}
+function botEscapeObservers(q,all,n){
+  return all.filter(o=>o.id!==q.id&&o.a&&!o.v&&!isImp(o.r)&&!(o.iv>n)&&near(q,o,340)&&botPerceives(q,o.x,o.y,n));
+}
+function botEscapeThreats(q,observers,n){
+  const memory=q.botKillMemory;
+  const sample=n>=(memory.sampleAt||0);
+  if(sample)memory.sampleAt=n+260;
+  return observers.filter(other=>{
+    const distance=Math.hypot(other.x-q.x,other.y-q.y);
+    const previous=memory.seen.get(other.id);
+    if(sample)memory.seen.set(other.id,distance);
+    return distance<115||distance<240&&memory.exposedTo?.has(other.id)||distance<190&&previous!==undefined&&distance<previous-14;
+  });
+}
+function botWalkingRetreat(q,observers){
+  for(const radius of [115,180])for(let step=0;step<12;step++){
+    const angle=step*Math.PI/6,point={x:q.x+Math.cos(angle)*radius,y:q.y+Math.sin(angle)*radius};
+    if(blocked(point.x,point.y,q)||!observers.every(o=>{
+      const current=Math.hypot(o.x-q.x,o.y-q.y),next=Math.hypot(o.x-point.x,o.y-point.y);
+      return next>=current+65||next>=current+5&&!los(o.x,o.y,point.x,point.y);
+    }))continue;
+    if(botRouteClear(q,q.x,q.y,point.x,point.y))return point;
+  }
   return null;
+}
+function botVentEntryWatched(vent,observers,n){
+  return observers.some(o=>near(o,vent,290)&&botPerceives(o,vent.x,vent.y,n));
 }
 function botVentExitScore(vent,q,all){
   let score=0;for(const other of all){if(other.id===q.id||!other.a||other.v||isImp(other.r)||other.iv>Date.now()||!botPerceives(q,other.x,other.y))continue;const d=Math.hypot(vent.x-other.x,vent.y-other.y);if(d<300&&los(vent.x,vent.y,other.x,other.y))score-=450-d;else score+=Math.min(d,800)*.025}return score;
@@ -3847,18 +3994,51 @@ function tickBotVentEscape(q,b,all,n=Date.now()){
     if(n>=escape.exitAt){const vent=VENTS[q.vi],occupied=vent&&all.some(other=>other.id!==q.id&&other.a&&!other.v&&!isImp(other.r)&&near(other,vent,155)&&!(other.iv>n)&&botPerceives(q,other.x,other.y,n));if(occupied&&n<escape.maxInside){escape.exitAt=n+400;return true}hVent(q.id,{s:0,i:q.vi});if(q.botKillMemory)q.botKillMemory.escapeDone=true;b.botEscape=null;b.mode='idle';b.path=[];b.target=null;if(b.motion){b.motion.vx=0;b.motion.vy=0}}
     return true;
   }
-  if(!q.a||!isImp(q.r)||gameMode==='hide')return false;
-  let escape=b.botEscape;
-  if(escape&&n>escape.until){b.botEscape=null;b.path=[];b.mode='idle';if(q.botKillMemory)q.botKillMemory.escapeDone=true;return false}
-  if(!escape){
-    if(!botEscapeThreat(q,all,n))return false;
-    const nearby=VENTS.map((vent,i)=>({vent,i,distance:Math.hypot(vent.x-q.x,vent.y-q.y)})).filter(o=>o.distance<460).sort((a,c)=>a.distance-c.distance);
-    for(const option of nearby.slice(0,4))if(planBotPath(q,b,option.vent)){escape=b.botEscape={phase:'approach',vent:option.i,until:n+5000};b.mode='escape';b.want='';b.stn=null;q.cur=null;break}
-    if(!escape){if(q.botKillMemory)q.botKillMemory.escapeDone=true;return false}
+  if(!q.a||!isImp(q.r)||gameMode!=='classic')return false;
+  const memory=q.botKillMemory;
+  if(!memory||memory.round!==roundId||memory.escapeDone||n-memory.at>6500){
+    if(b.botEscape){b.botEscape=null;b.path=[];b.mode='idle'}
+    return false;
   }
-  const vent=VENTS[escape.vent];if(!vent){b.botEscape=null;return false}
-  if(near(q,vent,70)&&los(q.x,q.y,vent.x,vent.y)){hVent(q.id,{s:1,i:escape.vent});if(q.v){escape.phase='inside';escape.travelAt=n+700;escape.exitAt=n+1900+Math.random()*1600;escape.maxInside=n+6000;b.path=[];return true}}
-  if(!b.path.length||b.tick%12===0)planBotPath(q,b,vent);followPath(q,b);return true;
+  let escape=b.botEscape;
+  if(escape?.phase==='walk'){
+    if(n<escape.until&&b.path.length){followPath(q,b);return true}
+    b.botEscape=null;b.mode='idle';memory.escapeDone=true;return false;
+  }
+  if(n<(memory.recheckAt||0)&&!escape)return false;
+  const observers=botEscapeObservers(q,all,n),threats=botEscapeThreats(q,observers,n);
+  function startWalking(point){
+    b.botEscape={phase:'walk',until:n+1900};b.mode='escape';b.want='';b.stn=null;q.cur=null;
+    b.path=[point];b.target=point;b.range=10;followPath(q,b);
+  }
+  if(!escape){
+    if(!threats.length)return false;
+    memory.recheckAt=n+520;
+    const walking=botWalkingRetreat(q,observers);
+    if(walking){startWalking(walking);return true}
+    const nearby=VENTS.map((vent,i)=>({vent,i,distance:Math.hypot(vent.x-q.x,vent.y-q.y),watched:botVentEntryWatched(vent,observers,n)}))
+      .filter(o=>o.distance<300&&(!o.watched||o.distance<155)).sort((a,c)=>Number(a.watched)-Number(c.watched)||a.distance-c.distance);
+    for(const option of nearby.slice(0,3))if(planBotPath(q,b,option.vent)){
+      escape=b.botEscape={phase:'approach',vent:option.i,until:n+1900};b.mode='escape';b.want='';b.stn=null;q.cur=null;break;
+    }
+    if(!escape)return false;
+  }
+  const vent=VENTS[escape.vent];
+  if(!vent||n>escape.until){b.botEscape=null;b.path=[];b.mode='idle';memory.escapeDone=true;return false}
+  if(near(q,vent,70)&&los(q.x,q.y,vent.x,vent.y)){
+    // If an onlooker can see the hatch, only commit when the bot remains under pressure with no clear walking route.
+    const watched=botVentEntryWatched(vent,observers,n);
+    if(watched){
+      const walking=threats.length&&botWalkingRetreat(q,observers);
+      if(walking){startWalking(walking);return true}
+      if(!threats.length){b.botEscape=null;b.path=[];b.mode='idle';memory.escapeDone=true;return false}
+    }
+    escape.ventShow=watched;
+    hVent(q.id,{s:1,i:escape.vent});
+    if(q.v){escape.phase='inside';escape.travelAt=n+700;escape.exitAt=n+1900+Math.random()*1600;escape.maxInside=n+6000;b.path=[];return true}
+  }
+  if(!b.path.length||b.tick%12===0)planBotPath(q,b,vent);
+  followPath(q,b);return true;
 }
 function chooseBotSpeaker(pool){
   if(!pool.length)return null;const least=Math.min(...pool.map(q=>q.said||0)),fair=pool.filter(q=>(q.said||0)===least);let roll=Math.random()*fair.reduce((sum,q)=>sum+botPersona(q).speak,0);
@@ -3877,73 +4057,105 @@ function botPersonalityPrompt(q,al){
 /* Public meeting testimony informs ballots without turning claims into hidden knowledge. */
 function botChatMentions(text,al){
   const found=[];
+  const particles='한테서|한테|에게서|에게|랑|하고|은|는|이|가|을|를|님|아|야';
+  const next='(?=$|[\\s,.:;!?！？()\\[\\]…~]|(?:임|임포|백퍼|100%|확실|맞음|킬|처치|죽|찍(?:어|자|음|을|는)|벤트|밴트|경크|아님|봤))';
+  const aliases=new Map();
   for(const p of al){
-    const labels=[p.nm,...chatColorNames(p.c)];let first=Infinity,end=-1;
-    for(const label of labels){
-      if(!label)continue;const escaped=String(label).replace(/[.*+?^$(){}|[\]\\]/g,'\\$&');
-      const re=new RegExp('(^|[\\s,:(])'+escaped+'(?:색)?(?=$|[\\s,:!?)]|(?:은|는|이|가|을|를|한테|에게|님|아|야|임)(?=\\s|$|[,!?])|찍(?:어|자|음|을|는))','giu');
-      for(const m of String(text).matchAll(re)){const at=m.index+m[1].length;if(at<first){first=at;end=m.index+m[0].length}}
+    if(!p.a)continue;
+    const colors=chatColorNames(p.c);
+    for(const label of [p.nm,...colors]){
+      if(!label)continue;
+      const key=String(label).normalize('NFC').toLowerCase();
+      const color=colors.includes(label),old=aliases.get(key);
+      if(!old||color&&!old.color)aliases.set(key,{player:p,color});
     }
-    if(Number.isFinite(first))found.push({id:p.id,at:first,end});
   }
-  return found.sort((a,b)=>a.at-b.at||b.end-a.end);
+  for(const [label,{player}] of aliases){
+    const escaped=label.replace(/[.*+?^$(){}|[\]\\]/g,'\\$&');
+    const re=new RegExp('(^|[\\s,.:;!?！？(\\[…])(@?)'+escaped+'(?:색)?('+particles+')?'+next,'giu');
+    for(const match of text.matchAll(re)){
+      const at=match.index+match[1].length;
+      found.push({id:player.id,at,end:match.index+match[0].length,particle:match[3]||'',address:!!match[2]});
+    }
+  }
+  found.sort((a,b)=>a.at-b.at||b.end-a.end);
+  const nonOverlapping=[];
+  for(const hit of found)if(!nonOverlapping.length||hit.at>=nonOverlapping.at(-1).end)nonOverlapping.push(hit);
+  return nonOverlapping;
+}
+const BOT_RETRACTION=/(?:잘못\s*(?:봤|봄|알|말)|착각|(?:말|의심|경크|주장)\s*취소)/;
+const BOT_KILL_REPORT=/킬\s*(?:하는|하던|했|함|하더|냄)|죽이(?:는|던|더|고)|죽였|죽임|썰었|처치\s*(?:하|했|함)|잡(?:았|는)/;
+const BOT_PASSIVE_DEATH=/죽었|죽음|당했|당함/;
+const BOT_HEARSAY=/(?:봤대|봤다던|라던데|(?:죽였|킬했|처치했)대|라고\s*(?:하|했)|말(?:하|했)|얘기(?:하|했)|아마|같(?:아|은|음)|듯)/;
+function botReadTestimony(text,al){
+  text=text.normalize('NFC').replace(/밴트/g,'벤트').replace(/봣/g,'봤').replace(/죽엿/g,'죽였');
+  const mentioned=botChatMentions(text,al);
+  const witness=/(?:직접|내\s*눈|보는\s*앞에서)|(?:봤어|봤음|봤다|봤는데|\b봄\b|봄(?:\s|$|[.!?ㅋ])|목격)/.test(text);
+  const hearsay=BOT_HEARSAY.test(text);
+  const questionText=[...mentioned].reverse().reduce((line,m)=>line.slice(0,m.at)+' '.repeat(m.end-m.at)+line.slice(m.end),text);
+  const asks=/(?:[?？]|봤냐|봤니|봤나|하는\s*건가|거야\s*\?|맞(?:냐|니|음\?)|누가\s*봤|본\s*사람)/.test(questionText);
+  const negativeKill=/(?:킬|죽이|죽였|처치).{0,22}(?:못\s*(?:봤|봄)|안\s*(?:봤|봄)|모르|안\s*보였|아니)/.test(text);
+  const negatedVent=/(?:벤트).{0,18}(?:안\s*(?:탔|탐)|못\s*(?:봤|봄)|아닌|아님)/.test(text);
+  const deny=/(?:아니(?:야|다|라고|고|었|잖|라)|아님|아냐|아닌\s*것|아닐\s*듯)/;
+  const annotated=mentioned.map((m,i)=>({...m,
+    local:text.slice(m.end,mentioned[i+1]?.at??text.length),
+    addressed:m.address||['님','아','야'].includes(m.particle)&&i+1<mentioned.length
+  }));
+  const killAt=text.search(BOT_KILL_REPORT),passiveAt=text.search(BOT_PASSIVE_DEATH);
+  const beforeKill=annotated.filter(m=>m.at<(killAt>=0?killAt:passiveAt)&&!m.addressed&&!deny.test(m.local)&&!BOT_RETRACTION.test(m.local));
+  const agent=passiveAt>=0&&killAt<0?beforeKill.find(m=>/^(?:한테|에게)/.test(m.particle)):
+    beforeKill.find(m=>/^[은는이가]$/.test(m.particle))||beforeKill.find(m=>!/[을를]/.test(m.particle));
+  const nearBody=/(?:시체|사체).{0,20}(?:근처|옆|주변)|(?:근처|옆).{0,15}(?:시체|사체)/;
+  const vent=/벤트\s*(?:.{0,14}(?:탔|타는|탐|나왔|들어|썼|씀|봤|봄|쇼))/;
+  const rows=[];
+  for(const m of annotated){
+    if(m.addressed)continue;
+    const {local}=m;
+    if(BOT_RETRACTION.test(local))rows.push({target:m.id,weight:0,kind:'retract'});
+    else if(m===agent&&negativeKill)rows.push({target:m.id,weight:0,kind:'retract'});
+    else if(m===agent&&!asks&&!hearsay)rows.push({target:m.id,weight:witness?3.15:2.55,kind:witness?'witness':'claim'});
+    else if(asks)continue;
+    else if(/(?:스캔|확미|실드|소행성|쓰레기).{0,28}(?:봤|봄|목격)|확시(?:야|임|다|\s|$)/.test(local))rows.push({target:m.id,weight:-2.5,kind:'defense'});
+    else if(/(?:계속|내내|처음부터).{0,18}(?:같이|함께)|(?:같이|함께).{0,18}(?:계속|내내|있었)/.test(local))rows.push({target:m.id,weight:-1.45,kind:'defense'});
+    else if(deny.test(local)&&!/아니면/.test(local))rows.push({target:m.id,weight:-.65,kind:'defense'});
+    else if(m===agent&&hearsay)rows.push({target:m.id,weight:.85,kind:'rumor'});
+    else if(!negatedVent&&(vent.test(local)||annotated.length===1&&vent.test(text)))rows.push({target:m.id,weight:hearsay?.9:witness?2.05:1.75,kind:'vent'});
+    else if(nearBody.test(local)||annotated.length===1&&nearBody.test(text))rows.push({target:m.id,weight:hearsay?.65:1.15,kind:'body'});
+    else if(/경크|맞경/.test(local)&&!/(?:아니|없|못)/.test(local))rows.push({target:m.id,weight:hearsay?.9:2.35,kind:'claim'});
+    else if(/(?:^|\s)(?:임(?:\s|$|[.!ㅋ])|임포(?:스터)?(?:인|임|야|다|같|\s|$))|(?:백퍼|100%|확실|맞음)/.test(local))rows.push({target:m.id,weight:hearsay?.9:1.85,kind:'suspicion'});
+    else if(/수상|의심|범인|찍(?:어|자|음|을)|투표하/.test(local))rows.push({target:m.id,weight:.8,kind:'suspicion'});
+  }
+  return rows;
 }
 function botPublicClaims(al){
   if(!meet)return[];
   const last=meetLog.at(-1),cache=meet.ballotClaims;
-  if(cache&&cache.log===meetLog&&cache.length===meetLog.length&&cache.last===last)return cache.rows;
+  const roster=al.filter(p=>p.a).map(p=>p.id+'|'+p.nm+'|'+p.c).join('\n');
+  if(cache&&cache.log===meetLog&&cache.length===meetLog.length&&cache.last===last&&cache.roster===roster)return cache.rows;
   const claims=new Map(),eligible=new Map(al.filter(p=>p.a).map(p=>[p.id,p]));
-  const save=(author,target,weight,kind,at)=>{
-    if(!eligible.has(target))return;const key=author.id+'|'+target,old=claims.get(key);
-    // One speaker cannot gain votes by repeating the same accusation. A retraction replaces it.
-    if(kind==='retract'){claims.set(key,{from:author.id,target,weight:0,kind,at});return}
-    if(old&&old.weight>0&&weight>0&&old.weight>weight)return;
-    claims.set(key,{from:author.id,target,weight,kind,at});
-  };
   for(const message of meetLog.slice(-100)){
     const author=eligible.get(message.id);if(!author||message.gh||typeof message.t!=='string')continue;
-    const text=message.t.slice(0,300),mentioned=botChatMentions(text,al);if(!mentioned.length)continue;
-    const hasWitness=/(?:내가|직접|방금|내\s*눈).{0,32}(?:봤|봄|보았|목격)|(?:봤어|봤음|봄|목격했|보는\s*앞에서)/.test(text);
-    const hearsay=/(?:봤대|봤다던|라던데|라고\s*(?:하|했)|말(?:하|했)|얘기(?:하|했)|아마|같(?:아|은|음))/.test(text);
-    const kill=/(?:킬(?:하는|하던|했|함|하더)|죽이(?:는|던|더|고)|죽였|죽임|썰었|처치(?:하|했)|잡는)/.test(text);
-    const negativeKill=/(?:킬|죽이|죽였).{0,20}(?:못\s*봤|안\s*봤|못\s*봄|모르|안\s*보였|아니)/.test(text);
-    // In "red killed yellow", the first named actor is the suspect, not the victim.
-    const firstActor=mentioned.find((m,i)=>{
-      const local=text.slice(m.end,mentioned[i+1]?.at??text.length);
-      const address=i===0&&mentioned.length>1&&/^(?:(?:아|야|님)?\s*,|(?:아|야|님)\s+)/.test(local);
-      return !address&&!/(?:잘못\s*봤|착각|아니(?:야|고|라)|아님|아냐|아닌)/.test(local);
-    });
-    for(let i=0;i<mentioned.length;i++){
-      const m=mentioned[i],target=eligible.get(m.id);if(!target)continue;
-      const after=text.slice(m.end,mentioned[i+1]?.at??text.length),before=text.slice(Math.max(0,m.at-25),m.at),local=after.slice(0,100);
-      const asksWitness=/(?:봤(?:어|냐|니|음)?\s*\?|봤냐|봤니|본\s*거야\s*\?)/.test(text)||!hasWitness&&/[?？]/.test(local);
-      const direct=kill&&hasWitness&&!hearsay&&!negativeKill&&!asksWitness&&firstActor?.id===target.id;
-      const retract=/(?:잘못\s*(?:봤|알|말)|착각|(?:말|의심|경크|주장)\s*취소)/.test(local);
-      if(retract){save(author,target.id,0,'retract',message.at);continue}
-      const denied=/(?:아니(?:야|다|라고|고|었|잖|라)|아님|아냐|아닌\s*것|아닐\s*듯)/.test(local)&&!/아니면/.test(local);
-      if(negativeKill&&firstActor?.id===target.id)save(author,target.id,0,'retract',message.at);
-      const visual=/(?:스캔|확미|실드|소행성|쓰레기).{0,28}(?:봤|봄|목격)|확시(?:야|임|다|\s|$)/.test(local);
-      const together=/(?:계속|내내|처음부터).{0,18}(?:같이|함께)|(?:같이|함께).{0,18}(?:계속|내내|있었)/.test(local);
-      if(!direct&&(visual||together||denied)){
-        const weight=visual?-2.5:together?-1.45:author.id===target.id?-.15:-.65;
-        save(author,target.id,weight,'defense',message.at);continue;
-      }
-      if(author.id===target.id)continue;
-      if(direct){save(author,target.id,3.15,'witness',message.at);continue}
-      // A location question or someone quoting an accusation is not independent evidence.
-      if(/(?:뭐|무슨|어떤)\s*근거|근거\s*(?:있|뭐)|왜\s*(?:의심|찍)|(?:직접\s*)?(?:봤어\?|봤냐|본\s*거야\?|본\s*사람)/.test(local))continue;
-      const nearBody=/(?:시체|사체).{0,20}(?:근처|옆|주변)|(?:근처|옆).{0,15}(?:시체|사체)/.test(local);
-      const vent=/(?:벤트|밴트).{0,18}(?:탔|타는|탐|나왔|들어)/.test(local);
-      const coded=/경크|맞경/.test(local)&&!/(?:아니|없|못)/.test(local);
-      const suspect=/수상|의심|범인|임포(?:스터)?(?:인|임|야|다|같)|(?:찍|투표하|투표할)|^\s*임(?:\s|$|[.!?])/.test(local);
-      const killClaim=kill&&!hearsay&&!negativeKill&&!asksWitness&&firstActor?.id===target.id;
-      let weight=killClaim?2.4:nearBody?1.05:vent?1.1:coded?1.55:suspect?.8:0;
-      if(weight&&hearsay)weight*=.65;
-      if(weight&&author.bot&&!nearBody&&!vent&&!coded)weight*=.45;
-      if(weight)save(author,target.id,weight,killClaim?'claim':nearBody?'body':vent?'vent':'suspicion',message.at);
+    const text=message.t.slice(0,300);
+    let lines=botReadTestimony(text,al);
+    if(!lines.length&&BOT_RETRACTION.test(text)&&!/[?？]/.test(text)){
+      const previous=[...claims.values()].filter(r=>r.from===author.id&&r.weight>0).sort((a,b)=>b.at-a.at)[0];
+      if(previous)lines=[{target:previous.target,weight:0,kind:'retract'}];
+    }
+    if(!lines.length&&!author.bot&&/^(?:(?:ㅇㅇ|맞아)[,\s]+)?나도\s*(?:직접\s*)?(?:봤[어음다]?|봄|목격했어)[.!\sㅋ]*$/.test(text)){
+      const previous=[...claims.values()].reverse().find(r=>r.from!==author.id&&message.at-r.at<=12000&&['witness','claim','vent'].includes(r.kind)&&r.weight>=1.7);
+      if(previous)lines=[{target:previous.target,weight:previous.kind==='vent'?1.85:2.25,kind:previous.kind==='vent'?'vent':'witness'}];
+    }
+    for(const line of lines){
+      if(line.target===author.id&&line.weight>0)continue;
+      const key=author.id+'|'+line.target,old=claims.get(key);
+      let weight=line.weight;
+      if(line.target===author.id&&weight<0)weight=Math.max(-.15,weight);
+      if(author.bot&&weight>0&&!['witness','body','vent'].includes(line.kind))weight*=.45;
+      if(weight>0&&old?.weight>weight)continue;
+      claims.set(key,{...line,weight,from:author.id,at:message.at});
     }
   }
-  const rows=[...claims.values()];meet.ballotClaims={log:meetLog,length:meetLog.length,last,rows};return rows;
+  const rows=[...claims.values()];meet.ballotClaims={log:meetLog,length:meetLog.length,last,roster,rows};return rows;
 }
 function botBallotAssessment(q,al){
   const others=al.filter(p=>p.a&&p.id!==q.id&&(!isImp(q.r)||!isImp(p.r))),empty={target:null,score:0,confidence:'none',reason:'none',supporters:0};if(!q?.a||!others.length||!meet)return empty;
@@ -3960,7 +4172,7 @@ function botBallotAssessment(q,al){
     if(claim.weight>0){row.sources.add(claim.from);if(claim.kind==='witness'||row.reason==='none')row.reason=claim.kind}
   }
   const ranked=[...scores.values()].sort((a,b)=>b.score-a.score),best=ranked[0];if(!best||best.score<=0)return empty;
-  const threshold=persona.kind==='cautious'?2.65:persona.kind==='suspicious'?1.5:1.85;
+  const threshold=persona.kind==='cautious'?2.65:persona.kind==='suspicious'?1.42:1.72;
   const margin=best.score-(ranked[1]?.score||0),enough=best.score>=threshold&&margin>=.55;
   return{target:enough?best.target:null,score:best.score,confidence:enough?(best.reason==='witness'||best.sources.size>=2?'strong':'tentative'):'none',reason:best.reason,supporters:best.sources.size};
 }
@@ -4069,8 +4281,9 @@ function botTick(){
           .sort((a,c)=>Math.hypot(a.x-q.x,a.y-q.y)-Math.hypot(c.x-q.x,c.y-q.y))[0];
         if(vic){
           const witnessed=botKillHasWitness(q,vic,all,n);
-          if(gameMode==='hide'||!witnessed){
-            if(near(q,vic,gameMode==='classic'?kr(q.r)*.88:CFG.kr*.85)){if(q.r==='py'&&!(vic.oil>n)&&n>=(q.ocd||0)&&all.filter(o=>o.a&&o.oil>n&&o.oilBy===q.id).length<2&&Math.random()<.7){hAbil(q.id,{k:'oil',t:vic.id});b.path=[];return}hKill(q.id,vic.id);b.path=[];b.mode='idle';return}
+          const risky=witnessed&&botMayRiskKill(q,b,vic,all,n);
+          if(gameMode==='hide'||!witnessed||risky){
+            if(near(q,vic,gameMode==='classic'?kr(q.r)*.88:CFG.kr*.85)){if(q.r==='py'&&!(vic.oil>n)&&n>=(q.ocd||0)&&all.filter(o=>o.a&&o.oil>n&&o.oilBy===q.id).length<2&&Math.random()<.7){hAbil(q.id,{k:'oil',t:vic.id});b.path=[];return}hKill(q.id,vic.id,{bold:risky});b.path=[];b.mode='idle';return}
             if(b.tick%6===0||!b.path.length||(gameMode==='classic'&&(!b.target||Math.hypot(b.target.x-vic.x,b.target.y-vic.y)>24)))planBotPath(q,b,vic);
             followPath(q,b);return;
           }
@@ -4119,7 +4332,7 @@ function topAcc(al,q){return botBallotAssessment(q,al).target}
 const hasF=c=>{c=c.charCodeAt(c.length-1)-44032;return c>=0&&c<11172&&c%28>0};
 const J=(n,a,b)=>n+(hasF(n)?a:b);
 const stRoom=s=>s.n.replace(/^.*\((.*?)( \d+)?\)$/,'$1');
-const roomOf=(x,y)=>{let b=null,d=1e9;STATIONS.forEach(s=>{const h=Math.hypot(s.x-x,s.y-y);if(h<d){d=h;b=s}});return b?stRoom(b):zoneOf(x,y)};
+const roomOf=(x,y)=>{const cell=cellCh(Math.floor(x/CELL),Math.floor(y/CELL));if(cell!=='+'&&RM[cell]?.[0])return RM[cell][0];let b=null,d=1e9;STATIONS.forEach(s=>{const h=Math.hypot(s.x-x,s.y-y);if(h<d){d=h;b=s}});return b?stRoom(b):zoneOf(x,y)};
 const SPR=[[['','','','일단 '],['','','.']],[['','','잠깐, '],['','','!']],[['','','흠, '],['','','.']],[['','','음, '],['','','...']]];
 // Only witnesses retain an incident; role identities and distant deaths stay private.
 /* Player-aware conversation: public chat and the speaker's own memories only. */
@@ -4149,7 +4362,19 @@ function conversationState(){
 const HUMAN_PHRASES={"report":["시체 위치 어디","시체 나온 곳 알려줘","신고 장소 알려줘","시체 발견 위치","시체는 어느 방","리폿 위치 알려줘","신고한 곳 어디","시체 어딨었음","시체 어디였음","시체 어디서 찾음"],"where":["어디 있었음","어느 방에 있었어","아까 위치 말해줘","방금 동선 알려줘","뭐 하고 있었음","어느 쪽 갔어","마지막 위치 어디","이동 경로 알려줘","너 어디 갔다 왔어","알리바이 말해봐"],"seen":["누구 봤음","마지막으로 본 사람","근처에 사람 있었어","누가 지나갔어","같이 있던 사람 있어","목격한 사람 있어","지나가는 거 봤어","주변에 누가 있었어","그 사람 본 적 있어","직접 본 사람 있어"],"vote":["누구 찍을 거임","이번 표 어디 줌","투표 누구 할래","스킵할 거야","이번엔 넘길래","누굴 찍을 생각","킵할까","어디 투표할 거","누구한테 표 줄래","이번 투표 어떻게 할래"],"evidence":["근거가 뭔데","뭘 보고 의심해","왜 그렇게 생각해","증거부터 말해줘","어떤 걸 본 건데","확실한 이유 있어","의심하는 이유 알려줘","직접 확인한 거야","그렇게 말하는 이유","구체적으로 설명해줘"],"suspect":["누가 제일 수상해","의심되는 사람 있어","범인 누구 같음","누구라고 생각해","가장 의심하는 사람","지금 용의자 누구","임포 누구 같아","지금 누가 의심됨","수상한 사람 골라봐","누가 이상했어"],"claim":["나 아니라고","나 진짜 억울해","나 임포 아닌데","나 왜 의심받음","나한테 왜 그래","내가 한 거 아님","나 범인 아니야","난 크루라고","나 죽인 적 없어","나는 결백해"],"meeting":["버튼 누른 이유","누가 회의 눌렀어","왜 소집한 거야","회의 연 이유 말해줘","무슨 일로 불렀어","긴급 누른 사람 누구","버튼 왜 누름","왜 다 모은 거야","회의 이유 알려줘","누가 긴급회의 함"],"clear":["확시 있는 사람","확미 본 거 있어","스캔 확인했어","누구 확시야","확정 크루 있어","누구 스캔 봤어","확미 증인 있어","확시 근거 말해줘","확실한 크루 누구","스캔 본 사람 있어"],"misfire":["오발 난 거야","보안관이 쏜 거야","쏜 사람이 죽었어","보안관 오발임","총 쏘고 죽은 거야","왜 쏜 사람이 죽음","이거 오발 아니야","총 누가 쐈어","보안관 맞아","오발인지 확인해줘"],"lover":["연인 같이 죽음","둘이 동시에 죽었어","같이 쓰러진 거야","따라 죽은 사람 있어","연인인 거야","한 명 죽고 또 죽었어","연인 때문에 죽음","동시에 둘 죽음","왜 둘 다 쓰러짐","같이 죽은 이유 뭐야"],"selfreport":["자작극 아니야","셀프 신고 같은데","자기가 죽이고 신고","신고자가 죽인 거 아냐","셀프 리폿 의심됨","이거 자작 아님","죽이고 신고한 거야","자작인지 확인해줘","신고한 사람이 범인 같아","셀프리폿 아니냐"]};
 const HUMAN_FORM_RULES=Object.entries(HUMAN_PHRASES).flatMap(([intent,forms])=>forms.map(form=>({intent,key:form.replace(/\s/g,'')}))).sort((a,b)=>b.key.length-a.key.length);
 function normalizeHumanSpeech(text){return String(text||'').normalize('NFC').toLowerCase().replace(/스킾/g,'스킵').replace(/밴트/g,'벤트').replace(/리포트/g,'리폿').replace(/어딧/g,'어딨').replace(/있엇/g,'있었').replace(/햇/g,'했').replace(/봣/g,'봤').replace(/\s+/g,' ').trim()}
-function humanIntent(text){const normalized=normalizeHumanSpeech(text);const compact=normalized.replace(/\s/g,'');const match=HUMAN_FORM_RULES.find(rule=>compact.includes(rule.key));return match?.intent||humanIntentBase(normalized)}
+function humanIntent(text){
+  const normalized=normalizeHumanSpeech(text),compact=normalized.replace(/\s/g,'');
+  const match=HUMAN_FORM_RULES.find(rule=>compact.includes(rule.key));
+  if(match)return match.intent;
+  if(!normalized||/^[ㅋㅎㅠㅜ.!?~ ]+$/.test(normalized))return '';
+  const names=chatTargets(normalized);
+  const kill=/(?:킬|죽였|죽이는|잡았|처치|썰었)/.test(normalized),ask=/[?？][ㅋㅎ! ]*$|봤(?:냐|니)|본\s*사람|봤는지|했다고\s*$/.test(normalized);
+  if(/벤트/.test(normalized))return 'vent';
+  if(names.length&&kill&&!ask&&!/못\s*봤|안\s*봤|아니|봤대/.test(normalized))return 'accuse';
+  if(!ask&&names.length&&/봤(?:음|어|다|고)|같이\s*있었/.test(normalized)&&!kill)return 'sighting';
+  if(/^(?:왜|진짜|ㄹㅇ|확실해|뭐임|뭔데)[\s?!~.]*$/.test(normalized))return 'followup';
+  return humanIntentBase(normalized);
+}
 function humanIntentBase(text){
   if(meet?.kind==='rep'&&/^(?:ㅇㄷ|어디|어디서)[\s?!~.]*$/.test(text))return 'report';
   if(/^ㄴㄱ[\s?!~.]*$/.test(text))return 'suspect';
@@ -4174,15 +4399,30 @@ function chatColorNames(color){
   const aliases=[['빨강','빨간','빨'],['파랑','파란','파'],['초록','진초'],['분홍','핑크','핑'],['노랑','노란','노'],['검정','검은','검'],['주황','주'],['보라','보'],['연두'],['하늘','시안'],['갈색','갈'],['하양','하얀','흰색','흰']];
   const index=COLORS.indexOf(color);return [...new Set([CN[index],...(aliases[index]||[])].filter(Boolean))];
 }
+function conversationMentions(text){
+  const roster=Object.values(players).map(p=>p.a?p:{id:p.id,nm:p.nm,c:p.c,a:true});
+  return botChatMentions(text,roster);
+}
 function chatTargets(text){
-  return Object.values(players).filter(q=>mentionsNickname(text,q.nm)||chatColorNames(q.c).some(label=>mentionsNickname(text,label))).map(q=>q.id);
+  return [...new Set(conversationMentions(text).map(item=>item.id))];
 }
 /* Human conversation: distinguish the listener from the person being discussed. */
 function humanQuestionFocus(text,intent,sender){
-  const position=id=>Math.min(...[players[id]?.nm,...chatColorNames(players[id]?.c)].filter(label=>label&&mentionsNickname(text,label)).map(label=>text.indexOf(label)));
-  const mentioned=chatTargets(text).sort((a,b)=>position(a)-position(b)),targets=mentioned.filter(id=>id!==sender),focusSelf=/(?:나|날|내가|나를).*(?:봤|본|보였|의심|수상)|왜.*(?:나|날|내)/.test(text);
+  const mentions=conversationMentions(text);
+  const mentioned=[...new Set(mentions.map(item=>item.id))],targets=mentioned.filter(id=>id!==sender),focusSelf=/(?:나|날|내가|나를).*(?:봤|본|보였|의심|수상)|왜.*(?:나|날|내)/.test(text);
   let recipients=targets.slice(),subject=focusSelf?sender:null;
-  if(intent==='accuse')return{targets,recipients:[],subject:mentioned[0]||sender};
+  if(intent==='followup'){
+    const previous=meetLog.slice(0,-1).reverse().find(m=>m.id!==sender&&players[m.id]?.a&&/킬|죽이|벤트|의심|봤/.test(m.t));
+    const subject=previous&&chatTargets(previous.t).find(id=>id!==previous.id);
+    return{targets,recipients:previous?.bot?[previous.id]:[],subject:subject||null};
+  }
+  if(['accuse','vent','sighting'].includes(intent)){
+    const addressed=mentions[0]&&(mentions[0].address||/^(?:아|야|님)?[,，:]\s*/.test(text.slice(mentions[0].end)));
+    const claims=typeof botReadTestimony==='function'?botReadTestimony(text,Object.values(players)):[];
+    const claimed=claims.filter(x=>x.weight>0&&x.target!==sender).sort((a,b)=>b.weight-a.weight)[0]?.target;
+    const subject=claimed||targets[addressed?1:0]||targets[0]||null;
+    return{targets,recipients:addressed?[mentions[0].id]:[],subject};
+  }
   if(intent==='vote')return{targets,recipients:[],subject:mentioned[0]||null};
   if(['evidence','suspect'].includes(intent)&&mentioned.length===1&&/왜.*의심|의심(?:하는|한).*근거|(?:누가|누구).*의심|임포.*생각|수상(?:한|하다고)/.test(text))return{targets,recipients:[],subject:mentioned[0]};
   if(intent==='seen'&&!focusSelf){
@@ -4199,7 +4439,13 @@ function rememberHumanChat(message,sender){
   if(Date.now()-(state.seen.get(fingerprint)||-Infinity)<12000)return;
   state.seen.set(fingerprint,Date.now());
   state.queue.push({id:++state.turns,from:sender.id,nm:sender.nm,intent,...focus,text:message.t,at:Date.now(),answered:false});
+  // Ask the newest related question first, while retaining unrelated questions from other players.
+  for(const item of state.queue.slice(0,-1)){
+    if(item.from===sender.id&&item.intent===intent&&item.subject===focus.subject&&item.recipients.join()===focus.recipients.join())item.answered=true;
+  }
   if(state.queue.length>24)state.queue.shift();
+  const urgentAt=Date.now()+450+rnd(0,450),previousAt=meet.nextBotAt;
+  if(!previousAt||previousAt>urgentAt)meet.nextBotAt=urgentAt;
 }
 function pendingHumanQuestion(q){
   const state=conversationState();if(!state||!q?.a)return null;
@@ -4212,14 +4458,16 @@ function pendingHumanQuestion(q){
 }
 function humanReplyCandidate(ready){
   const state=conversationState();if(!state)return null;
-  const least=ready.length?Math.min(...ready.map(q=>q.said||0)):0;
   const score=(q,m)=>{
     if((m.recipients||m.targets).includes(q.id))return 20;
-    if(m.intent==='seen'&&m.subject&&(q.chatMemory?.sightings||[]).some(h=>h.id===m.subject))return 15;
+    if(['seen','sighting'].includes(m.intent)&&m.subject&&(q.chatMemory?.sightings||[]).some(h=>h.id===m.subject))return 15;
     if(meet.caller===q.id&&['report','meeting','selfreport'].includes(m.intent))return 14;
-    const event=botKnownEvidence(q,m.subject);if(m.intent==='accuse'){if(event?.kind==='kill')return 18;if(m.subject===q.id)return 14}return event?10:0;
+    const event=botPublicEvidence(q,m.subject);
+    if(event&&['accuse','evidence','followup','vent'].includes(m.intent))return 18;
+    if(m.intent==='accuse'&&m.subject===q.id)return 14;
+    return event?10:0;
   };
-  return ready.filter(q=>{const question=pendingHumanQuestion(q);return question&&((question.recipients||question.targets).includes(q.id)||(q.said||0)<=least+2)}).sort((a,b)=>{const qa=pendingHumanQuestion(a),qb=pendingHumanQuestion(b);return qa.at-qb.at||score(b,qb)-score(a,qa)||(a.said||0)-(b.said||0)})[0]||null;
+  return ready.filter(q=>pendingHumanQuestion(q)).sort((a,b)=>{const qa=pendingHumanQuestion(a),qb=pendingHumanQuestion(b);return qa.at-qb.at||score(b,qb)-score(a,qa)||(a.said||0)-(b.said||0)})[0]||null;
 }
 function botOwnAlibi(q){
   if(!q.a)return '관전 중이야';const falseRoom=botFalseAlibi(q);if(falseRoom)return '난 '+falseRoom+' 쪽에 있었어';
@@ -4238,17 +4486,20 @@ function botPublicEvidence(q,targetId){
 }
 function botHumanReply(q){
   const question=pendingHumanQuestion(q);if(!question)return null;
-  const memory=q.chatMemory||{},recipients=question.recipients||question.targets,subject=question.subject||question.targets.find(id=>id!==q.id),event=botPublicEvidence(q,subject),target=players[subject||question.targets[0]],person=Object.values(players).filter(p=>!p.bot&&p.a).length>1?question.nm+', ':'';
+  const memory=q.chatMemory||{},recipients=question.recipients||question.targets;
+  const subject=question.subject||(question.intent==='seen'&&/누구/.test(question.text)?null:question.targets.find(id=>id!==q.id));
+  const event=botPublicEvidence(q,subject),target=players[subject||question.targets[0]];
+  const person=Object.values(players).filter(p=>!p.bot&&p.a).length>1?question.nm+', ':'';
   let text='';
   if(recipients.length&&recipients.every(id=>!players[id]?.a))text=(players[recipients[0]]?.nm||'그 사람')+'은 죽어서 답 못 해';
   else if(question.intent==='where')text=botOwnAlibi(q);
   else if(question.intent==='seen'){
     const sight=[...(memory.sightings||[])].reverse().find(h=>players[h.id]&&(!subject||h.id===subject));
-    if(event?.kind==='kill'&&(!subject||subject===event.actorId))text=J(event.actor,'이','가')+' '+event.room+'에서 죽이는 거 봤어';
+    if(event?.kind==='kill'&&(!subject||subject===event.actorId))text=botKillWitnessLine(event,'');
     else text=sight?players[sight.id].nm+' '+sight.r+'에서 봤어. 그 뒤는 몰라':subject?'난 '+(target?.nm||'그 사람')+' 못 봤어':'난 누구 본 건 없는 듯';
   }else if(question.intent==='accuse'){
     if(target?.id===q.id||recipients.includes(q.id))text='나 아님. '+botOwnAlibi(q);
-    else if(event?.kind==='kill')text='나도 '+J(event.actor,'이','가')+' '+event.room+'에서 죽이는 거 봤어';
+    else if(event?.kind==='kill')text=botKillWitnessLine(event,'나도 ');
     else if(target){const sight=[...(memory.sightings||[])].reverse().find(h=>h.id===target.id);text=sight?target.nm+' '+sight.r+'에서 보긴 했는데, 죽이는 건 못 봤어':'어디서 본 건데? '+target.nm+' 죽이는 거 직접 봤어?'}
     else text='누가 어디서 죽였어?';
   }else if(question.intent==='selfreport')text=event?.kind==='kill'&&meet.kind==='rep'&&meet.caller===event.actorId&&meet.bodyId===event.victimId?event.actor+' 죽이고 신고도 하더라. 내가 봤어':'신고한 것 말고 다른 근거 있어?';
@@ -4262,10 +4513,24 @@ function botHumanReply(q){
   else if(question.intent==='vote'){
     const vote=meet.votes[q.id],alive=Object.values(players).filter(o=>o.a),assessment=typeof botBallotAssessment==='function'?botBallotAssessment(q,alive):null,intended=typeof botVoteChoice==='function'?botVoteChoice(q,alive):assessment?.target,planned=intended&&intended!=='skip'&&players[intended];
     text=vote==='skip'?'난 이번엔 넘겼어':players[vote]?'난 '+players[vote].nm+' 찍었어':planned?'지금은 '+planned.nm+' 쪽으로 생각 중이야'+(assessment?.target===planned.id&&assessment.confidence==='direct'?'. 직접 봤으니까':'. 얘기 더 들어볼게'):event?.kind==='kill'?'난 '+event.actor+' 찍을 거야. 직접 봤어':'아직 안 정했어';
+  }else if(question.intent==='vent'){
+    const vent=[q.chatIncident,q.chatMemory?.event].find(e=>e?.kind==='vent'&&e.round===roundId&&(!subject||e.actorId===subject)&&!(isImp(q.r)&&isImp(players[e.actorId]?.r)));
+    if(vent)text=botVentWitnessLine(vent);
+    else if(target?.id===q.id)text=q.r==='eng'?'나 엔지니어라 벤트 탈 수 있어. 어디서 봤어?':'나 말하는 거야? 어디 벤트였는데?';
+    else text=target?target.nm+' 벤트 타는 거 네가 직접 본 거야?':'누가 어디 벤트 탔어?';
+  }else if(question.intent==='sighting'){
+    const sight=[...(memory.sightings||[])].reverse().find(h=>h.id===subject);
+    const namedRoom=[...new Set(ST_RAW.map(row=>row[3]))].find(room=>question.text.includes(room));
+    if(sight)text='난 '+target.nm+' '+sight.r+'에서 봤어. '+(namedRoom&&namedRoom!==sight.r?'그다음에 '+namedRoom+'로 간 건가?':'그 뒤로는 못 봤어');
+    else text=target?(namedRoom?namedRoom+'에서 ':'')+target.nm+' 본 건 알겠어. 신고 직전이야?':'언제쯤 본 거야?';
+  }else if(question.intent==='followup'){
+    if(event?.kind==='kill')text=botKillWitnessLine(event,'');
+    else if(event?.kind==='vent')text=botVentWitnessLine(event);
+    else text=target?target.nm+' 쪽은 아직 확실하지 않아. 본 사람 말부터 들어보자':'어느 얘기 말하는 거야?';
   }else if(question.intent==='claim')text='그럼 신고 나기 바로 전엔 어디였어?';
   else if(question.intent==='hello')text='ㅎㅇ';
-  else if(event?.kind==='kill')text=J(event.actor,'이','가')+' '+event.room+'에서 죽이는 거 봤어';
-  else if(event?.kind==='vent')text=event.actor+' 벤트 타더라. 기술자야?';
+  else if(event?.kind==='kill')text=botKillWitnessLine(event);
+  else if(event?.kind==='vent')text=botVentWitnessLine(event);
   else if(target?.id===q.id||recipients.includes(q.id)&&question.intent==='suspect')text='난 아님. '+botOwnAlibi(q);
   else text=target?target.nm+' 직접 본 게 있어? 난 아직 모르겠어':'난 아직 모르겠어. 본 거 있는 사람?';
   question.answered=true;question.by=q.id;q.li=meetLog.length;return person+text;
@@ -4292,7 +4557,7 @@ function botFreshLine(q,al){
   const conversation=conversationState();meet.usedLines=meet.usedLines||new Set();
   const available=t=>t&&safeGhostLine(q,t)&&!meet.usedLines.has(botSpeechKey(t))&&!conversation.meanings.has(botMeaningKey(q,t));
   const reply=q.a?botHumanReply(q):null;
-  if(reply){meet.usedLines.add(botSpeechKey(reply));conversation.meanings.add(botMeaningKey(q,reply));q.sd=q.sd||{};q.sd[reply]=1;return reply}
+  if(reply&&available(reply)){meet.usedLines.add(botSpeechKey(reply));conversation.meanings.add(botMeaningKey(q,reply));q.sd=q.sd||{};q.sd[reply]=1;return reply}
   let line=botLine(q,al);
   if(!available(line)){
     const others=al.filter(o=>o.id!==q.id),reporter=players[meet.caller],lines=[];
@@ -4365,7 +4630,9 @@ function botVoteReply(q){
 }
 function scheduledMeetingChat(al,now,voting){
   if(!meet.nextBotAt)meet.nextBotAt=now+rnd(1000,2000);if(now<meet.nextBotAt)return;
-  const conversation=conversationState(),ready=al.filter(q=>q.bot&&q.a&&now>=(q.nx||0)),human=humanReplyCandidate(ready);
+  const conversation=conversationState(),ready=al.filter(q=>q.bot&&q.a&&now>=(q.nx||0));
+  const human=humanReplyCandidate(ready);
+  if(human&&now-(conversation.lastLivingBotAt||0)<600)return;
   if(voting&&!human&&now-Math.max(conversation.lastHumanAt||0,conversation.lastLivingBotAt||0)<3000)return;
   if(!meet.nextGhostAt)meet.nextGhostAt=now+rnd(8000,12000);
   const ghosts=Object.values(players).filter(q=>q.bot&&!q.a).sort((a,b)=>(a.ghostSaid||0)-(b.ghostSaid||0)),ghost=!human&&now>=meet.nextGhostAt?ghosts[0]:null;
@@ -4452,11 +4719,12 @@ function openEmergencyConsole(){
   });
 }
 function use(targetIndex=null){
+  if(!Number.isInteger(targetIndex)&&islandCableEntry(me())>=0&&!mgOpen&&!deviceView){sendAb({k:'island-ride'});return}
   if(gameMode==='hide'&&(isImp(myRole)||finalHideActive()))return;
   if(phase==='wait'){useLobby();return}
   if(deviceView)return;
   const m=me();
-  if(!m || phase!=='play' || Date.now()<introEnd || m.v || mgOpen) return;
+  if(!m || phase!=='play' || Date.now()<introEnd || m.v || m.mapRide || mgOpen) return;
   if(!m.a && (isImp(myRole) || myRole==='jt')) return;
   const explicitTask=Number.isInteger(targetIndex);
   if(explicitTask && !canReachTask(m,tasks[targetIndex])) return;
@@ -4490,7 +4758,7 @@ const nearTarget=(r,eligible=()=>true)=>{
   return Object.values(players).filter(q=>q.id!==selfId&&q.a&&!q.v&&eligible(q)&&near(m,q,r)&&los(m.x,m.y,q.x,q.y))
     .sort((a,b)=>Math.hypot(a.x-m.x,a.y-m.y)-Math.hypot(b.x-m.x,b.y-m.y))[0];
 };
-const nearVictim=()=>nearTarget(CFG.kr,q=>!myAllies.has(q.id));
+const nearVictim=()=>nearTarget(CFG.kr,q=>!q.mapRide&&!myAllies.has(q.id));
 // The outline uses the exact local kill target; it is never sent to other players.
 function localKillTarget(n=Date.now()){
   const m=me();if(!m||phase!=='play'||n<introEnd||(gameMode==='hide'&&n<hideStarts)||!m.a||m.v||!isImp(myRole)||n-lastKill<kcd(myRole))return null;
@@ -6110,6 +6378,7 @@ function renderTaskPanel(){
   const hint=document.createElement('small');hint.textContent='선택한 탭의 현재 단계만 노랗게 표시';root.append(hint);
 }
 function frameBody(){
+  if(!isHost)finishIslandRides(Date.now());
   if(finalHideActive()&&mgClose)mgClose(false);
   syncReactorAlert();syncHideDangerAudio(Date.now());syncEngineHum();
   if(phase!=='play'||!gr||!introEnd)$('shushScreen').style.display='none';
@@ -6129,7 +6398,7 @@ function frameBody(){
     if((phase!=='play'||kf||ej||reviveFx)&&mgOpen&&mgClose)mgClose(false);
     if(holdN>=0){if(!(sabS&&sabS.k==='reactor')||!near(m,holdN?RB:RA,80)||mgOpen||!m.a)stopHold();else if(n-holdSent>200){holdSent=n;sendHold(1)}}
     if(m.v&&myRole==='eng'&&n-m.vt>EVT)doVent({s:0,i:m.vi});
-    if(phase!=='meet'&&!m.v&&!ventActorAnimating(m,n)&&!mgOpen&&!deviceView&&!lobbyPanel&&!endScene&&!reviveFx&&(!kf&&!ej)&&n>=introEnd&&(phase!=='wait'||n>=(m.seatUntil||0))&&!(gameMode==='hide'&&imp&&n<hideStarts)){ 
+    if(phase!=='meet'&&!m.v&&!m.mapRide&&!ventActorAnimating(m,n)&&!mgOpen&&!deviceView&&!lobbyPanel&&!endScene&&!reviveFx&&(!kf&&!ej)&&n>=introEnd&&(phase!=='wait'||n>=(m.seatUntil||0))&&!(gameMode==='hide'&&imp&&n<hideStarts)){ 
       let sx=moveInput==='mouse'?0:(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),sy=moveInput==='mouse'?0:(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0),pw=1;
       if(Math.hypot(padMove.x,padMove.y)>.16){sx=padMove.x;sy=padMove.y;pw=Math.min(1,Math.hypot(sx,sy))}let l=Math.hypot(sx,sy)||1;
       if(joy){const dx=joy.x-joy.ox,dy=joy.y-joy.oy,d=Math.hypot(dx,dy);if(d>8){sx=dx;sy=dy;l=d;pw=Math.min(1,d/50)}}
@@ -6142,7 +6411,8 @@ function frameBody(){
     syncUploadedWalking(m,Math.hypot(m.x-walkStartX,m.y-walkStartY));
     /* UI */
     const ni=nearbyTaskIndex(m),nt=ni<0?null:tasks[ni],ntb=canOpenEmergencyConsole(),ft=fixT(),ghostCanWork=!alive&&!imp&&myRole!=='jt',lobbyTarget=phase==='wait'?lobbyObject(m):null,information=gameMode!=='hide'&&alive?nearInformationDevice(m):null;
-    setIB('b-use',{show:phase!=='meet',en:phase==='wait'?!!lobbyTarget&&!lobbyPanel:play&&!m.v&&!mgOpen&&!deviceView&&!reviveFx&&n>=introEnd&&!!(ft||(nt&&(!alive?ghostCanWork:true))||information||ntb),txt:phase==='wait'?(lobbyTarget?.label||'작업'):ft?(ft.hold?'누르기':'복구'):!nt&&information?({admin:'관리 지도',cctv:'CCTV',doorlog:'도어로그',vitals:'바이탈'}[information.type]||'정보 장치'):!nt&&ntb?'회의':'작업'});
+    const cableReady=play&&!mgOpen&&!deviceView&&islandCableEntry(m,n)>=0;
+    setIB('b-use',{show:phase!=='meet',en:phase==='wait'?!!lobbyTarget&&!lobbyPanel:play&&!m.v&&!m.mapRide&&!mgOpen&&!deviceView&&!reviveFx&&n>=introEnd&&!!(cableReady||ft||(nt&&(!alive?ghostCanWork:true))||information||ntb),txt:phase==='wait'?(lobbyTarget?.label||'작업'):cableReady?'짚라인':ft?(ft.hold?'누르기':'복구'):!nt&&information?({admin:'관리 지도',cctv:'CCTV',doorlog:'도어로그',vitals:'바이탈'}[information.type]||'정보 장치'):!nt&&ntb?'회의':'작업'});
     setIB('b-rep',{show:phase!=='wait'&&gameMode!=='hide',en:play&&alive&&!m.v&&!mgOpen&&!!reportableBody(m),txt:'신고'});
     const kc=kcd(myRole),kcv=Math.max(0,kc-(n-lastKill));
     setIB('b-kill',{show:play&&imp,en:play&&alive&&!m.v&&!(gameMode==='hide'&&n<hideStarts)&&kcv===0&&!!nearVictim(),cd:kcv,tot:kc,txt:'킬'});
@@ -6343,14 +6613,16 @@ function draw(m,n,imp){
   const cw=cv.width,ch=cv.height;
   if(ej&&n-ej.ts<4200){drawMapEjectionScene(ctx,cw,ch,ej,n);return}
   if(phase==='wait'&&!endScene){drawWaitRoom(ctx,cw,ch,n);return}
-  let cx=WW<=cw?(WW-cw)/2:Math.max(0,Math.min(WW-cw,m.x-cw/2));
-  let cy=WH<=ch?(WH-ch)/2:Math.max(0,Math.min(WH-ch,m.y-ch/2));
+  const camera=m.mapRide?islandRidePoint(m.mapRide,n):m;
+  const visionOrigin=m.mapRide?(n-m.mapRide.at<ISLAND_RIDE_MS/2?m.mapRide.entry:m.mapRide.exit):m;
+  let cx=WW<=cw?(WW-cw)/2:Math.max(0,Math.min(WW-cw,camera.x-cw/2));
+  let cy=WH<=ch?(WH-ch)/2:Math.max(0,Math.min(WH-ch,camera.y-ch/2));
   if(kf&&n-kf.ts<400){cx+=rnd(-8,8);cy+=rnd(-8,8)}
   if(developerArrival&&n-developerArrival.ts<700){const a=(1-(n-developerArrival.ts)/700)*11;cx+=Math.sin(n*.19)*a;cy+=Math.cos(n*.23)*a}
   ctx.fillStyle='#0b0c12';ctx.fillRect(0,0,cw,ch);
   ctx.save();ctx.translate(-cx,-cy);
   const lightOut=!!(sabS&&sabS.k==='light'),VR=gameVisionRadius(m,imp,n);
-  const seen=(x,y)=>!m.a||(Math.hypot(x-m.x,y-m.y)<VR&&los(m.x,m.y,x,y));
+  const seen=(x,y)=>!m.a||(Math.hypot(x-camera.x,y-camera.y)<VR&&los(visionOrigin.x,visionOrigin.y,x,y));
   {const x0=Math.max(cx,0),y0=Math.max(cy,0),x1=Math.min(cx+cw,WW),y1=Math.min(cy+ch,WH);if(x1>x0&&y1>y0)ctx.drawImage(bg,x0*BG_FACTOR,y0*BG_FACTOR,(x1-x0)*BG_FACTOR,(y1-y0)*BG_FACTOR,x0,y0,x1-x0,y1-y0)}
   GAPS.forEach(g=>{ctx.fillStyle='#2c3452';ctx.fillRect(g[0],g[1],g[2],g[3]);ctx.fillStyle='rgba(212,160,23,.25)';ctx.fillRect(g[0],g[1],g[2],g[3])});
   if(locked())DOORS.forEach(w=>{if(!activeDoorGroups().includes(w[4]))return;ctx.fillStyle='#7f1d1d';ctx.fillRect(w[0],w[1],w[2],w[3]);ctx.fillStyle='#ef4444';ctx.fillRect(w[0]+3,w[1]+3,w[2]-6,w[3]-6)});
@@ -6378,6 +6650,7 @@ function draw(m,n,imp){
   // 플레이어
   const killTargetId=localKillTarget(n)?.id;
   for(const b of Object.values(players)){
+    if(b.mapRide){const point=islandRidePoint(b.mapRide,n);if(b.id===selfId||seen(point.x,point.y)){const look=disp(b);ctx.strokeStyle='#f3daa2';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(point.x,point.y-16);ctx.lineTo(point.x,point.y-36);ctx.stroke();drawChar(ctx,point.x,point.y,{c:look.c,fc:b.fc||1,t:n,hat:b.hat,decor:b.decor,skin:b.skin,noSh:true})}continue}
     smoothActorDisplay(b,n,b.id===selfId);
     if(b.v||ventActorAnimating(b,n))continue;
     const self=b.id===selfId;
@@ -6412,16 +6685,16 @@ function draw(m,n,imp){
   });
   // 시야 제한
   if(m.a&&!m.v){
-    const pts=vis(m.x,m.y,VR);
+    const pts=vis(visionOrigin.x,visionOrigin.y,VR);
     const hole=()=>{ctx.beginPath();ctx.rect(cx-20,cy-20,cw+40,ch+40);ctx.moveTo(pts[0][0],pts[0][1]);pts.forEach(p=>ctx.lineTo(p[0],p[1]));ctx.closePath()};
     if(lightOut&&!imp){ // 정전은 크루원에게만 적용
       ctx.fillStyle='#05060a';hole();ctx.fill('evenodd');
     }else{ // 평상시: 시야 밖은 윤곽만 어둡게, 안쪽은 가장자리로 부드럽게
       ctx.fillStyle='rgba(5,6,10,.55)';hole();ctx.fill('evenodd');
       ctx.save();ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);pts.forEach(p=>ctx.lineTo(p[0],p[1]));ctx.closePath();ctx.clip();
-      const gr=ctx.createRadialGradient(m.x,m.y,VR*.6,m.x,m.y,VR);
+      const gr=ctx.createRadialGradient(camera.x,camera.y,VR*.6,camera.x,camera.y,VR);
       gr.addColorStop(0,'rgba(5,6,10,0)');gr.addColorStop(1,'rgba(5,6,10,.55)');
-      ctx.fillStyle=gr;ctx.fillRect(m.x-VR,m.y-VR,VR*2,VR*2);ctx.restore();
+      ctx.fillStyle=gr;ctx.fillRect(camera.x-VR,camera.y-VR,VR*2,VR*2);ctx.restore();
     }
   }
   drawTaskWorldVisuals(ctx,n,seen);
@@ -6452,6 +6725,9 @@ function draw(m,n,imp){
     ctx.fillStyle='rgba(0,0,0,.50)';ctx.fillRect(0,0,cw,ch);
     ctx.save();ctx.globalAlpha=.86;ctx.drawImage(bg,ox,oy,WW*k,WH*k);ctx.restore();
     ctx.strokeStyle='#8b93b8';ctx.lineWidth=2;ctx.strokeRect(ox,oy,WW*k,WH*k);
+    if(currentMap==='fungle'){
+      const [a,b]=ISLAND_CABLE.map(([c,r])=>cc(c,r));ctx.save();ctx.strokeStyle='#efd493';ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(ox+a.x*k,oy+a.y*k);ctx.lineTo(ox+b.x*k,oy+b.y*k);ctx.stroke();ctx.restore();
+    }
     ctx.fillStyle='#facc15';currentTaskSteps().forEach(t=>{ctx.beginPath();ctx.arc(ox+t.x*k,oy+t.y*k,5,0,6.3);ctx.fill();ctx.strokeStyle='#fff2a8';ctx.lineWidth=1;ctx.stroke()});
     ctx.fillStyle='#ef4444';TABLES.forEach(t=>{ctx.beginPath();ctx.arc(ox+t.x*k,oy+t.y*k,5,0,6.3);ctx.fill()});
     if(imp){ctx.fillStyle='#a855f7';VENTS.forEach(v=>ctx.fillRect(ox+v.x*k-3,oy+v.y*k-3,6,6))}
