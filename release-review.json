@@ -1,11 +1,11 @@
 {
   "date": "2026-11-25",
-  "change": "Keep bare eyewitness labels out of ballot scoring, ask for concrete details, and add limited conditional pushback when a single player gives concrete testimony",
-  "sha256": "43b269c74c84398564976532bdf1fc79ba095f1ecf69f250ee35c41d70cc8776",
+  "change": "Coordinate AI sabotage repair, sustain visible pursuits, improve visual task overlap and witness dialogue, let impostors defend or turn on teammates, and add accelerated fall and impact motion",
+  "sha256": "d7fc4817a2a15dd1a8c7e9a79e6b9e3dfce75ba8aeb66ee233da6331d02e7ad7",
   "validation": [
-    "Repeated labels and bare corroboration cannot force a vote",
-    "Crew and impostor bots ask for or use concrete evidence",
-    "Conditional lines do not affect voting",
-    "Dialogue and full runtime passed"
+    "Two bots complete a split reactor repair",
+    "Exclusive visual scan, grounded witnesses, task highlight overlap, and teammate defense/betrayal passed",
+    "Canvas fall stages, acceleration, impact and settle passed",
+    "Full runtime, bot movement, conversation and vote regressions passed"
   ]
 }

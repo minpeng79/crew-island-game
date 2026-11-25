@@ -2973,7 +2973,24 @@ function taskReady(t){
   const i=tasks.indexOf(t);return t.k!=='ul'||i>0&&tasks[i-1].d;
 }
 function taskInView(t){return(t.scope||(['card','wires'].includes(t.k)?'common':'personal'))===taskFilter}
-function currentTaskSteps(){return tasks.filter(t=>taskInView(t)&&taskReady(t))}
+function visualStationKind(st){
+  if(!st)return '';
+  if(st.k==='scan'&&MED_SCAN_MAPS.has(currentMap))return 'scan';
+  if(st.k==='asteroids'&&['skeld','polus'].includes(currentMap))return 'laser';
+  if(currentMap==='skeld'&&st.k==='shields')return 'shield';
+  if(currentMap==='skeld'&&st.k==='trash'&&/창고/.test(st.rn||st.n||''))return 'trash';
+  return '';
+}
+function currentTaskSteps(){
+  const steps=new Map();
+  for(const t of tasks){
+    const visual=CFG.visualTasks!==false&&visualStationKind(t);
+    if(!taskReady(t)||!visual&&!taskInView(t))continue;
+    const point=t.hardware||t,key=Math.round(point.x/14)+':'+Math.round(point.y/14),previous=steps.get(key);
+    if(!previous||visual&&!visualStationKind(previous))steps.set(key,t);
+  }
+  return [...steps.values()];
+}
 function applyOwnRole(d){
   hideHunterId=d.hideHunter||'';
   myRole=d.r;me().su=d.su;tasks=d.plan?ownTaskPlan(d.plan):(d.tk||[]).map(i=>({...STATIONS[i],d:false}));
@@ -3034,11 +3051,15 @@ function medicalScanStation(q,i){
   return st;
 }
 function clearMedicalScan(q){if(q)q.scanVisual=null}
+function occupiedScan(q,st,n=Date.now()){
+  return Object.values(players).some(other=>other.id!==q.id&&medicalScanValid(other,n)&&near(other,st,TASK_RANGE*2));
+}
 function hScan(p,d){
   const q=players[p];if(!q||d.round!==roundId)return;
   if(!d.on){clearMedicalScan(q);return}
   const n=Date.now(),st=medicalScanStation(q,d.i);
   if(!MED_SCAN_MAPS.has(currentMap)||CFG.visualTasks===false||phase!=='play'||n<introEnd||!q.a||q.v||!crewFaction(q.r)||!st||!near(q,st,TASK_RANGE+4)||!los(q.x,q.y,(st.hardware||st).x,(st.hardware||st).y))return;
+  if(occupiedScan(q,st,n))return;
   q.scanVisual={i:d.i,x:q.x,y:q.y,at:n,end:n+MED_SCAN_MS};
 }
 function medicalScanValid(q,n=Date.now()){
@@ -3084,6 +3105,24 @@ function drawMedicalScanConsole(g,w,h,q,elapsed){
 /* Public visual tasks share authenticated host effects, never role abilities. */
 let taskVisualEvents=[],taskShieldLighting=false;
 function resetTaskVisuals(){taskVisualEvents=[];taskShieldLighting=false}
+function rememberVisualTask(actor,kind,point,n=Date.now()){
+  if(CFG.visualTasks===false||phase!=='play'||!actor?.a||!crewFaction(actor.r)||!point)return;
+  for(const bot of Object.values(players)){
+    if(!bot.bot||!bot.a||bot.v||bot.mapRide||bot.id===actor.id||!near(bot,point,280)||!botPerceives(bot,point.x,point.y,n)||!botPerceives(bot,actor.x,actor.y,n))continue;
+    if(bot.visualMemoryRound!==roundId){bot.visualMemoryRound=roundId;bot.visualWitnesses=new Map()}
+    bot.visualWitnesses.set(actor.id,{kind,room:roomOf(actor.x,actor.y),at:n});
+  }
+}
+function botVisualWitnessLine(q,al,target){
+  if(!q.a||q.visualMemoryRound!==roundId)return null;
+  const named={scan:'스캔하는 거',laser:'소행성 쏘는 거',shield:'보호막 켜는 거',trash:'쓰레기 내보내는 거'};
+  for(const [id,evidence]of q.visualWitnesses){
+    if(target&&target!==id||meet.visualStatements?.has(id)||!al.some(o=>o.a&&o.id===id))continue;
+    if(Date.now()-evidence.at>120000)continue;
+    return {id,text:players[id].nm+' '+evidence.room+'에서 '+named[evidence.kind]+' 직접 봤어. 확시야.'};
+  }
+  return null;
+}
 function assignedVisualStation(q,i,kind){
   if(!q||!Number.isInteger(i)||q.dn?.[i]!==0)return null;
   const st=STATIONS[q.tk?.[i]];if(!st||st.k!==kind)return null;
@@ -3096,6 +3135,7 @@ function hTaskVisual(p,d){
   const st=assignedVisualStation(q,d.i,'asteroids');if(!visualTaskEligible(q,st)||!['skeld','polus'].includes(currentMap))return;
   const key=roundId+':'+d.i;if(q.taskShotVisual?.key!==key)q.taskShotVisual={key,count:0,last:0};
   if(q.taskShotVisual.count>=20||n-q.taskShotVisual.last<65)return;q.taskShotVisual.count++;q.taskShotVisual.last=n;
+  rememberVisualTask(q,'laser',st.hardware||st,n);
   hFx({t:'taskvisual',kind:'laser',x:(st.hardware||st).x,y:(st.hardware||st).y,actor:p});
 }
 function requestTaskVisual(st,kind){
@@ -3104,8 +3144,10 @@ function requestTaskVisual(st,kind){
 }
 function completeTaskVisual(q,st){
   if(!visualTaskEligible(q,st))return;
-  if(currentMap==='skeld'&&st.k==='shields'){taskShieldLighting=true;hFx({t:'taskvisual',kind:'shield',x:st.x,y:st.y})}
-  if(currentMap==='skeld'&&st.k==='trash'&&/창고/.test(st.rn||st.n||''))hFx({t:'taskvisual',kind:'trash',x:(st.hardware||st).x,y:(st.hardware||st).y+32*MAP_SCALE});
+  const kind=visualStationKind(st);
+  if(kind==='shield'){taskShieldLighting=true;rememberVisualTask(q,kind,st);hFx({t:'taskvisual',kind:'shield',x:st.x,y:st.y})}
+  if(kind==='trash'){rememberVisualTask(q,kind,st.hardware||st);hFx({t:'taskvisual',kind:'trash',x:(st.hardware||st).x,y:(st.hardware||st).y+32*MAP_SCALE})}
+  if(kind==='laser'&&q.bot){rememberVisualTask(q,kind,st.hardware||st);hFx({t:'taskvisual',kind:'laser',x:(st.hardware||st).x,y:(st.hardware||st).y})}
 }
 function receiveTaskVisual(d){
   if(d.kind==='shield'){taskShieldLighting=true;return}
@@ -3492,7 +3534,10 @@ function hostTick(){
   const n=Date.now();if(finalHideActive(n)&&mgClose)mgClose(false);tickRulesClocks(n);if(gameMode==='hide'&&phase==='play'&&hideEnds&&n>=hideEnds){check('🎉 크루원 승리! (시간 생존)');return}
   bodies=bodies.filter(b=>!b.acid||b.acid>n);
   Object.values(players).forEach(q=>{
-    if(q.scanVisual&&!medicalScanValid(q,n))clearMedicalScan(q);
+    if(q.scanVisual){
+      if(!medicalScanValid(q,n))clearMedicalScan(q);
+      else if(n-q.scanVisual.at>=500&&n-(q.scanVisual.witnessCheck||0)>=450){q.scanVisual.witnessCheck=n;rememberVisualTask(q,'scan',q.scanVisual,n)}
+    }
     if(q.oil&&q.oil<=n){const owner=q.oilBy;q.oil=0;q.oilBy=null;if(players[owner])privateFx(owner,{t:'ability-state',target:owner,su:players[owner].su,icd:players[owner].icd||0,oilIds:Object.values(players).filter(o=>o.a&&o.oil>n&&o.oilBy===owner).map(o=>o.id)})}
     if(q.watching&&!deviceViewerActive(q,q.watching))q.watching='';
     if(phase==='wait'&&lobbyBlocked(q.x,q.y)){const pos=lobbySeat(q.lobbySeat||0);Object.assign(q,pos);privateFx(q.id,{t:'position',target:q.id,...pos})}
@@ -3670,7 +3715,7 @@ function botMotion(q,b=q.bt){
   const unit=(shift)=>((seed>>>shift)&255)/255;
   return b.motion={seed,phase:unit(8)*Math.PI*2,cruise:.85+unit(0)*.24,lane:(unit(16)-.5)*10,pass:unit(24)<.5?-1:1,turn:.46+unit(8)*.22,vx:0,vy:0,at:0,neighborsAt:0};
 }
-function botMoveUrgent(q,b){return !!b.reportBody||['report','fix','flee','emergency','escape'].includes(b.mode)||gameMode==='hide'&&isImp(q.r)||!!sab}
+function botMoveUrgent(q,b){return !!b.reportBody||['report','fix','flee','emergency','escape','hunt'].includes(b.mode)||gameMode==='hide'&&isImp(q.r)||!!sab}
 function botRouteClear(q,ax,ay,bx,by){
   if(!q.a)return true;
   const steps=Math.max(1,Math.ceil(Math.hypot(bx-ax,by-ay)/7));
@@ -4169,6 +4214,9 @@ function botBallotAssessment(q,al){
     const own=scores.get(evidence.actorId);if(evidence.kind==='body'||evidence.kind==='vent'){own.score+=evidence.kind==='body'?1.35:1.3;own.reason=evidence.kind;own.sources.add(q.id);own.hasEvidence=true}
   }else if(q.sus&&scores.has(q.sus)){const own=scores.get(q.sus);own.score+=.65;own.reason='suspicion';own.sources.add(q.id)}
   const trust=.56+persona.hearsay*.48;
+  if(q.visualMemoryRound===roundId)for(const [id,sighting]of q.visualWitnesses){
+    const row=scores.get(id);if(row&&Date.now()-sighting.at<=120000)row.score-=4;
+  }
   for(const claim of botPublicClaims(al)){
     const row=scores.get(claim.target);if(!row||claim.from===q.id)continue;
     if(claim.kind==='challenge')continue;
@@ -4205,11 +4253,34 @@ function botBallotReady(q,al,now,pending){
   return now>=Math.min(lastStart,Math.max(due,listenUntil));
 }
 
+function botTeammatePressure(q,al,onlyId=null){
+  if(!q.a||!isImp(q.r))return null;
+  const claims=botPublicClaims(al),pressures=[];
+  for(const mate of al){
+    if(!mate.a||mate.id===q.id||!isImp(mate.r)||onlyId&&mate.id!==onlyId)continue;
+    const publicRows=claims.filter(c=>c.target===mate.id&&c.from!==q.id);
+    const independent=publicRows.filter(c=>c.from!==mate.id&&['witness','claim'].includes(c.kind)&&c.weight>=2);
+    const defenses=publicRows.filter(c=>c.weight<0).reduce((sum,c)=>sum-c.weight,0);
+    const strength=independent.reduce((sum,c)=>sum+c.weight,0)-defenses;
+    const exposed=independent.some(c=>c.kind==='witness')&&new Set(independent.map(c=>c.from)).size>=2&&strength>=4.6;
+    if(exposed||publicRows.some(c=>c.from!==mate.id&&c.weight>0))pressures.push({mate,exposed,strength});
+  }
+  return pressures.sort((a,b)=>Number(b.exposed)-Number(a.exposed)||b.strength-a.strength)[0]||null;
+}
+function botTeammateLine(q,al,target){
+  const pressure=botTeammatePressure(q,al,target);
+  if(!pressure)return null;
+  const {mate,exposed}=pressure;
+  if(exposed)return mate.nm+' 봤다는 사람이 둘 이상이네. 난 이번엔 '+mate.nm+' 쪽에 표 줄게.';
+  const seen=[...(q.chatMemory?.sightings||[])].reverse().find(s=>s.id===mate.id);
+  return seen?mate.nm+' '+seen.r+'에서 본 건 맞아. 그 뒤엔 어디 갔어?':mate.nm+' 얘기도 들어보자. 시체 옆에 있었다는 거야, 직접 본 거야?';
+}
 function botVoteChoice(q,al){
   const others=al.filter(other=>other.a&&other.id!==q.id);if(!q.a||!others.length)return 'skip';
   const assessment=botBallotAssessment(q,al);
   if(isImp(q.r)){
-    // Impostors know their teammates, but choose a plausible public suspect instead of a random pile-on.
+    const cover=botTeammatePressure(q,al);
+    if(cover?.exposed&&assessment.score<cover.strength)return cover.mate.id;
     if(assessment.target&&!isImp(players[assessment.target]?.r))return assessment.target;
     const crew=others.filter(other=>!isImp(other.r)),publicSuspect=botPublicClaims(al).filter(c=>['witness','claim','body','vent'].includes(c.kind)&&c.weight>0&&crew.some(p=>p.id===c.target)).sort((a,b)=>b.weight-a.weight)[0];
     return publicSuspect?.weight>=1?publicSuspect.target:'skip';
@@ -4217,10 +4288,92 @@ function botVoteChoice(q,al){
   return assessment.target||'skip';
 }
 
+function assignBotRepairs(all,n){
+  if(!sab||!['light','reactor','o2','comm'].includes(sab.k))return new Map();
+  const panels=sab.k==='reactor'?[RA,RB].map((p,i)=>({...p,n:i})).filter(p=>{
+    const hold=sab.rh[p.n],actor=hold&&players[hold.id];return !actor?.a||actor.bot||n-hold.t>=700;
+  }):sab.k==='o2'?oxygenPanels().filter(p=>!sab.done[p.n]):[{...(sab.k==='light'?LP:SPOTS.find(p=>p.k==='comm')),n:0}].filter(p=>Number.isFinite(p.x));
+  const valid=q=>q?.a&&q.bot&&!q.v&&!q.mapRide&&crewFaction(q.r)&&!q.bt?.reportBody;
+  const signature=panels.map(p=>p.n).join(',');
+  const previous=sab.botDispatch;
+  if(previous?.signature===signature&&n<previous.retryAt&&[...previous.assignments.keys()].every(id=>valid(players[id])))return previous.assignments;
+  const assignments=new Map(),ranked=[];
+  for(const panel of panels){
+    const candidates=all.filter(valid).sort((a,b)=>Math.hypot(a.x-panel.x,a.y-panel.y)-Math.hypot(b.x-panel.x,b.y-panel.y)).slice(0,5);
+    for(const q of candidates){
+      const distance=Math.hypot(q.x-panel.x,q.y-panel.y);
+      const path=distance<60?[]:findPath(q.x,q.y,panel.x,panel.y);
+      if(!path.length&&distance>=60)continue;
+      const cost=(path.length?path.length*CELL:distance)-(previous?.assignments.get(q.id)?.n===panel.n?CELL*2:0);
+      ranked.push({q,panel,cost});
+    }
+  }
+  ranked.sort((a,b)=>a.cost-b.cost);
+  const used=new Set();
+  for(const {q,panel}of ranked){
+    if(assignments.has(q.id)||used.has(panel.n))continue;
+    assignments.set(q.id,panel);used.add(panel.n);
+  }
+  sab.botDispatch={signature,retryAt:n+(assignments.size<panels.length?850:3300),assignments};
+  return assignments;
+}
+function tickBotRepair(q,b,panel,n){
+  if(!panel){if(b.mode==='fix')releaseBotStation(q,b,n);return false}
+  if(b.mode!=='fix'||b.repairPanel!==panel.n||b.repairIncident!==sab){
+    releaseBotStation(q,b,n);b.mode='fix';b.repairPanel=panel.n;b.repairIncident=sab;b.repairAt=n+420+botMotion(q,b).seed%750;b.repairArrivedAt=0;
+  }
+  if(n<b.repairAt)return true;
+  if(near(q,panel,60)){
+    if(sab.k==='reactor')hFix(q.id,{k:'rh',n:panel.n,on:1});
+    else{
+      if(!b.repairArrivedAt)b.repairArrivedAt=n;
+      if(n-b.repairArrivedAt>=1100)hFix(q.id,{k:sab.k,n:panel.n,code:sab.codes?.[panel.n],switches:sab.k==='light'?[true,true,true,true,true]:undefined});
+    }
+  }else{
+    b.repairArrivedAt=0;
+    if(!b.path.length||b.tick%14===0)planBotPath(q,b,panel);
+    followPath(q,b);
+  }
+  return true;
+}
+function tickBotHunt(q,b,all,n){
+  if(n-q.lk<kcd(q.r))return false;
+  if(!b.hunt&&n<(b.huntRetryAt||0))return false;
+  const candidates=all.filter(o=>o.a&&!o.v&&!o.mapRide&&!(o.iv>n)&&!isImp(o.r)&&near(q,o,450)&&botPerceives(q,o.x,o.y,n));
+  const hunt=b.hunt,seen=hunt&&candidates.find(o=>o.id===hunt.id);
+  let target=seen;
+  if(!target&&(!hunt||n>=hunt.until)&&n>=(b.huntRetryAt||0)){
+    b.huntRetryAt=n+290+botMotion(q,b).seed%200;
+    target=candidates.sort((a,c)=>Math.hypot(a.x-q.x,a.y-q.y)-Math.hypot(c.x-q.x,c.y-q.y))[0];
+  }
+  if(target){
+    const witnessed=gameMode!=='hide'&&botKillHasWitness(q,target,all,n);
+    const approvedRisk=hunt?.id===target.id&&hunt.riskUntil>n&&botVisibleKillWitnesses(q,target,all,n).length===1;
+    const risky=witnessed&&(approvedRisk||botMayRiskKill(q,b,target,all,n));
+    if(!witnessed||risky){
+      const ready=hunt?.id===target.id?hunt.ready:n+(gameMode==='hide'?180:350)+botMotion(q,b).seed%340;
+      b.hunt={id:target.id,x:target.x,y:target.y,ready,until:n+1250,riskUntil:risky?(approvedRisk?hunt.riskUntil:n+950):0};
+      if(n>=ready&&near(q,target,gameMode==='classic'?kr(q.r)*.88:CFG.kr*.85)){
+        if(q.r==='py'&&!(target.oil>n)&&n>=(q.ocd||0)&&all.filter(o=>o.a&&o.oil>n&&o.oilBy===q.id).length<2&&Math.random()<.7)hAbil(q.id,{k:'oil',t:target.id});
+        else hKill(q.id,target.id,{bold:risky});
+        b.hunt=null;releaseBotStation(q,b,n);return true;
+      }
+    }else b.hunt=null;
+  }
+  const lead=b.hunt;
+  if(lead&&n<lead.until){
+    if(b.mode!=='hunt'||!b.path.length||b.tick%6===0&&(!b.target||!near(b.target,lead,25)))planBotPath(q,b,lead);
+    b.mode='hunt';b.want='';b.stn=null;q.cur=null;
+    followPath(q,b);return true;
+  }
+  b.hunt=null;if(b.mode==='hunt')releaseBotStation(q,b,n);
+  return false;
+}
 function botTick(){
   const n=Date.now(),all=Object.values(players);
+  const repairs=phase==='play'&&n>=introEnd&&gameMode!=='hide'?assignBotRepairs(all,n):new Map();
   all.forEach((q,botIndex)=>{
-    if(!q.bot||(!q.a&&(isImp(q.r)||q.r==='jt')))return;
+    if(!q.bot||q.mapRide||(!q.a&&(isImp(q.r)||q.r==='jt')))return;
     const b=q.bt||(q.bt={path:[],mode:'idle',w:0,ti:-1,want:'',tick:0,lx:0,ly:0});
     b.tick++;
     if((b.tick+botIndex)%20===0&&phase==='play'&&q.a&&!q.v&&n>=introEnd){q.lz=roomOf(q.x,q.y);const hs=q.hs=q.hs||[];all.filter(x=>x.id!==q.id&&x.a&&!x.v&&!(x.iv>n)&&Math.hypot(x.x-q.x,x.y-q.y)<280&&botPerceives(q,x.x,x.y,n)).forEach(o=>{const apparent=botObservedIdentity(o);if(!apparent.id)return;q.ls={id:apparent.id,z:roomOf(o.x,o.y)};hs.push({id:apparent.id,r:roomOf(o.x,o.y),t:n});if(hs.length>14)hs.shift()})}
@@ -4250,18 +4403,7 @@ function botTick(){
         const button=TABLES[0];if(button){if(nearTbl(q,80)){hMeet(q.id,{k:'call'});return}if(b.mode!=='emergency'||!b.path.length||b.tick%18===0){b.mode='emergency';b.want='';b.stn=null;q.cur=null;planBotPath(q,b,button)}followPath(q,b);return}
       }
     }
-    if(worker&&q.a&&sab&&b.mode!=='fix'&&Math.random()<.012){b.mode='fix';b.path=[];b.w=0;b.rp=Math.random()<.5?0:1}
-    if(b.mode==='fix'){
-      const tg=!sab?null:sab.k==='light'?LP:sab.k==='o2'?oxygenPanels().find(p=>!sab.done?.[p.n]):sab.k==='reactor'?(b.rp?RB:RA):sab.k==='comm'?SPOTS.find(s=>s.k==='comm'):null;
-      if(!tg){b.mode='idle';b.path=[]}
-      else{
-        if(near(q,tg,45)){
-          if(sab.k==='reactor')hFix(q.id,{k:'rh',n:b.rp,on:1});
-          else if(++b.w>25){hFix(q.id,{k:sab.k,n:tg.n,code:sab.k==='o2'?sab.codes[tg.n]:undefined,switches:sab.k==='light'?[true,true,true,true,true]:undefined});b.mode='idle';b.path=[];b.w=0}
-        }else{if(!b.path.length||b.tick%10===0)planBotPath(q,b,tg);followPath(q,b)}
-        return;
-      }
-    }
+    if(tickBotRepair(q,b,sab&&q.a?repairs.get(q.id):null,n))return;
     // 능력 사용 (봇)
     if(q.a&&!q.v&&b.tick%10===0){
       const wit=all.filter(o=>o.id!==q.id&&o.a&&!o.v&&!(o.iv>n)&&!isImp(o.r)&&Math.hypot(o.x-q.x,o.y-q.y)<320&&botPerceives(q,o.x,o.y,n));
@@ -4281,23 +4423,15 @@ function botTick(){
     // 임포스터: 사보타주 / 킬
     if(imp){
       if(!sab&&n>=sabNext&&Math.random()<.004)hSab(q.id,{k:pick(['light','door','inv','o2','reactor','comm']),g:1+Math.floor(Math.random()*4)});
-      if(n-q.lk>=kcd(q.r)&&Math.random()<(gameMode==='hide'?.45:gameMode==='classic'?.12:.04)){
-        const vic=all.filter(o=>o.a&&!o.v&&!(o.iv>n)&&!isImp(o.r)&&Math.hypot(o.x-q.x,o.y-q.y)<450&&botPerceives(q,o.x,o.y,n))
-          .sort((a,c)=>Math.hypot(a.x-q.x,a.y-q.y)-Math.hypot(c.x-q.x,c.y-q.y))[0];
-        if(vic){
-          const witnessed=botKillHasWitness(q,vic,all,n);
-          const risky=witnessed&&botMayRiskKill(q,b,vic,all,n);
-          if(gameMode==='hide'||!witnessed||risky){
-            if(near(q,vic,gameMode==='classic'?kr(q.r)*.88:CFG.kr*.85)){if(q.r==='py'&&!(vic.oil>n)&&n>=(q.ocd||0)&&all.filter(o=>o.a&&o.oil>n&&o.oilBy===q.id).length<2&&Math.random()<.7){hAbil(q.id,{k:'oil',t:vic.id});b.path=[];return}hKill(q.id,vic.id,{bold:risky});b.path=[];b.mode='idle';return}
-            if(b.tick%6===0||!b.path.length||(gameMode==='classic'&&(!b.target||Math.hypot(b.target.x-vic.x,b.target.y-vic.y)>24)))planBotPath(q,b,vic);
-            followPath(q,b);return;
-          }
-        }
-      }
+      if(tickBotHunt(q,b,all,n))return;
     }
     // 평소: 미션 / 배회
     if(b.mode==='work'){
-      if(--b.w<=0){if(worker&&b.want==='task')hTask(q.id,b.ti);if(b.stn){q.dl=q.dl||[];q.dl.push(b.stn);q.lastTaskAt=n;if(q.dl.length>6)q.dl.shift()}releaseBotStation(q,b,n);b.divertUntil=0}
+      if(--b.w<=0){
+        if(worker&&b.want==='task')hTask(q.id,b.ti);
+        if(b.stn&&(b.want==='fake'||q.dn?.[b.ti])){q.dl=q.dl||[];q.dl.push(b.stn);q.lastTaskAt=n;if(q.dl.length>6)q.dl.shift()}
+        releaseBotStation(q,b,n);b.divertUntil=0;
+      }
       return;
     }
     if(botTravelPause(q,b,n,!!sab))return;
@@ -4320,7 +4454,10 @@ function botTick(){
       if(!planBotPath(q,b,t)){b.want='';b.stn=null;return}
     }
     if(b.want==='wander'&&followPath(q,b)){releaseBotStation(q,b,n);return}
-    if(b.want!=='wander'&&followPath(q,b)&&(b.want==='task'||b.want==='fake')&&b.stn&&near(q,b.stn,65)){b.mode='work';b.w=({dl:90,ul:90,sim:110,scan:140,sample:130}[b.stn.k]||60)+rnd(-8,18);q.cur=b.stn;if(b.stn.k==='scan')hScan(q.id,{on:true,i:b.ti,round:roundId})}
+    if(b.want!=='wander'&&followPath(q,b)&&(b.want==='task'||b.want==='fake')&&b.stn&&near(q,b.stn,65)){
+      if(b.stn.k==='scan'&&occupiedScan(q,b.stn,n)){releaseBotStation(q,b,n);return}
+      b.mode='work';b.w=({dl:90,ul:90,sim:110,scan:140,sample:130}[b.stn.k]||60)+rnd(-8,18);q.cur=b.stn;if(b.stn.k==='scan')hScan(q.id,{on:true,i:b.ti,round:roundId});
+    }
   });
   if(phase==='play')for(const q of all){if(q.bot&&q.bt?.reportBody&&completeMovingBotReport(q,q.bt,n))break}
 }
@@ -4505,6 +4642,7 @@ function botHumanReply(q){
     else text=sight?players[sight.id].nm+' '+sight.r+'에서 봤어. 그 뒤는 몰라':subject?'난 '+(target?.nm||'그 사람')+' 못 봤어':'난 누구 본 건 없는 듯';
   }else if(question.intent==='accuse'){
     if(target?.id===q.id||recipients.includes(q.id))text='나 아님. '+botOwnAlibi(q);
+    else if(target?.a&&isImp(q.r)&&isImp(target.r))text=botTeammateLine(q,Object.values(players).filter(o=>o.a),target.id)||target.nm+' 말도 들어보자. 직접 본 거야?';
     else if(event?.kind==='kill')text=botKillWitnessLine(event,'나도 ');
     else if(target){const sight=[...(memory.sightings||[])].reverse().find(h=>h.id===target.id);text=sight?target.nm+' '+sight.r+'에서 보긴 했는데, 죽이는 건 못 봤어':'어디서 본 건데? '+target.nm+' 죽이는 거 직접 봤어?'}
     else text='누가 어디서 죽였어?';
@@ -4513,7 +4651,11 @@ function botHumanReply(q){
   else if(question.intent==='report'){
     const sight=q.bodySight;
     text=meet.kind!=='rep'?'시체 아니고 버튼이야':sight?.id===meet.bodyId?(q.id===meet.caller?'내가 ':'나도 ')+sight.room+'에서 봤어'+(sight.with?.length?'. 같이 본 사람도 있어':'. 죽이는 건 못 봤어'):'난 시체는 못 봤어. 신고자는 어디서 봤어?';
-  }else if(question.intent==='clear')text=target?target.nm+' 무슨 확미 한 건데? 난 못 봤어':'무슨 확미 봤어? 난 못 봤는데';
+  }else if(question.intent==='clear'){
+    const evidence=botVisualWitnessLine(q,Object.values(players),target?.id);
+    if(evidence){(meet.visualStatements||=new Set()).add(evidence.id);text=evidence.text}
+    else text=target?target.nm+' 무슨 확미 한 건데? 난 못 봤어':'무슨 확미 봤어? 난 못 봤는데';
+  }
   else if(question.intent==='misfire')text=event?.kind==='misfire'?event.actor+' 쏘고 본인이 쓰러졌어. 오발인 듯':'난 쏘는 건 못 봤어. 누가 본 거야?';
   else if(question.intent==='lover')text=event?.kind==='lover'?event.victim+'도 바로 죽긴 했어. 연인인지는 몰라':'같이 죽는 거 본 사람이 있어?';
   else if(question.intent==='vote'){
@@ -4580,6 +4722,10 @@ function botFreshLine(q,al){
   const available=t=>t&&safeGhostLine(q,t)&&!meet.usedLines.has(botSpeechKey(t))&&!conversation.meanings.has(botMeaningKey(q,t));
   const reply=q.a?botHumanReply(q):null;
   if(reply&&available(reply)){meet.usedLines.add(botSpeechKey(reply));conversation.meanings.add(botMeaningKey(q,reply));q.sd=q.sd||{};q.sd[reply]=1;return reply}
+  const visual=botVisualWitnessLine(q,al);
+  if(visual&&available(visual.text)){(meet.visualStatements||=new Set()).add(visual.id);meet.usedLines.add(botSpeechKey(visual.text));return visual.text}
+  const teammate=botTeammateLine(q,al);
+  if(teammate&&available(teammate)){meet.usedLines.add(botSpeechKey(teammate));return teammate}
   const challenge=botAccountabilityLine(q,al);
   if(available(challenge)){meet.accountabilitySaid=true;meet.usedLines.add(botSpeechKey(challenge));return challenge}
   let line=botLine(q,al);
@@ -4638,6 +4784,8 @@ function botLine(q,al){
 
 function botVoteReply(q){
   const conversation=conversationState();meet.usedLines=meet.usedLines||new Set();const choices=[],memory=q.chatMemory||{},event=botPublicEvidence(q),vote=meet.votes[q.id];
+  const visual=botVisualWitnessLine(q,Object.values(players));
+  if(visual){(meet.visualStatements||=new Set()).add(visual.id);meet.usedLines.add(botSpeechKey(visual.text));return visual.text}
   if(!q.said){
     if(!event||event.kind!=='kill')choices.push({t:botOwnAlibi(q)});const sight=[...(memory.sightings||[])].reverse().find(h=>players[h.id]);
     if(sight)choices.push({t:players[sight.id].nm+' '+sight.r+'에서 봤어. 그 뒤는 몰라'});
@@ -4707,7 +4855,7 @@ function sendHold(on){const dd={k:'rh',n:holdN,on};if(isHost)hFix(selfId,dd);els
 function startHold(n){holdN=n;holdSent=Date.now();sendHold(1)}
 function stopHold(){if(holdN>=0){sendHold(0);holdN=-1}}
 function canReachTask(m,t) {
-  if (!m || !t || !taskInView(t) || !taskReady(t) || !near(m,t,TASK_RANGE)) return false;
+  if (!m || !t || (!taskInView(t)&&!(CFG.visualTasks!==false&&visualStationKind(t))) || !taskReady(t) || !near(m,t,TASK_RANGE)) return false;
   const location=t.hardware || t;
   return !m.a || los(m.x,m.y,location.x,location.y);
 }
@@ -4721,14 +4869,14 @@ function taskIndexAt(m,x,y) {
   let best=-1,distance=Infinity;
   tasks.forEach((t,i)=>{
     if (!taskHardwareHit(t,x,y) || !canReachTask(m,t)) return;
-    const d=Math.hypot(x-t.hardware.x,y-t.hardware.y);
+    const d=Math.hypot(x-t.hardware.x,y-t.hardware.y)-(CFG.visualTasks!==false&&visualStationKind(t)?9:0);
     if (d<distance) {best=i;distance=d}
   });
   return best;
 }
 function nearbyTaskIndex(m=me()){
   let best=-1,distance=Infinity;
-  tasks.forEach((t,i)=>{if(!canReachTask(m,t))return;const d=Math.hypot(m.x-t.x,m.y-t.y);if(d<distance){best=i;distance=d}});
+  tasks.forEach((t,i)=>{if(!canReachTask(m,t))return;const d=Math.hypot(m.x-t.x,m.y-t.y)-(CFG.visualTasks!==false&&visualStationKind(t)?14:0);if(d<distance){best=i;distance=d}});
   return best;
 }
 function canOpenEmergencyConsole(){
@@ -4766,6 +4914,7 @@ function use(targetIndex=null){
     return;
   }
   const real=!isImp(myRole)&&myRole!=='jt';
+  if(real&&m.a&&tasks[i].k==='scan'&&CFG.visualTasks!==false&&occupiedScan(m,tasks[i])){note('스캔대 사용 중 · 끝나면 시작할 수 있어');return}
   openMG(tasks[i],()=>{tasks[i].d=true;if(real){const group=tasks[i].group,finished=group?tasks.filter(t=>t.group===group).every(t=>t.d):true;if(finished&&gameMode!=='training'){profile.stats.missions=(profile.stats.missions||0)+1;awardTask(tasks[i]);if(profile.stats.missions>=10)unlockAch('인턴');if(profile.stats.missions>=100)unlockAch('매니저');if(profile.stats.missions>=500)unlockAch('감독')}if(isHost)hTask(selfId,i);else sTask({i,round:roundId},hostId)}taskPanelSig='';if(!tasks.some(t=>taskInView(t)&&!t.d)&&tasks.some(t=>!t.d))taskFilter=taskFilter==='common'?'personal':'common'});
 }
 function reportableBody(m,r=90,bodyId=''){
@@ -6479,24 +6628,46 @@ function frameBody(){
     if(deviceView){if(!play||!alive||m.v||mgOpen||!near(m,deviceView,115))closeDevice();else drawDeviceScreen(n)}
   }
 }
-function drawTaskHighlight(g,hardware) {
+function drawTaskHighlight(g,hardware,visual=false) {
   g.save();
   g.translate(hardware.x,hardware.y);
   g.scale(MAP_SCALE,MAP_SCALE);
   taskHardwarePath(g,hardware,1);
-  g.strokeStyle='#ffe45c';
+  g.strokeStyle=visual?'#a5f9c3':'#ffe45c';
   g.lineWidth=2.1;
   g.stroke();
   g.restore();
 }
-function corpseFallProgress(age,stand=1500){return ez(cl((age-Math.max(1000,Math.min(2000,stand)))/550))}
+const CORPSE_FALL_MS=295,CORPSE_SETTLE_MS=180;
+function corpseFallProgress(age,stand=1500){
+  const elapsed=age-Math.max(1000,Math.min(2000,stand));
+  return Math.pow(cl(elapsed/CORPSE_FALL_MS),2.25);
+}
+function corpseFallPose(age,stand=1500){
+  const elapsed=age-Math.max(1000,Math.min(2000,stand));
+  const fall=corpseFallProgress(age,stand);
+  const impact=elapsed>=CORPSE_FALL_MS?cl((elapsed-CORPSE_FALL_MS)/CORPSE_SETTLE_MS):null;
+  const settle=impact===null?0:1-impact;
+  const squash=impact===null?0:.21*settle*Math.exp(-impact*8);
+  const rebound=impact===null?0:2.6*Math.sin(Math.PI*impact)*settle;
+  const tilt=impact===null?0:Math.sin(impact*Math.PI*2)*settle*.16;
+  return {fall,impact,squash,rebound,tilt};
+}
 function drawCorpse(g,x,y,o={}){
-  const c=o.c||'#c51111',fc=o.fc||1,age=o.age??Infinity,fall=corpseFallProgress(age,o.stand??1500);
+  const c=o.c||'#c51111',fc=o.fc||1,age=o.age??Infinity,{fall,impact,squash,rebound,tilt}=corpseFallPose(age,o.stand??1500);
   drawBodyPuddle(g,x,y,age,o.melt||0);g.save();g.translate(x,y);const melt=cl(o.melt||0);if(melt>0){g.fillStyle='rgba(104,211,155,'+(.5*(1-melt))+')';g.beginPath();g.ellipse(0,17,17+melt*16,4+melt*2,0,0,6.3);g.fill();g.globalAlpha*=1-melt;g.translate(0,melt*14);g.scale(1+melt*.08,1-melt*.8)}
   if(age<320){const split=cl(age/320);g.save();g.globalAlpha*=1-split;g.translate(fc*(8+split*14),-8-split*9);g.rotate(fc*split*.35);g.beginPath();g.rect(-32,-40,64,31);g.clip();drawChar(g,0,0,{c,fc,t:o.t||0,hat:o.hat,skin:o.skin});g.restore()}
   g.save();
-  if(!o.noSh){g.fillStyle='rgba(0,0,0,.23)';g.beginPath();g.ellipse(0,17,21,6,0,0,6.3);g.fill()}
-  g.translate(-fc*2*fall,-8*(1-fall)+5*fall);g.rotate(fc*Math.PI*.5*fall);g.strokeStyle='#111821';g.lineWidth=2.2;g.lineJoin='round';
+  if(!o.noSh){
+    g.fillStyle='rgba(0,0,0,'+(.23+squash*.55)+')';g.beginPath();g.ellipse(0,17,21+squash*22,6-squash*5,0,0,6.3);g.fill();
+    if(impact!==null&&impact<.78&&melt===0){
+      g.fillStyle='rgba(196,190,168,'+(.39*(1-impact/.78))+')';
+      for(let i=0;i<5;i++){const side=i%2?-1:1;g.beginPath();g.ellipse(side*(9+i*2+impact*22),18-impact*(7+i*3),2.3-impact,1.1,side*.28,0,6.3);g.fill()}
+    }
+  }
+  g.translate(0,17);g.scale(1+squash*.45,1-squash);g.translate(0,-17);
+  g.translate(-fc*(2*fall+5*Math.sin(Math.PI*fall)),-8+13*fall-rebound);
+  g.rotate(fc*(Math.PI*.5*fall+tilt));g.strokeStyle='#111821';g.lineWidth=2.2;g.lineJoin='round';
   g.fillStyle=shade(c,-.24);g.beginPath();g.roundRect(-18,0,7,15,3);g.fill();g.stroke();
   // The remaining lower suit is compact, with two blunt boots and a short cartoon bone.
   g.fillStyle=c;g.beginPath();g.roundRect(-13,-3,26,23,[4,4,6,6]);g.fill();g.stroke();
@@ -6661,7 +6832,7 @@ function draw(m,n,imp){
   if (!m.v && (m.a || (!imp && myRole!=='jt'))) {
     for (const task of currentTaskSteps()) {
       const hardware=task.hardware;
-      if (hardware && seen(hardware.x,hardware.y)) drawTaskHighlight(ctx,hardware);
+      if(hardware&&seen(hardware.x,hardware.y))drawTaskHighlight(ctx,hardware,CFG.visualTasks!==false&&!!visualStationKind(task));
     }
   }
   // 시체
@@ -6673,7 +6844,9 @@ function draw(m,n,imp){
   drawFootDust(ctx,n);
   // 플레이어
   const killTargetId=localKillTarget(n)?.id;
-  for(const b of Object.values(players)){
+  const actors=Object.values(players);
+  if(actors.some(p=>p.scanVisual))actors.sort((a,b)=>Number(medicalScanValid(a,n))-Number(medicalScanValid(b,n)));
+  for(const b of actors){
     if(b.mapRide){const point=islandRidePoint(b.mapRide,n);if(b.id===selfId||seen(point.x,point.y)){const look=disp(b);ctx.strokeStyle='#f3daa2';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(point.x,point.y-16);ctx.lineTo(point.x,point.y-36);ctx.stroke();drawChar(ctx,point.x,point.y,{c:look.c,fc:b.fc||1,t:n,hat:b.hat,decor:b.decor,skin:b.skin,noSh:true})}continue}
     smoothActorDisplay(b,n,b.id===selfId);
     if(b.v||ventActorAnimating(b,n))continue;
