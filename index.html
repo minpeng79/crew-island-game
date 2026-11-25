@@ -335,6 +335,21 @@
 #action-slate button:focus-visible{outline:2px solid #d9ee99;outline-offset:5px}
 #action-skip{padding:12px 18px;min-height:44px;border-radius:5px;bottom:max(5vh,env(safe-area-inset-bottom));right:max(5vw,env(safe-area-inset-right))}
 #action-roll .board small{font:700 12px monospace;letter-spacing:3px}
+#crewBoot[hidden],#crewBootRetry[hidden]{display:none!important}
+#crewBoot{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 50% 42%,#263a40,#111a20 63%,#0a1116);color:#e7efed;font:15px system-ui,sans-serif}
+#crewBoot .boot-console{width:min(390px,100%);padding:clamp(20px,5vw,32px);border:1px solid #647880;background:#142128;box-shadow:0 14px 36px #050c115e;border-radius:12px;text-align:left}
+#crewBoot .boot-beacon{display:block;position:relative;width:48px;height:32px;margin-bottom:22px;border:1px solid #819890;border-radius:7px;background:repeating-linear-gradient(90deg,#26383d 0 8px,#2d4245 8px 9px)}
+#crewBoot .boot-beacon::after{content:'';position:absolute;inset:auto 6px 6px;height:3px;border-radius:2px;background:#d6eaa0;box-shadow:0 0 8px #d6eaa058;animation:crew-loader-lamp 1.2s ease-in-out infinite alternate}
+@keyframes crew-loader-lamp{from{opacity:.45}to{opacity:1}}
+#crewBoot h2{margin:0;font:750 clamp(21px,6vw,29px)/1.15 system-ui,sans-serif;letter-spacing:-.025em}
+#crewBootStatus{margin:10px 0 18px;color:#b5c6c8;line-height:1.5}
+#crewBootProgress{display:block;width:100%;height:8px;appearance:none;accent-color:#d6eaa0;border:0;border-radius:4px;background:#31434b;overflow:hidden}
+#crewBootProgress::-webkit-progress-bar{background:#31434b}
+#crewBootProgress::-webkit-progress-value{background:#d6eaa0;transition:width .18s ease-out}
+#crewBootProgress::-moz-progress-bar{background:#d6eaa0}
+#crewBootRetry{margin-top:18px;min-height:44px;padding:9px 14px;border-radius:6px;border:1px solid #a8bd7f;background:#d6eaa0;color:#172128;font:700 14px system-ui;cursor:pointer}
+#crewBootRetry:focus-visible{outline:2px solid #e8f4d7;outline-offset:4px}
+@media(prefers-reduced-motion:reduce){#crewBoot .boot-beacon::after{animation:none}#crewBootProgress::-webkit-progress-value{transition:none}}
 </style>
 </head>
 <body>
@@ -421,8 +436,55 @@
 
 <div id="blk" style="display:none;position:fixed;inset:0;z-index:25"></div>
 <section id="shushScreen" aria-hidden="true" style="display:none"></section><canvas id="ic"></canvas><canvas id="eventCanvas" aria-hidden="true"></canvas>
+<section id="crewBoot" role="dialog" aria-modal="true" aria-labelledby="crewBootTitle" tabindex="-1" hidden>
+  <div class="boot-console">
+    <span class="boot-beacon" aria-hidden="true"></span>
+    <h2 id="crewBootTitle">게임 준비 중</h2>
+    <p id="crewBootStatus" role="status">게임 코드를 불러오는 중…</p>
+    <progress id="crewBootProgress" max="3" value="0" aria-label="게임 준비 단계"></progress>
+    <button type="button" id="crewBootRetry" hidden>다시 불러오기</button>
+  </div>
+</section>
+<script id="crew-boot-script">
+(()=>{
+  const panel=document.getElementById('crewBoot');
+  const progress=document.getElementById('crewBootProgress');
+  const status=document.getElementById('crewBootStatus');
+  const retry=document.getElementById('crewBootRetry');
+  let shownAt=null,stage=0,releaseMenu,readyTimer,failureTimer;
+  const stages=['게임 코드를 불러오는 중…','맵과 화면을 준비하는 중…','게임 메뉴를 여는 중…','준비 완료 · 잠시 뒤 메뉴가 열려.'];
+  function watchForDelay(){
+    clearTimeout(failureTimer);
+    if(shownAt!==null&&stage<3)failureTimer=setTimeout(()=>{
+      status.textContent='게임을 불러오는 데 시간이 걸리고 있어.';
+      retry.hidden=false;retry.focus();
+    },18000);
+  }
+  function finishWhenReady(){
+    if(stage!==3||shownAt===null||readyTimer!==undefined)return;
+    clearTimeout(failureTimer);
+    readyTimer=setTimeout(()=>{panel.hidden=true;releaseMenu()},Math.max(0,450-(Date.now()-shownAt)));
+  }
+  globalThis.crewBoot={
+    advance(next){
+      if(!Number.isInteger(next)||next<=stage||next>3)return;
+      stage=next;progress.value=stage;status.textContent=stages[stage];retry.hidden=true;
+      watchForDelay();
+      finishWhenReady();
+    },
+    show(release){
+      if(shownAt!==null)return;
+      shownAt=Date.now();releaseMenu=release;panel.hidden=false;panel.focus();
+      watchForDelay();
+      finishWhenReady();
+    }
+  };
+  retry.onclick=()=>location.reload();
+})();
+</script>
 <script type="module">
 import {joinRoom,selfId} from 'https://cdn.jsdelivr.net/npm/trystero@0.20.0/+esm';
+globalThis.crewBoot?.advance(1);
 
 const APP={appId:'crew-island-reference-v7'};
 const $=i=>document.getElementById(i);
@@ -1714,6 +1776,7 @@ let bg;function buildBackdrop(){
   g.save();g.scale(MAP_SCALE,MAP_SCALE);drawCachedContactDetails(g,currentMap);g.restore();
 }
 buildBackdrop();
+globalThis.crewBoot?.advance(2);
 const hit=(w,x,y)=>x+R>w[0]&&x-R<w[0]+w[2]&&y+R>w[1]&&y-R<w[1]+w[3];
 const locked=()=>activeDoorGroups().length>0;
 const blocked=(x,y,actor=me())=>!Number.isFinite(x)||!Number.isFinite(y)||x<R||y<R||x>WW-R||y>WH-R||cellCh(Math.floor(x/CELL),Math.floor(y/CELL))===' '||WALLS.some(w=>hit(w,x,y))||OBSTACLES.some(w=>hit(w,x,y))||(locked()&&DOORS.some(w=>activeDoorGroups().includes(w[4])&&hit(w,x,y)&&!(actor&&hit(w,actor.x,actor.y))));
@@ -7047,6 +7110,7 @@ function drawEndScene(g,w,h,d,n){
 }
 
 frame();
+globalThis.crewBoot?.advance(3);
 </script>
 <script id="action-slate-script">
 (()=>{
@@ -7062,7 +7126,8 @@ frame();
   function finish(){
     if(finished)return;finished=true;clearTimeout(timer);clearTimeout(soundTimer);
     document.removeEventListener('keydown',onKey,true);slate.remove();
-    if(login){login.inert=wasInert;if(!wasInert&&login.style.display!=='none')document.getElementById('nm')?.focus()}
+    const releaseMenu=()=>{if(login){login.inert=wasInert;if(!wasInert&&login.style.display!=='none')document.getElementById('nm')?.focus()}};
+    if(globalThis.crewBoot)globalThis.crewBoot.show(releaseMenu);else releaseMenu();
   }
   function action(){
     if(actionStarted||finished)return;actionStarted=true;clearTimeout(timer);

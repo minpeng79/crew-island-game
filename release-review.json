@@ -1,11 +1,9 @@
 {
-  "date": "2026-11-25",
-  "change": "Coordinate AI sabotage repair, sustain visible pursuits, improve visual task overlap and witness dialogue, let impostors defend or turn on teammates, and add accelerated fall and impact motion",
-  "sha256": "d7fc4817a2a15dd1a8c7e9a79e6b9e3dfce75ba8aeb66ee233da6331d02e7ad7",
+  "date": "2026-11-26",
+  "change": "Add startup loading screen after Studio Action with real initialization milestones and retry",
+  "sha256": "e942c7a1c262d248ff039da83a1fd2ce7ca4d7fe0091d9126f8bf58211b16fcf",
   "validation": [
-    "Two bots complete a split reactor repair",
-    "Exclusive visual scan, grounded witnesses, task highlight overlap, and teammate defense/betrayal passed",
-    "Canvas fall stages, acceleration, impact and settle passed",
-    "Full runtime, bot movement, conversation and vote regressions passed"
+    "Fast and delayed startup, stalled-load retry, opener skip and menu focus passed",
+    "Full game runtime passed"
   ]
 }
