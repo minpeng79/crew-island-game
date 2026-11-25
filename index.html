@@ -4087,8 +4087,11 @@ const BOT_RETRACTION=/(?:잘못\s*(?:봤|봄|알|말)|착각|(?:말|의심|경�
 const BOT_KILL_REPORT=/킬\s*(?:하는|하던|했|함|하더|냄)|죽이(?:는|던|더|고)|죽였|죽임|썰었|처치\s*(?:하|했|함)|잡(?:았|는)/;
 const BOT_PASSIVE_DEATH=/죽었|죽음|당했|당함/;
 const BOT_HEARSAY=/(?:봤대|봤다던|라던데|(?:죽였|킬했|처치했)대|라고\s*(?:하|했)|말(?:하|했)|얘기(?:하|했)|아마|같(?:아|은|음)|듯)/;
+const BOT_CONDITIONAL_VOTE=/(?:아니면|아니었으면|아닌\s*거면|틀리면|틀렸으면).{0,35}(?:찍|투표|의심|동선)/;
 function botReadTestimony(text,al){
   text=text.normalize('NFC').replace(/밴트/g,'벤트').replace(/봣/g,'봤').replace(/죽엿/g,'죽였');
+  // A promise about a future vote is not a new accusation or an alibi.
+  if(BOT_CONDITIONAL_VOTE.test(text))return [];
   const mentioned=botChatMentions(text,al);
   const witness=/(?:직접|내\s*눈|보는\s*앞에서)|(?:봤어|봤음|봤다|봤는데|\b봄\b|봄(?:\s|$|[.!?ㅋ])|목격)/.test(text);
   const hearsay=BOT_HEARSAY.test(text);
@@ -4121,7 +4124,7 @@ function botReadTestimony(text,al){
     else if(m===agent&&hearsay)rows.push({target:m.id,weight:.85,kind:'rumor'});
     else if(!negatedVent&&(vent.test(local)||annotated.length===1&&vent.test(text)))rows.push({target:m.id,weight:hearsay?.9:witness?2.05:1.75,kind:'vent'});
     else if(nearBody.test(local)||annotated.length===1&&nearBody.test(text))rows.push({target:m.id,weight:hearsay?.65:1.15,kind:'body'});
-    else if(/경크|맞경/.test(local)&&!/(?:아니|없|못)/.test(local))rows.push({target:m.id,weight:hearsay?.9:2.35,kind:'claim'});
+    else if(/경크|맞경/.test(local)&&!/(?:아니|없|못)/.test(local))rows.push({target:m.id,weight:hearsay?.2:.45,kind:'challenge'});
     else if(/(?:^|\s)(?:임(?:\s|$|[.!ㅋ])|임포(?:스터)?(?:인|임|야|다|같|\s|$))|(?:백퍼|100%|확실|맞음)/.test(local))rows.push({target:m.id,weight:hearsay?.9:1.85,kind:'suspicion'});
     else if(/수상|의심|범인|찍(?:어|자|음|을)|투표하/.test(local))rows.push({target:m.id,weight:.8,kind:'suspicion'});
   }
@@ -4161,17 +4164,19 @@ function botBallotAssessment(q,al){
   const others=al.filter(p=>p.a&&p.id!==q.id&&(!isImp(q.r)||!isImp(p.r))),empty={target:null,score:0,confidence:'none',reason:'none',supporters:0};if(!q?.a||!others.length||!meet)return empty;
   const evidence=botKnownEvidence(q),direct=evidence?.kind==='kill'&&evidence.round===roundId&&others.some(p=>p.id===evidence.actorId);
   if(direct)return{target:evidence.actorId,score:8,confidence:'direct',reason:'kill',supporters:1};
-  const persona=botPersona(q),scores=new Map(others.map(p=>[p.id,{target:p.id,score:0,reason:'none',sources:new Set()}]));
+  const persona=botPersona(q),scores=new Map(others.map(p=>[p.id,{target:p.id,score:0,reason:'none',sources:new Set(),hasEvidence:false}]));
   if(evidence?.round===roundId&&scores.has(evidence.actorId)){
-    const own=scores.get(evidence.actorId);if(evidence.kind==='body'||evidence.kind==='vent'){own.score+=evidence.kind==='body'?1.35:1.3;own.reason=evidence.kind;own.sources.add(q.id)}
+    const own=scores.get(evidence.actorId);if(evidence.kind==='body'||evidence.kind==='vent'){own.score+=evidence.kind==='body'?1.35:1.3;own.reason=evidence.kind;own.sources.add(q.id);own.hasEvidence=true}
   }else if(q.sus&&scores.has(q.sus)){const own=scores.get(q.sus);own.score+=.65;own.reason='suspicion';own.sources.add(q.id)}
   const trust=.56+persona.hearsay*.48;
   for(const claim of botPublicClaims(al)){
     const row=scores.get(claim.target);if(!row||claim.from===q.id)continue;
+    if(claim.kind==='challenge')continue;
     row.score+=claim.weight*trust;
+    if(claim.weight>0&&['witness','claim','body','vent'].includes(claim.kind))row.hasEvidence=true;
     if(claim.weight>0){row.sources.add(claim.from);if(claim.kind==='witness'||row.reason==='none')row.reason=claim.kind}
   }
-  const ranked=[...scores.values()].sort((a,b)=>b.score-a.score),best=ranked[0];if(!best||best.score<=0)return empty;
+  const ranked=[...scores.values()].filter(row=>row.hasEvidence).sort((a,b)=>b.score-a.score),best=ranked[0];if(!best||best.score<=0)return empty;
   const threshold=persona.kind==='cautious'?2.65:persona.kind==='suspicious'?1.42:1.72;
   const margin=best.score-(ranked[1]?.score||0),enough=best.score>=threshold&&margin>=.55;
   return{target:enough?best.target:null,score:best.score,confidence:enough?(best.reason==='witness'||best.sources.size>=2?'strong':'tentative'):'none',reason:best.reason,supporters:best.sources.size};
@@ -4206,7 +4211,7 @@ function botVoteChoice(q,al){
   if(isImp(q.r)){
     // Impostors know their teammates, but choose a plausible public suspect instead of a random pile-on.
     if(assessment.target&&!isImp(players[assessment.target]?.r))return assessment.target;
-    const crew=others.filter(other=>!isImp(other.r)),publicSuspect=botPublicClaims(al).filter(c=>c.weight>0&&crew.some(p=>p.id===c.target)).sort((a,b)=>b.weight-a.weight)[0];
+    const crew=others.filter(other=>!isImp(other.r)),publicSuspect=botPublicClaims(al).filter(c=>['witness','claim','body','vent'].includes(c.kind)&&c.weight>0&&crew.some(p=>p.id===c.target)).sort((a,b)=>b.weight-a.weight)[0];
     return publicSuspect?.weight>=1?publicSuspect.target:'skip';
   }
   return assessment.target||'skip';
@@ -4411,6 +4416,7 @@ function humanQuestionFocus(text,intent,sender){
   const mentions=conversationMentions(text);
   const mentioned=[...new Set(mentions.map(item=>item.id))],targets=mentioned.filter(id=>id!==sender),focusSelf=/(?:나|날|내가|나를).*(?:봤|본|보였|의심|수상)|왜.*(?:나|날|내)/.test(text);
   let recipients=targets.slice(),subject=focusSelf?sender:null;
+  if(intent==='evidence'&&/경크|맞경/.test(text))return{targets,recipients:[],subject:targets[0]||null};
   if(intent==='followup'){
     const previous=meetLog.slice(0,-1).reverse().find(m=>m.id!==sender&&players[m.id]?.a&&/킬|죽이|벤트|의심|봤/.test(m.t));
     const subject=previous&&chatTargets(previous.t).find(id=>id!==previous.id);
@@ -4527,6 +4533,10 @@ function botHumanReply(q){
     if(event?.kind==='kill')text=botKillWitnessLine(event,'');
     else if(event?.kind==='vent')text=botVentWitnessLine(event);
     else text=target?target.nm+' 쪽은 아직 확실하지 않아. 본 사람 말부터 들어보자':'어느 얘기 말하는 거야?';
+  }else if(question.intent==='evidence'&&/경크|맞경/.test(question.text)){
+    if(event?.kind==='kill'&&event.actorId===subject)text=botKillWitnessLine(event,'나도 ');
+    else if(target?.id===q.id)text=botOwnAlibi(q)+'. 나를 어디서 봤는데?';
+    else text=target?target.nm+' 죽이는 걸 직접 봤어? 어디였는데?':'누가 뭘 한 걸 봤어? 방 이름부터 말해줘.';
   }else if(question.intent==='claim')text='그럼 신고 나기 바로 전엔 어디였어?';
   else if(question.intent==='hello')text='ㅎㅇ';
   else if(event?.kind==='kill')text=botKillWitnessLine(event);
@@ -4553,11 +4563,25 @@ function safeGhostLine(q,line){
 }
 
 const botSpeechKey=t=>String(t).replace(/^(일단|잠깐|흠|음)[, ]*/,'').replace(/[\s.!?…]/g,'');
+function botAccountabilityLine(q,al){
+  if(!q.a||isImp(q.r)||meet.accountabilitySaid||botPersona(q).kind==='cautious'||botKnownEvidence(q)?.kind==='kill')return null;
+  const claims=botPublicClaims(al);
+  const claim=claims.filter(c=>c.from!==q.id&&c.target!==q.id&&players[c.from]?.a&&!players[c.from].bot&&['witness','claim'].includes(c.kind)&&c.weight>=2.4&&Date.now()-c.at>=1400).sort((a,b)=>b.at-a.at)[0];
+  if(!claim||!players[claim.target]?.a||claims.some(c=>c.from!==claim.from&&c.target===claim.target&&c.weight>=1.7&&['witness','claim'].includes(c.kind)))return null;
+  const accused=players[claim.target].nm,accuser=players[claim.from].nm;
+  return pick([
+    accuser+', '+accused+' 확실해? 얘 아니면 다음엔 너부터 찍을게.',
+    accuser+', 네가 직접 본 거 맞아? '+accused+' 아니면 다음엔 너 동선부터 볼게.',
+    accused+' 아니면 다음엔 '+accuser+'한테 표 줄 거야. 어디서 봤는지 말해 봐.'
+  ]);
+}
 function botFreshLine(q,al){
   const conversation=conversationState();meet.usedLines=meet.usedLines||new Set();
   const available=t=>t&&safeGhostLine(q,t)&&!meet.usedLines.has(botSpeechKey(t))&&!conversation.meanings.has(botMeaningKey(q,t));
   const reply=q.a?botHumanReply(q):null;
   if(reply&&available(reply)){meet.usedLines.add(botSpeechKey(reply));conversation.meanings.add(botMeaningKey(q,reply));q.sd=q.sd||{};q.sd[reply]=1;return reply}
+  const challenge=botAccountabilityLine(q,al);
+  if(available(challenge)){meet.accountabilitySaid=true;meet.usedLines.add(botSpeechKey(challenge));return challenge}
   let line=botLine(q,al);
   if(!available(line)){
     const others=al.filter(o=>o.id!==q.id),reporter=players[meet.caller],lines=[];
