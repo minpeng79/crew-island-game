@@ -1,9 +1,11 @@
 {
   "date": "2026-11-26",
-  "change": "Add startup loading screen after Studio Action with real initialization milestones and retry",
-  "sha256": "e942c7a1c262d248ff039da83a1fd2ce7ca4d7fe0091d9126f8bf58211b16fcf",
+  "change": "Connect recent same-speaker testimony across guest chat bubbles without making bare accusations evidence, and retain statements followed by questions",
+  "sha256": "ac6c411895acfffa5ab941e76543b2dd47579da35ceaf3507b3b30c15323658e",
   "validation": [
-    "Fast and delayed startup, stalled-load retry, opener skip and menu focus passed",
-    "Full game runtime passed"
+    "Reproduced missed guest testimony on previous version",
+    "Actual host ballot simulation shows mixed votes from a single detailed claim and skips for bare labels",
+    "Separate speakers, stale claims and negative statements checked",
+    "Whole runtime passed"
   ]
 }

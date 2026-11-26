@@ -4196,15 +4196,19 @@ const BOT_KILL_REPORT=/킬\s*(?:하는|하던|했|함|하더|냄)|죽이(?:는|�
 const BOT_PASSIVE_DEATH=/죽었|죽음|당했|당함/;
 const BOT_HEARSAY=/(?:봤대|봤다던|라던데|(?:죽였|킬했|처치했)대|라고\s*(?:하|했)|말(?:하|했)|얘기(?:하|했)|아마|같(?:아|은|음)|듯)/;
 const BOT_CONDITIONAL_VOTE=/(?:아니면|아니었으면|아닌\s*거면|틀리면|틀렸으면).{0,35}(?:찍|투표|의심|동선)/;
+const BOT_FIRSTHAND=/(?:직접|내\s*눈|보는\s*앞에서)|(?:봤어|봤음|봤다|봤는데|봄(?:\s|$|[.!?ㅋ])|목격)/;
+const BOT_QUESTION=/(?:[?？]|봤냐|봤니|봤나|하는\s*건가|거야\s*\?|맞(?:냐|니|음\?)|누가\s*봤|본\s*사람)/;
 function botReadTestimony(text,al){
   text=text.normalize('NFC').replace(/밴트/g,'벤트').replace(/봣/g,'봤').replace(/죽엿/g,'죽였');
+  const sentences=text.split(/(?<=[가-힣][.!?！？])\s+/);
+  if(sentences.length>1&&sentences.some(line=>BOT_QUESTION.test(line)||BOT_CONDITIONAL_VOTE.test(line)))return sentences.flatMap(line=>botReadTestimony(line,al));
   // A promise about a future vote is not a new accusation or an alibi.
   if(BOT_CONDITIONAL_VOTE.test(text))return [];
   const mentioned=botChatMentions(text,al);
-  const witness=/(?:직접|내\s*눈|보는\s*앞에서)|(?:봤어|봤음|봤다|봤는데|\b봄\b|봄(?:\s|$|[.!?ㅋ])|목격)/.test(text);
+  const witness=BOT_FIRSTHAND.test(text);
   const hearsay=BOT_HEARSAY.test(text);
   const questionText=[...mentioned].reverse().reduce((line,m)=>line.slice(0,m.at)+' '.repeat(m.end-m.at)+line.slice(m.end),text);
-  const asks=/(?:[?？]|봤냐|봤니|봤나|하는\s*건가|거야\s*\?|맞(?:냐|니|음\?)|누가\s*봤|본\s*사람)/.test(questionText);
+  const asks=BOT_QUESTION.test(questionText);
   const negativeKill=/(?:킬|죽이|죽였|처치).{0,22}(?:못\s*(?:봤|봄)|안\s*(?:봤|봄)|모르|안\s*보였|아니)/.test(text);
   const negatedVent=/(?:벤트).{0,18}(?:안\s*(?:탔|탐)|못\s*(?:봤|봄)|아닌|아님)/.test(text);
   const deny=/(?:아니(?:야|다|라고|고|었|잖|라)|아님|아냐|아닌\s*것|아닐\s*듯)/;
@@ -4232,11 +4236,20 @@ function botReadTestimony(text,al){
     else if(m===agent&&hearsay)rows.push({target:m.id,weight:.85,kind:'rumor'});
     else if(!negatedVent&&(vent.test(local)||annotated.length===1&&vent.test(text)))rows.push({target:m.id,weight:hearsay?.9:witness?2.05:1.75,kind:'vent'});
     else if(nearBody.test(local)||annotated.length===1&&nearBody.test(text))rows.push({target:m.id,weight:hearsay?.65:1.15,kind:'body'});
-    else if(/경크|맞경/.test(local)&&!/(?:아니|없|못)/.test(local))rows.push({target:m.id,weight:hearsay?.2:.45,kind:'challenge'});
+    else if((/경크|맞경/.test(local)||annotated.length===1&&/^(?:맞?경크|맞경)\s*[:：]?\s*$/.test(text.slice(0,m.at)))&&!/(?:아니|없|못)/.test(local))rows.push({target:m.id,weight:hearsay?.2:.45,kind:'challenge'});
     else if(/(?:^|\s)(?:임(?:\s|$|[.!ㅋ])|임포(?:스터)?(?:인|임|야|다|같|\s|$))|(?:백퍼|100%|확실|맞음)/.test(local))rows.push({target:m.id,weight:hearsay?.9:1.85,kind:'suspicion'});
     else if(/수상|의심|범인|찍(?:어|자|음|을)|투표하/.test(local))rows.push({target:m.id,weight:.8,kind:'suspicion'});
   }
   return rows;
+}
+function botTestimonyFollowup(text,speaker,at,claims,al){
+  const last=[...claims.values()].filter(c=>c.from===speaker&&c.kind==='challenge'&&at-c.at<=12000);
+  if(last.length!==1||!BOT_FIRSTHAND.test(text)||BOT_QUESTION.test(text)||BOT_HEARSAY.test(text)||BOT_CONDITIONAL_VOTE.test(text)||/못\s*(?:봤|봄)|안\s*(?:봤|봄)|아니|아님|아냐|착각|모르/.test(text))return null;
+  // The same speaker can finish their sentence in a second chat bubble.
+  if(botChatMentions(text,al).some(m=>!m.address&&!/^[을를]$/.test(m.particle)))return null;
+  if(BOT_KILL_REPORT.test(text))return{target:last[0].target,weight:3.15,kind:'witness'};
+  if(/밴트|벤트/.test(text)&&/탔|타는|탐|나왔|들어|썼|씀/.test(text))return{target:last[0].target,weight:2.05,kind:'vent'};
+  return null;
 }
 function botPublicClaims(al){
   if(!meet)return[];
@@ -4248,6 +4261,10 @@ function botPublicClaims(al){
     const author=eligible.get(message.id);if(!author||message.gh||typeof message.t!=='string')continue;
     const text=message.t.slice(0,300);
     let lines=botReadTestimony(text,al);
+    if(!author.bot&&!lines.some(line=>line.kind==='witness'||line.kind==='claim'||line.kind==='vent')){
+      const followup=botTestimonyFollowup(text,author.id,message.at,claims,al);
+      if(followup)lines=[...lines,followup];
+    }
     if(!lines.length&&BOT_RETRACTION.test(text)&&!/[?？]/.test(text)){
       const previous=[...claims.values()].filter(r=>r.from===author.id&&r.weight>0).sort((a,b)=>b.at-a.at)[0];
       if(previous)lines=[{target:previous.target,weight:0,kind:'retract'}];
