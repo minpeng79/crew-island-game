@@ -545,19 +545,23 @@ const SKELD_ROOMS={
 };
 const SKELD_LINKS=[
   [[12,8],[24,8]],[[20,8],[20,10]],[[10,11],[10,26]],[[7,18],[12,18]],
-  [[13,29],[27,29]],[[24,27],[27,27]],[[31,13],[31,24]],[[31,19],[35,19]],
+  [[13,30],[27,30]],[[31,13],[31,24]],[[31,19],[35,19]],
   [[38,8],[43,8]],[[49,11],[51,11],[51,28]],[[43,16],[51,16]],[[51,18],[55,18]],
   [[37,29],[44,29]],[[37,33],[39,33]],
   [[20,5],[20,8]],[[51,8],[55,8]],[[58,9],[58,13]],
-  [[20,29],[20,33]],[[24,20],[31,20]]
+  [[21,30],[21,33]],[[24,20],[31,20]]
 ];
+function isDoorCell(ch){return /^[1-5]$/.test(ch)}
 function skeldGrid(){
   const grid=Array.from({length:38},()=>Array(64).fill(' '));
   const inside=(x,y,p)=>{let on=false;for(let i=0,j=p.length-1;i<p.length;j=i++){const a=p[i],b=p[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])on=!on}return on};
   Object.entries(SKELD_ROOMS).forEach(([ch,o])=>{for(let r=0;r<38;r++)for(let c=0;c<64;c++)if(inside(c+.5,r+.5,o.poly))grid[r][c]=ch});
   const line=(a,b)=>{let[x,y]=a;for(let i=0;i<100;i++){for(let yy=y-1;yy<=y+1;yy++)for(let xx=x-1;xx<=x+1;xx++)if(grid[yy]?.[xx]===' ')grid[yy][xx]='+';if(x===b[0]&&y===b[1])break;if(x!==b[0])x+=Math.sign(b[0]-x);else y+=Math.sign(b[1]-y)}};
   SKELD_LINKS.forEach(points=>points.slice(1).forEach((p,i)=>line(points[i],p)));
-  [[15,8,1,'v'],[31,16,2,'h'],[40,8,3,'v'],[40,29,4,'v']].forEach(([c,r,id,axis])=>{for(let d=-1;d<=1;d++){const x=c+(axis==='h'?d:0),y=r+(axis==='v'?d:0);if(grid[y]?.[x]&&grid[y][x]!==' ')grid[y][x]=String(id)}});
+  // A single door off the lower corridor, with a blind corner behind it.
+  for(let c=16;c<25;c++)grid[28][c]=c>=20&&c<=22?'+':' ';
+  for(let c=20;c<25;c++)grid[26][c]=' ';
+  [[15,8,1,'v'],[31,16,2,'h'],[40,8,3,'v'],[40,29,4,'v'],[21,28,5,'h']].forEach(([c,r,id,axis])=>{for(let d=-1;d<=1;d++){const x=c+(axis==='h'?d:0),y=r+(axis==='v'?d:0);if(grid[y]?.[x]&&grid[y][x]!==' ')grid[y][x]=String(id)}});
   return grid.map(row=>row.join(''));
 }
 let SHIP=skeldGrid();
@@ -584,7 +588,7 @@ let VT_RAW=[
   [3,21,5],[5,30,5],
   [45,32,6],[55,21,6]
 ];
-let SPOT_RAW=[['light',19,23,0,'전기실'],['door',15,8,1,'서쪽 복도'],['door',31,16,2,'식당 출입구'],['door',40,8,3,'무기고 통로'],['door',40,29,4,'보호막 통로'],['inv',58,19,0,'항해 교란'],['o2',40,14,0,'산소 공급실'],['reactor',3,15,0,'원자로'],['comm',40,33,0,'통신실']];
+let SPOT_RAW=[['light',19,23,0,'전기실'],['door',15,8,1,'서쪽 복도'],['door',31,16,2,'식당 출입구'],['door',40,8,3,'무기고 통로'],['door',40,29,4,'보호막 통로'],['door',21,28,5,'전기실 출입구'],['inv',58,19,0,'항해 교란'],['o2',40,14,0,'산소 공급실'],['reactor',3,15,0,'원자로'],['comm',40,33,0,'통신실']];
 const SKELD_MAP={grid:SHIP,rm:RM,tasks:ST_RAW,vents:VT_RAW,spots:SPOT_RAW,
   table:[31,9],start:[31,11],systems:[[19,23],[40,14],[3,15],[3,21]],
   devices:[{type:'admin',x:1580,y:860,room:'관리실'},{type:'cctv',x:580,y:660,room:'보안실',feeds:[[51,18],[31,18],[21,8],[10,18]]}],
@@ -605,7 +609,8 @@ const FUNGLE_SHORE=[[7,1],[17,2],[29,1],[39,3],[52,1],[59,4],[62,11],[61,18],[62
 function fungleRebuildPlan(){return {
   shore:[[7,2],[12,1],[16,3],[23,2],[29,1],[35,3],[40,2],[44,4],[51,1],[56,2],[61,4],[63,8],[61,12],[63,17],[62,21],[63,26],[61,29],[63,34],[60,37],[53,38],[49,38],[44,38],[40,36],[36,38],[31,37],[27,37],[22,37],[17,36],[12,38],[7,36],[4,34],[2,31],[3,27],[1,24],[2,21],[1,17],[3,13],[1,10],[3,7],[3,4]],
   masses:[[[31,2],[40,3],[43,6],[42,12],[38,13],[34,11],[31,8]],[[47,13],[53,12],[55,16],[54,20],[51,23],[48,21],[48,17]],[[39,23],[46,23],[49,27],[48,30],[44,32],[40,29]],[[18,27],[22,26],[25,29],[25,34],[22,36],[20,34]],[[8,25],[12,26],[13,30],[12,35],[9,36],[8,32]],[[31,28],[35,29],[36,33],[34,37],[31,36]],[[49,27],[53,27],[55,30],[54,35],[50,36],[49,32]],[[3,4],[9,3],[13,5],[14,9],[11,11],[6,10]],[[15,12],[19,12],[21,15],[20,18],[17,19],[15,17]],[[26,14],[32,13],[34,16],[32,20],[28,20],[26,18]],[[22,21],[26,21],[27,24],[25,26],[22,25]]],
-  paths:[[[22,8],[22,14],[23,19],[24,23],[30,24],[37,24],[40,21],[40,16],[40,10],[35,10],[30,10],[25,10],[22,8]],[[5,15],[10,15],[14,20],[20,22],[24,23]],[[10,15],[10,23],[15,25],[22,25],[24,23]],[[15,25],[17,28],[16,31],[23,32],[28,32],[30,28],[30,24]],[[28,32],[37,33],[42,33],[46,33],[51,34],[58,31],[58,25],[53,24],[46,25],[40,21]],[[40,10],[48,11],[53,10],[57,5]],[[48,11],[45,18],[46,25]],[[58,17],[58,23],[53,24]],[[58,17],[57,12],[53,10]],[[5,15],[5,23],[6,29],[10,33],[16,31]],[[36,15],[36,16],[40,16]]]
+  ridges:[[[30,1],[45,2],[46,6],[42,9],[38,7],[35,8],[31,6]],[[40,13],[43,13],[45,16],[43,21],[40,23],[38,19]],[[51,18],[55,19],[56,23],[53,25],[49,23],[49,20]],[[20,13],[26,13],[29,16],[28,20],[24,22],[20,20],[19,17]],[[31,25],[34,25],[37,28],[36,30],[32,30],[29,28]],[[17,25],[22,26],[24,28],[22,33],[20,34],[17,31],[15,29]],[[7,25],[12,26],[14,30],[12,33],[9,32],[7,29]]],
+  paths:[[[22,8],[22,11],[18,14],[17,19],[20,23],[24,23],[30,24],[37,24],[40,21],[40,16],[40,10],[35,10],[30,10],[25,10],[22,8]],[[5,15],[10,15],[14,20],[20,22],[24,23]],[[10,15],[10,23],[15,25],[22,25],[24,23]],[[15,25],[17,28],[16,31],[23,32],[28,32],[30,28],[30,24]],[[28,32],[37,33],[42,33],[46,33],[51,34],[58,31],[58,25],[53,24],[46,25],[40,21]],[[40,10],[48,11],[53,10],[57,5]],[[48,11],[45,18],[46,25]],[[58,17],[58,23],[53,24]],[[58,17],[57,12],[53,10]],[[5,15],[5,23],[6,29],[10,33],[16,31]],[[36,15],[36,16],[40,16]]]
 }}
 function funglePointInPoly(x,y,p){let a=false;for(let i=0,j=p.length-1;i<p.length;j=i++){const u=p[i],v=p[j];if((u[1]>y)!==(v[1]>y)&&x<(v[0]-u[0])*(y-u[1])/(v[1]-u[1])+u[0])a=!a}return a}
 function fungleGrid(){
@@ -614,9 +619,9 @@ function fungleGrid(){
   for(const[ch,x,y,w,h]of d.rooms)for(let r=y;r<y+h;r++)for(let c=x;c<x+w;c++)if(land[r]?.[c])g[r][c]=ch;
   const protect=(x,y,r=1)=>{for(let yy=y-r;yy<=y+r;yy++)for(let xx=x-r;xx<=x+r;xx++)if(land[yy]?.[xx])keep[yy][xx]=true};
   for(const p of plan.paths)for(let i=1;i<p.length;i++){let[x,y]=p[i-1];const[tx,ty]=p[i];for(let k=0;k<120;k++){protect(x,y);if(x===tx&&y===ty)break;if(x!==tx)x+=Math.sign(tx-x);else y+=Math.sign(ty-y)}}
-  const hot=[...d.tasks,...d.vents,...d.systems,d.table,d.start,...d.spots.map(s=>[s[1],s[2]])];
+  const hot=[...d.tasks,...d.vents,...d.systems,d.table,d.start,...ISLAND_CABLE,...d.spots.map(s=>[s[1],s[2]])];
   for(const[c,r]of hot)protect(c,r,2);
-  for(const poly of plan.masses)for(let r=0;r<SH;r++)for(let c=0;c<SW;c++)if(land[r][c]&&!keep[r][c]&&funglePointInPoly(c+.5,r+.5,poly))g[r][c]=' ';
+  for(const poly of [...plan.masses,...plan.ridges])for(let r=0;r<SH;r++)for(let c=0;c<SW;c++)if(land[r][c]&&!keep[r][c]&&funglePointInPoly(c+.5,r+.5,poly))g[r][c]=' ';
   // Keep every usable floor tile in the same connected component as the crash-site spawn.
   const seen=Array.from({length:SH},()=>Array(SW).fill(false)),q=[d.start];seen[d.start[1]][d.start[0]]=true;
   for(let i=0;i<q.length;i++){const[x,y]=q[i];for(const[dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy;if(g[yy]?.[xx]&&g[yy][xx]!==' '&&!seen[yy][xx]){seen[yy][xx]=true;q.push([xx,yy])}}}
@@ -625,11 +630,20 @@ function fungleGrid(){
 }
 function polusGrid(){
  const d=MAP_DATA.polus,g=Array.from({length:SH},()=>Array(SW).fill(' '));
- for(let y=10;y<37;y++)for(let x=2;x<63;x++)g[y][x]='+';
- for(let y=1;y<14;y++)for(let x=20;x<36;x++)g[y][x]='+';
+ const perimeter=[[5,10],[17,11],[20,8],[19,2],[23,0],[34,1],[36,8],[43,8],[46,10],[57,8],[63,12],[63,18],[62,25],[64,31],[61,37],[48,37],[43,38],[27,37],[20,38],[12,37],[3,36],[2,31],[1,26],[3,21],[1,17],[2,12]];
+ const drifts=[[[14,10],[18,11],[20,13],[19,16],[17,15],[15,13]],[[32,13],[36,11],[40,13],[39,16],[36,17]],[[12,23],[16,23],[16,28],[14,30],[12,28]],[[22,16],[26,17],[26,21],[23,22],[20,20]],[[43,22],[47,21],[48,23],[47,28],[44,28]],[[42,27],[45,28],[44,31],[42,31]]];
+ for(let y=0;y<SH;y++)for(let x=0;x<SW;x++)if(funglePointInPoly(x+.5,y+.5,perimeter)&&!drifts.some(p=>funglePointInPoly(x+.5,y+.5,p)))g[y][x]='+';
  for(const[ch,x,y,w,h]of d.rooms){for(let yy=y-1;yy<=y+h;yy++)for(let xx=x-1;xx<=x+w;xx++)if(g[yy]?.[xx])g[yy][xx]=' ';for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)g[yy][xx]=ch}
  for(let y=22;y<26;y++)for(let x=48;x<55;x++)g[y][x]=' ';
  for(const[x1,y1,x2,y2]of d.links){let x=x1,y=y1;for(let i=0;i<100;i++){for(let yy=y-1;yy<=y+1;yy++)for(let xx=x-1;xx<=x+1;xx++)if(g[yy]?.[xx]===' ')g[yy][xx]='+';if(x===x2&&y===y2)break;x+=Math.sign(x2-x);y+=Math.sign(y2-y)}}
+ // A graded track links the west utilities to the office approach through the snow bank.
+ for(let y=20;y<=22;y++)for(let x=14;x<=19;x++)if(g[y][x]===' ')g[y][x]='+';
+ // The specimen wing is reached through either decon passage.
+ for(let y=28;y<=35;y++)for(let x=48;x<=60;x++){
+   const door=y===28&&x>=57&&x<=59||x===48&&y>=32&&y<=34;
+   if(door)g[y][x]='+';
+   else if(x===48||x===60||y===28||y===35)g[y][x]=' ';
+ }
  return g.map(r=>r.join(''));
 }
 function customGrid(id){if(id==='polus')return polusGrid();if(id==='fungle')return fungleGrid();const d=MAP_DATA[id],g=Array.from({length:SH},()=>Array(SW).fill(' ')),room=(ch,x,y,w,h)=>{for(let r=y;r<y+h;r++)for(let c=x;c<x+w;c++)g[r][c]=ch},path=(x1,y1,x2,y2)=>{let x=x1,y=y1;const step=(a,b)=>a===b?a:a+(b>a?1:-1);for(let z=0;z<100;z++){for(let r=y-1;r<=y+1;r++)for(let c=x-1;c<=x+1;c++)if(r>=0&&r<SH&&c>=0&&c<SW&&g[r][c]===' ')g[r][c]='+';if(x===x2&&y===y2)break;if(x!==x2)x=step(x,x2);if(y!==y2)y=step(y,y2)}};d.rooms.forEach(a=>room(...a));d.links.forEach(a=>path(...a));return g.map(r=>r.join(''))}
@@ -986,7 +1000,7 @@ function buildWorld(){
   for(let r=0;r<SH;r++)for(let c=0;c<SW;c++){
     const ch=cellCh(c,r);if(ch===' ')continue;
     FLOORS.push(cc(c,r));
-    if(ch>='1'&&ch<='4')DOORS.push([c*CELL,r*CELL,CELL,CELL,+ch]);
+    if(isDoorCell(ch))DOORS.push([c*CELL,r*CELL,CELL,CELL,+ch]);
   }
   ST_RAW.forEach(([c,r,k,rn,meta={}])=>{
     const station={...cc(c,r),k,rn,n:LBL[k]+' ('+rn+')',...meta};
@@ -1168,7 +1182,7 @@ function drawReferenceBackdropNative(g,rn,FLOORS){
   for(let r=0;r<SH;r++)for(let c=0;c<SW;c++){
     const ch=cellCh(c,r);if(ch===' ')continue;const x=c*CELL,y=r*CELL,name=d.names[ch]||'',outside=ch==='+';
     let color=palette(name);
-    if(outside)color=id==='polus'?'#735d88':id==='mira'?'#c4d7d6':id==='airship'?'#a5b2b7':'#c5ad82';
+    if(outside)color=id==='polus'?(c>=47&&r>=22&&r<=27?'#786779':r<14?'#9a9eaf':'#8589a0'):id==='mira'?'#c4d7d6':id==='airship'?'#a5b2b7':'#c5ad82';
     if(id==='fungle')color=ch==='C'?'#8a9ca1':c>43&&r<25?'#b88a5c':r>26?'#88729d':'#c5ad82';
     g.fillStyle=color;g.fillRect(x,y,CELL,CELL);
     if(!outside&&id!=='fungle'){
@@ -1242,6 +1256,7 @@ function drawReferenceBackdropNative(g,rn,FLOORS){
   // Boundary walls exactly match collision geometry, including Polus door openings.
   if(id!=='fungle')for(let r=0;r<SH;r++)for(let c=0;c<SW;c++)if(!floor(c,r)&&[-1,0,1].some(dy=>[-1,0,1].some(dx=>floor(c+dx,r+dy)))){const x=c*CELL,y=r*CELL;g.fillStyle=id==='airship'?'#713b47':id==='mira'?'#728f95':'#48556c';g.fillRect(x,y,40,40);g.fillStyle=id==='mira'?'#d1deda':'#8299a8';g.fillRect(x+2,y+3,36,5);g.fillStyle='#213845';g.fillRect(x+2,y+33,36,5)}
   drawMapEdgeFinish(g,id);
+  drawCorridorRails(g,id);
   drawMapApproaches(g,id);
   if(id==='fungle')drawIslandCable(g);
   drawPremiumInteriorDetails(g,id);
@@ -1300,12 +1315,12 @@ function drawMapApproaches(g,id){
   const palettes={skeld:['#a6bdc2','#2e484e'],mira:['#bbdfde','#365e73'],polus:['#e9c3a9','#473557'],airship:['#e1bf82','#53484a'],fungle:['#e7d5a6','#564c45']};
   const [ink,edge]=palettes[id],entries=new Map();
   for(let row=1;row<SH-1;row++)for(let col=1;col<SW-1;col++){
-    const passage=cellCh(col,row);if(passage!=='+'&&!/^[1-4]$/.test(passage))continue;
+    const passage=cellCh(col,row);if(passage!=='+'&&!isDoorCell(passage))continue;
     for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){
       const room=cellCh(col+dx,row+dy),label=RM[room]?.[0];if(!label||room==='+')continue;
       const x=(col+.5)*size,y=(row+.5)*size;
       if(ST_RAW.some(t=>Math.hypot(t[0]*size+size/2-x,t[1]*size+size/2-y)<52)||VT_RAW.some(t=>Math.hypot(t[0]*size+size/2-x,t[1]*size+size/2-y)<47))continue;
-      const next=cellCh(col-dx,row-dy),straight=next==='+'||/^[1-4]$/.test(next);
+      const next=cellCh(col-dx,row-dy),straight=next==='+'||isDoorCell(next);
       const score=(passage!=='+'?3:0)+(straight?2:0)+(cellCh(col+dx*2,row+dy*2)===room?1:0);
       if(!entries.has(room)||entries.get(room).score<score)entries.set(room,{x,y,dx,dy,score,label});
     }
@@ -1319,6 +1334,27 @@ function drawMapApproaches(g,id){
     g.rotate(-Math.atan2(dy,dx));g.font='bold 9px sans-serif';g.textAlign='center';g.textBaseline='middle';
     g.lineWidth=2.6;g.strokeStyle=edge;g.fillStyle=ink;g.strokeText(label,-dx*11,dy===-1?13:-17,72);g.fillText(label,-dx*11,dy===-1?13:-17,72);g.restore();
   }
+}
+function drawCorridorRails(g,id){
+  if(id!=='mira'&&id!=='airship')return;
+  const cold=id==='mira',C=40;
+  g.save();
+  g.lineCap='round';
+  for(let r=1;r<SH-1;r++)for(let c=1;c<SW-1;c++){
+    if(cellCh(c,r)!=='+')continue;
+    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      if(cellCh(c+dx,r+dy)!==' ')continue;
+      const x=(c+.5)*C+dx*15,y=(r+.5)*C+dy*15,span=cold?19:15;
+      for(const [width,color] of [[5,cold?'#294653':'#492a32'],[2,cold?'#c5edf0':'#e9b665']]){
+        g.strokeStyle=color;g.lineWidth=width;g.beginPath();
+        g.moveTo(x-dy*span,y-dx*span);g.lineTo(x+dy*span,y+dx*span);g.stroke();
+      }
+      if((c+r)%3===0){
+        g.fillStyle=cold?'#61d8db':'#fcc67d';g.fillRect(x-2-dx*3,y-2-dy*3,4,4);
+      }
+    }
+  }
+  g.restore();
 }
 function drawIslandCable(g){
   const [a,b]=ISLAND_CABLE.map(([c,r])=>({x:(c+.5)*40,y:(r+.5)*40}));
@@ -1655,14 +1691,19 @@ function drawFungleRebuiltBackdropNative(g,rn){
   const coast=plan.shore.map(([x,y])=>[x*C,y*C]);poly(coast,'#dcba86','#7bc8c0',24);poly(coast,'#d3b080','#e6ebcb',6);
   g.save();g.beginPath();coast.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.clip();
   const sand=g.createLinearGradient(0,0,w,h);sand.addColorStop(0,'#e6c796');sand.addColorStop(.55,'#c9aa7b');sand.addColorStop(1,'#a48aa1');g.fillStyle=sand;g.fillRect(0,0,w,h);
-  // Irregular silhouettes join the beach, stepped rock plateau and mushroom forest.
-  poly([[39*C,0],[64*C,0],[64*C,29*C],[57*C,28*C],[54*C,26*C],[49*C,26*C],[47*C,22*C],[42*C,22*C],[43*C,17*C],[40*C,13*C],[42*C,8*C]],'#b88356');
-  poly([[0,27*C],[7*C,26*C],[13*C,28*C],[20*C,26*C],[27*C,28*C],[33*C,26*C],[40*C,28*C],[47*C,25*C],[54*C,27*C],[64*C,26*C],[64*C,h],[0,h]],'#82769a');
+  // Trace the vegetation line across the island, leaving the western floodplain sandy.
+  poly([[0,0],[37,0],[40,8],[36,11],[30,12],[28,15],[36,19],[35,23],[31,24],[24,21],[20,22],[16,20],[18,16],[14,11],[7,11],[2,7]].map(([x,y])=>[x*C,y*C]),'#889676');
+  poly([[39*C,0],[64*C,0],[64*C,29*C],[57*C,28*C],[54*C,26*C],[49*C,26*C],[47*C,22*C],[42*C,22*C],[43*C,17*C],[40*C,13*C],[42*C,8*C]],'#b88356','#d4a777',8);
+  poly([[0,27*C],[7*C,26*C],[13*C,28*C],[20*C,26*C],[27*C,28*C],[33*C,26*C],[40*C,28*C],[47*C,25*C],[54*C,27*C],[64*C,26*C],[64*C,h],[0,h]],'#82769a','#a0899d',9);
   for(let r=0;r<SH;r++)for(let c=0;c<SW;c++){
     if(!inside((c+.5)*C,(r+.5)*C))continue;
     const x=c*C,y=r*C;
     if((c*3+r)%5===0){g.fillStyle=r>27?'#b6a3bc18':'#efd6a318';g.beginPath();g.ellipse(x+16+noise(c,r)*12,y+20,12,3,-.2,0,T);g.fill()}
     if((c*7+r)%11===0){g.fillStyle=r>27?'#594c741f':'#7b67561c';g.fillRect(x+noise(c,r)*35,y+noise(c,r,4)*35,2,1)}
+    if(c>14&&c<40&&r>13&&r<25&&(c*7+r*3)%11===0){
+      const px=x+12+noise(c,r,6)*17,py=y+12+noise(c,r,7)*16;
+      oval(px,py,12,5,'#40594433',-.25);leaf(px-6,py+1,13,'#77896177',-.7);leaf(px+2,py,12,'#607c5666',.7);
+    }
     if(c>42&&r<27&&(c+r)%5===0){line([[x+4,y+31],[x+16,y+28],[x+34,y+30]],'#6c573d38',1);line([[x+8,y+34],[x+29,y+34]],'#ecc68a25',1)}
   }
   // Curved worn tracks show the traversable loops without turning into painted walls.
@@ -4027,7 +4068,7 @@ function botPersona(q){
   return q.botPersona={kind,...profile};
 }
 function botActualRoom(q){
-  const ch=cellCh(Math.floor(q.x/CELL),Math.floor(q.y/CELL));return ch==='+'||/^[1-4]$/.test(ch)?'복도':RM[ch]?.[0]||roomOf(q.x,q.y);
+  const ch=cellCh(Math.floor(q.x/CELL),Math.floor(q.y/CELL));return ch==='+'||isDoorCell(ch)?'복도':RM[ch]?.[0]||roomOf(q.x,q.y);
 }
 function rememberBotRoom(q,n=Date.now()){
   if(!q.bot||!q.a||q.v)return;
@@ -4198,8 +4239,28 @@ const BOT_HEARSAY=/(?:봤대|봤다던|라던데|(?:죽였|킬했|처치했)대|
 const BOT_CONDITIONAL_VOTE=/(?:아니면|아니었으면|아닌\s*거면|틀리면|틀렸으면).{0,35}(?:찍|투표|의심|동선)/;
 const BOT_FIRSTHAND=/(?:직접|내\s*눈|보는\s*앞에서)|(?:봤어|봤음|봤다|봤는데|봄(?:\s|$|[.!?ㅋ])|목격)/;
 const BOT_QUESTION=/(?:[?？]|봤냐|봤니|봤나|하는\s*건가|거야\s*\?|맞(?:냐|니|음\?)|누가\s*봤|본\s*사람)/;
+function normalizeTestimony(text){
+  return String(text||'').normalize('NFC').replace(/밴트/g,'벤트').replace(/봣/g,'봤')
+    .replace(/(?<![\p{L}\p{N}])(?:죽엿|주겻)/gu,'죽였')
+    .replace(/(?<![\p{L}\p{N}])(?:주김|쥬김)(?![\p{L}\p{N}])/gu,'죽임');
+}
+function botSpeechRoom(text){
+  const names=Object.values(RM).map(entry=>entry[0]).sort((a,b)=>b.length-a.length);
+  const words=new Set(text.split(/[^\p{L}\p{N}]+/u));
+  for(const name of names){
+    const forms=[name];
+    if(/^(?:전기|의무|보안|관리|통신|항해|회의)실$/.test(name))forms.push(name.slice(0,-1));
+    if(name==='산소 공급실')forms.push('산소');
+    for(const form of forms){
+      const room=form.replace(/[.*+?^$${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s*');
+      if(new RegExp('(?:^|[^\\p{L}\\p{N}])'+room+'\\s*(?:(?:앞|안)\\s*에서|에서|서)(?![\\p{L}\\p{N}])','u').test(text))return name;
+    }
+    if(words.has(name)||name.includes(' ')&&text.includes(name))return name;
+  }
+  return null;
+}
 function botReadTestimony(text,al){
-  text=text.normalize('NFC').replace(/밴트/g,'벤트').replace(/봣/g,'봤').replace(/죽엿/g,'죽였');
+  text=normalizeTestimony(text);
   const sentences=text.split(/(?<=[가-힣][.!?！？])\s+/);
   if(sentences.length>1&&sentences.some(line=>BOT_QUESTION.test(line)||BOT_CONDITIONAL_VOTE.test(line)))return sentences.flatMap(line=>botReadTestimony(line,al));
   // A promise about a future vote is not a new accusation or an alibi.
@@ -4209,7 +4270,7 @@ function botReadTestimony(text,al){
   const hearsay=BOT_HEARSAY.test(text);
   const questionText=[...mentioned].reverse().reduce((line,m)=>line.slice(0,m.at)+' '.repeat(m.end-m.at)+line.slice(m.end),text);
   const asks=BOT_QUESTION.test(questionText);
-  const negativeKill=/(?:킬|죽이|죽였|처치).{0,22}(?:못\s*(?:봤|봄)|안\s*(?:봤|봄)|모르|안\s*보였|아니)/.test(text);
+  const negativeKill=/(?:킬|죽이|죽였|죽임|처치).{0,22}(?:못\s*(?:봤|봄)|안\s*(?:봤|봄)|모르|안\s*보였|아니)|(?:^|\s)(?:안|못)\s*(?:죽이|죽였|죽임|킬|처치)/.test(text);
   const negatedVent=/(?:벤트).{0,18}(?:안\s*(?:탔|탐)|못\s*(?:봤|봄)|아닌|아님)/.test(text);
   const deny=/(?:아니(?:야|다|라고|고|었|잖|라)|아님|아냐|아닌\s*것|아닐\s*듯)/;
   const annotated=mentioned.map((m,i)=>({...m,
@@ -4222,13 +4283,13 @@ function botReadTestimony(text,al){
     beforeKill.find(m=>/^[은는이가]$/.test(m.particle))||beforeKill.find(m=>!/[을를]/.test(m.particle));
   const nearBody=/(?:시체|사체).{0,20}(?:근처|옆|주변)|(?:근처|옆).{0,15}(?:시체|사체)/;
   const vent=/벤트\s*(?:.{0,14}(?:탔|타는|탐|나왔|들어|썼|씀|봤|봄|쇼))/;
-  const rows=[];
+  const rows=[],room=agent&&!asks?botSpeechRoom(text):null;
   for(const m of annotated){
     if(m.addressed)continue;
     const {local}=m;
     if(BOT_RETRACTION.test(local))rows.push({target:m.id,weight:0,kind:'retract'});
     else if(m===agent&&negativeKill)rows.push({target:m.id,weight:0,kind:'retract'});
-    else if(m===agent&&!asks&&!hearsay)rows.push({target:m.id,weight:witness?3.15:2.55,kind:witness?'witness':'claim'});
+    else if(m===agent&&!asks&&!hearsay)rows.push({target:m.id,weight:witness?3.15:2.55,kind:witness?'witness':'claim',room});
     else if(asks)continue;
     else if(/(?:스캔|확미|실드|소행성|쓰레기).{0,28}(?:봤|봄|목격)|확시(?:야|임|다|\s|$)/.test(local))rows.push({target:m.id,weight:-2.5,kind:'defense'});
     else if(/(?:계속|내내|처음부터).{0,18}(?:같이|함께)|(?:같이|함께).{0,18}(?:계속|내내|있었)/.test(local))rows.push({target:m.id,weight:-1.45,kind:'defense'});
@@ -4243,11 +4304,12 @@ function botReadTestimony(text,al){
   return rows;
 }
 function botTestimonyFollowup(text,speaker,at,claims,al){
+  text=normalizeTestimony(text);
   const last=[...claims.values()].filter(c=>c.from===speaker&&c.kind==='challenge'&&at-c.at<=12000);
   if(last.length!==1||!BOT_FIRSTHAND.test(text)||BOT_QUESTION.test(text)||BOT_HEARSAY.test(text)||BOT_CONDITIONAL_VOTE.test(text)||/못\s*(?:봤|봄)|안\s*(?:봤|봄)|아니|아님|아냐|착각|모르/.test(text))return null;
   // The same speaker can finish their sentence in a second chat bubble.
   if(botChatMentions(text,al).some(m=>!m.address&&!/^[을를]$/.test(m.particle)))return null;
-  if(BOT_KILL_REPORT.test(text))return{target:last[0].target,weight:3.15,kind:'witness'};
+  if(BOT_KILL_REPORT.test(text))return{target:last[0].target,weight:3.15,kind:'witness',room:botSpeechRoom(text)};
   if(/밴트|벤트/.test(text)&&/탔|타는|탐|나왔|들어|썼|씀/.test(text))return{target:last[0].target,weight:2.05,kind:'vent'};
   return null;
 }
@@ -4583,16 +4645,16 @@ function conversationState(){
 /* Compact intent grammar: 12,000 distinct tested conversational forms, not canned replies. */
 const HUMAN_PHRASES={"report":["시체 위치 어디","시체 나온 곳 알려줘","신고 장소 알려줘","시체 발견 위치","시체는 어느 방","리폿 위치 알려줘","신고한 곳 어디","시체 어딨었음","시체 어디였음","시체 어디서 찾음"],"where":["어디 있었음","어느 방에 있었어","아까 위치 말해줘","방금 동선 알려줘","뭐 하고 있었음","어느 쪽 갔어","마지막 위치 어디","이동 경로 알려줘","너 어디 갔다 왔어","알리바이 말해봐"],"seen":["누구 봤음","마지막으로 본 사람","근처에 사람 있었어","누가 지나갔어","같이 있던 사람 있어","목격한 사람 있어","지나가는 거 봤어","주변에 누가 있었어","그 사람 본 적 있어","직접 본 사람 있어"],"vote":["누구 찍을 거임","이번 표 어디 줌","투표 누구 할래","스킵할 거야","이번엔 넘길래","누굴 찍을 생각","킵할까","어디 투표할 거","누구한테 표 줄래","이번 투표 어떻게 할래"],"evidence":["근거가 뭔데","뭘 보고 의심해","왜 그렇게 생각해","증거부터 말해줘","어떤 걸 본 건데","확실한 이유 있어","의심하는 이유 알려줘","직접 확인한 거야","그렇게 말하는 이유","구체적으로 설명해줘"],"suspect":["누가 제일 수상해","의심되는 사람 있어","범인 누구 같음","누구라고 생각해","가장 의심하는 사람","지금 용의자 누구","임포 누구 같아","지금 누가 의심됨","수상한 사람 골라봐","누가 이상했어"],"claim":["나 아니라고","나 진짜 억울해","나 임포 아닌데","나 왜 의심받음","나한테 왜 그래","내가 한 거 아님","나 범인 아니야","난 크루라고","나 죽인 적 없어","나는 결백해"],"meeting":["버튼 누른 이유","누가 회의 눌렀어","왜 소집한 거야","회의 연 이유 말해줘","무슨 일로 불렀어","긴급 누른 사람 누구","버튼 왜 누름","왜 다 모은 거야","회의 이유 알려줘","누가 긴급회의 함"],"clear":["확시 있는 사람","확미 본 거 있어","스캔 확인했어","누구 확시야","확정 크루 있어","누구 스캔 봤어","확미 증인 있어","확시 근거 말해줘","확실한 크루 누구","스캔 본 사람 있어"],"misfire":["오발 난 거야","보안관이 쏜 거야","쏜 사람이 죽었어","보안관 오발임","총 쏘고 죽은 거야","왜 쏜 사람이 죽음","이거 오발 아니야","총 누가 쐈어","보안관 맞아","오발인지 확인해줘"],"lover":["연인 같이 죽음","둘이 동시에 죽었어","같이 쓰러진 거야","따라 죽은 사람 있어","연인인 거야","한 명 죽고 또 죽었어","연인 때문에 죽음","동시에 둘 죽음","왜 둘 다 쓰러짐","같이 죽은 이유 뭐야"],"selfreport":["자작극 아니야","셀프 신고 같은데","자기가 죽이고 신고","신고자가 죽인 거 아냐","셀프 리폿 의심됨","이거 자작 아님","죽이고 신고한 거야","자작인지 확인해줘","신고한 사람이 범인 같아","셀프리폿 아니냐"]};
 const HUMAN_FORM_RULES=Object.entries(HUMAN_PHRASES).flatMap(([intent,forms])=>forms.map(form=>({intent,key:form.replace(/\s/g,'')}))).sort((a,b)=>b.key.length-a.key.length);
-function normalizeHumanSpeech(text){return String(text||'').normalize('NFC').toLowerCase().replace(/스킾/g,'스킵').replace(/밴트/g,'벤트').replace(/리포트/g,'리폿').replace(/어딧/g,'어딨').replace(/있엇/g,'있었').replace(/햇/g,'했').replace(/봣/g,'봤').replace(/\s+/g,' ').trim()}
+function normalizeHumanSpeech(text){return normalizeTestimony(text).toLowerCase().replace(/스킾/g,'스킵').replace(/리포트/g,'리폿').replace(/어딧/g,'어딨').replace(/있엇/g,'있었').replace(/햇/g,'했').replace(/\s+/g,' ').trim()}
 function humanIntent(text){
   const normalized=normalizeHumanSpeech(text),compact=normalized.replace(/\s/g,'');
   const match=HUMAN_FORM_RULES.find(rule=>compact.includes(rule.key));
   if(match)return match.intent;
   if(!normalized||/^[ㅋㅎㅠㅜ.!?~ ]+$/.test(normalized))return '';
   const names=chatTargets(normalized);
-  const kill=/(?:킬|죽였|죽이는|잡았|처치|썰었)/.test(normalized),ask=/[?？][ㅋㅎ! ]*$|봤(?:냐|니)|본\s*사람|봤는지|했다고\s*$/.test(normalized);
+  const kill=BOT_KILL_REPORT.test(normalized)||BOT_PASSIVE_DEATH.test(normalized)&&botReadTestimony(normalized,Object.values(players)).some(claim=>claim.weight>=2),ask=/[?？][ㅋㅎ! ]*$|봤(?:냐|니)|본\s*사람|봤는지|했다고\s*$/.test(normalized);
   if(/벤트/.test(normalized))return 'vent';
-  if(names.length&&kill&&!ask&&!/못\s*봤|안\s*봤|아니|봤대/.test(normalized))return 'accuse';
+  if(names.length&&kill&&!ask&&!/(?:못|안)\s*(?:봤|죽이|죽였|죽임|킬|처치)|아니|봤대/.test(normalized))return 'accuse';
   if(!ask&&names.length&&/봤(?:음|어|다|고)|같이\s*있었/.test(normalized)&&!kill)return 'sighting';
   if(/^(?:왜|진짜|ㄹㅇ|확실해|뭐임|뭔데)[\s?!~.]*$/.test(normalized))return 'followup';
   return humanIntentBase(normalized);
@@ -4724,7 +4786,7 @@ function botHumanReply(q){
     if(target?.id===q.id||recipients.includes(q.id))text='나 아님. '+botOwnAlibi(q);
     else if(target?.a&&isImp(q.r)&&isImp(target.r))text=botTeammateLine(q,Object.values(players).filter(o=>o.a),target.id)||target.nm+' 말도 들어보자. 직접 본 거야?';
     else if(event?.kind==='kill')text=botKillWitnessLine(event,'나도 ');
-    else if(target){const sight=[...(memory.sightings||[])].reverse().find(h=>h.id===target.id);text=sight?target.nm+' '+sight.r+'에서 보긴 했는데, 죽이는 건 못 봤어':'어디서 본 건데? '+target.nm+' 죽이는 거 직접 봤어?'}
+    else if(target){const sight=[...(memory.sightings||[])].reverse().find(h=>h.id===target.id),room=botSpeechRoom(question.text);text=sight?target.nm+' '+sight.r+'에서 보긴 했는데, 죽이는 건 못 봤어':room?room+'에서 '+target.nm+' 직접 본 거야? 신고 직전이었어?':'어디서 본 건데? '+target.nm+' 죽이는 거 직접 봤어?'}
     else text='누가 어디서 죽였어?';
   }else if(question.intent==='selfreport')text=event?.kind==='kill'&&meet.kind==='rep'&&meet.caller===event.actorId&&meet.bodyId===event.victimId?event.actor+' 죽이고 신고도 하더라. 내가 봤어':'신고한 것 말고 다른 근거 있어?';
   else if(question.intent==='meeting')text=q.id===meet.caller?(q.meetingReason||'내가 눌렀어. 확인할 게 있어서'):'난 안 눌렀어. 누른 사람 얘기 들어보자';
@@ -4748,7 +4810,7 @@ function botHumanReply(q){
     else text=target?target.nm+' 벤트 타는 거 네가 직접 본 거야?':'누가 어디 벤트 탔어?';
   }else if(question.intent==='sighting'){
     const sight=[...(memory.sightings||[])].reverse().find(h=>h.id===subject);
-    const namedRoom=[...new Set(ST_RAW.map(row=>row[3]))].find(room=>question.text.includes(room));
+    const namedRoom=botSpeechRoom(question.text);
     if(sight)text='난 '+target.nm+' '+sight.r+'에서 봤어. '+(namedRoom&&namedRoom!==sight.r?'그다음에 '+namedRoom+'로 간 건가?':'그 뒤로는 못 봤어');
     else text=target?(namedRoom?namedRoom+'에서 ':'')+target.nm+' 본 건 알겠어. 신고 직전이야?':'언제쯤 본 거야?';
   }else if(question.intent==='followup'){
@@ -5546,7 +5608,7 @@ function drawLobbyGlassAtmosphere(g,n){
   g.save();g.beginPath();g.rect(0,0,70,WAIT_H);g.rect(WAIT_W-70,0,70,WAIT_H);g.clip();const cycle=Math.floor(n/11000),t=(n%11000)/700;if(t<1){const x=cycle%2?WAIT_W-60:12,y=110+t*180;g.globalAlpha=.55*Math.sin(t*Math.PI);g.strokeStyle='#c5e5ff';g.lineWidth=1.5;g.beginPath();g.moveTo(x-14,y-40);g.lineTo(x+20,y+20);g.stroke()}g.restore();
 }
 let roomNamePopup=null,roomNameState=null,criticalAlarmState={key:'',start:0};
-function actualRoomLabel(actor){const ch=cellCh(Math.floor(actor.x/CELL),Math.floor(actor.y/CELL));return !ch||ch===' '?null:ch==='+'||/^[1-4]$/.test(ch)?'복도':RM[ch]?.[0]||null}
+function actualRoomLabel(actor){const ch=cellCh(Math.floor(actor.x/CELL),Math.floor(actor.y/CELL));return !ch||ch===' '?null:ch==='+'||isDoorCell(ch)?'복도':RM[ch]?.[0]||null}
 function drawRoomNamePopup(g,w,h,actor,n){
   if(phase!=='play'||!actor||n<introEnd){roomNamePopup=null;roomNameState=null;return}
   const room=actualRoomLabel(actor),key=currentMap+'|'+roundId;if(!room)return;
@@ -6601,7 +6663,7 @@ function drawDeviceScreen(n){
   if(INTEL_TYPES.has(deviceView.type)){const rows=mapIntelRows(deviceView.type);if(!isHost&&!deviceIntel){if(sDevice&&Date.now()>=(deviceView.nextRequestAt||0)){deviceView.nextRequestAt=Date.now()+300;sDevice({open:true,type:deviceView.type},hostId)}g.fillStyle='#c2d4de';g.font='20px sans-serif';g.fillText('장치 신호 수신 중…',w/2,h/2);return}if(deviceView.type==='vitals')drawCanonicalVitals(g,w,h,rows,n);else drawCanonicalDoorlog(g,w,h,rows,n);return}
   if(deviceView.type==='admin'){
     const k=Math.min((w-50)/WW,(h-60)/WH),ox=(w-WW*k)/2,oy=(h-WH*k)/2;g.save();g.globalAlpha=.7;g.drawImage(bg,ox,oy,WW*k,WH*k);g.restore();
-    const groups={};for(const f of FLOORS){const ch=cellCh(f.x/CELL|0,f.y/CELL|0);if(!RM[ch]||ch==='+'||/^[1-4]$/.test(ch))continue;const a=groups[ch]||(groups[ch]={x:0,y:0,n:0,count:0});a.x+=f.x;a.y+=f.y;a.n++}
+    const groups={};for(const f of FLOORS){const ch=cellCh(f.x/CELL|0,f.y/CELL|0);if(!RM[ch]||ch==='+'||isDoorCell(ch))continue;const a=groups[ch]||(groups[ch]={x:0,y:0,n:0,count:0});a.x+=f.x;a.y+=f.y;a.n++}
     Object.values(players).forEach(q=>{if(!q.a||q.v)return;const ch=cellCh(q.x/CELL|0,q.y/CELL|0);if(groups[ch])groups[ch].count++});
     Object.entries(groups).forEach(([ch,a])=>{const x=ox+a.x/a.n*k,y=oy+a.y/a.n*k;g.fillStyle=a.count?'#d9f99d':'#adc7b6';g.font='bold 12px sans-serif';g.fillText(RM[ch][0],x,y-9);if(a.count){g.fillStyle='#06261b';g.strokeStyle='#bef264';g.lineWidth=2;g.beginPath();g.roundRect(x-20,y-3,40,23,6);g.fill();g.stroke();g.fillStyle='#e8ff9e';g.font='bold 17px sans-serif';for(let i=0;i<a.count;i++){const cols=Math.min(5,a.count);drawChar(g,x+(i%cols-(cols-1)/2)*11,y+8+Math.floor(i/cols)*14,{c:'#f6df65',sc:.26,noSh:true,t:0})}}});return;
   }

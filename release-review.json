@@ -1,11 +1,10 @@
 {
   "date": "2026-11-26",
-  "change": "Connect recent same-speaker testimony across guest chat bubbles without making bare accusations evidence, and retain statements followed by questions",
-  "sha256": "ac6c411895acfffa5ab941e76543b2dd47579da35ceaf3507b3b30c15323658e",
+  "change": "Rework Skeld Electrical, Polus outdoor and specimen routes, Fungle terrain and trails, and MIRA and Airship corridor details. Resolve colloquial Korean room names and kill testimony disambiguation.",
+  "sha256": "f2db6b8d91a647733acf6ec8dd4d01fa94c7454cd15423619e63900fb7983960",
   "validation": [
-    "Reproduced missed guest testimony on previous version",
-    "Actual host ballot simulation shows mixed votes from a single detailed claim and skips for bare labels",
-    "Separate speakers, stale claims and negative statements checked",
-    "Whole runtime passed"
+    "Verified five maps with actual bot movement to task and vent targets, crowded spawns, and open/closed Electrical door routing",
+    "Verified shorthand, typo, passive death, negative and question variants through host guest-chat ingress",
+    "Passed native Canvas whole-module rounds on each map and 12,000 dialogue classification cases"
   ]
 }
